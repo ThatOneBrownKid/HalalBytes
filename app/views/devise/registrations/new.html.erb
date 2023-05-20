@@ -1,29 +1,52 @@
-<h2>Sign up</h2>
-
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+ <body>
+  <section class="h-100">
+    <div class="container h-100">
+      <div class="row justify-content-sm-center h-100">
+        <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
+          <div class="text-center my-5">
+            <%= image_tag 'bootstrap.png', class: 'w-25' %>
+          </div>
+          <div class="card shadow-lg">
+            <div class="card-body p-5">
+              <h1 class="fs-4 card-title fw-bold mb-4">
+                <%= action_name == "edit" ? "Edit" : "Register" %>
+              </h1>
+              <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+                <%= devise_error_messages! %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+                <div class="mb-3">
+                  <%= f.label :first_name, class: "mb-2 text-muted" %>
+                  <%= f.text_field :first_name, class: "form-control", required: true, autofocus: true %>
+                </div>
 
-  <div class="field">
-    <%= f.label :password %>
-    <% if @minimum_password_length %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
+                <div class="mb-3">
+                  <%= f.label :last_name, class: "mb-2 text-muted" %>
+                  <%= f.text_field :last_name, class: "form-control", required: true %>
+                </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
+                <div class="mb-3">
+                  <%= f.label :email, class: "mb-2 text-muted" %>
+                  <%= f.email_field :email, class: "form-control", required: true %>
+                </div>
 
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
+                <div class="mb-3">
+                  <%= f.label :password, class: "mb-2 text-muted" %>
+                  <%= f.password_field :password, class: "form-control", required: true %>
+                </div>
+
+                <div class="align-items-center d-flex">
+                  <%= f.submit action_name == "edit" ? "Confirm" : "Register", class: "btn btn-primary ms-auto" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+
+
 <% end %>
 
-<%= render "devise/shared/links" %>
