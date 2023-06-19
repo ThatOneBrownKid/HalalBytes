@@ -1,37 +1,38 @@
-<div id="<%= dom_id restaurant %>">
-  <p>
-    <strong>Name:</strong>
-    <%= restaurant.name %>
-  </p>
-
-  <p>
-    <strong>Address:</strong>
-    <%= restaurant.address %>
-  </p>
-
-  <p>
-    <strong>Phone:</strong>
-    <%= restaurant.phone %>
-  </p>
-
-  <p>
-    <strong>Website:</strong>
-    <%= restaurant.website %>
-  </p>
-
-  <p>
-    <strong>Cuisine:</strong>
-    <%= restaurant.cuisine %>
-  </p>
-
-  <p>
-    <strong>Price range:</strong>
-    <%= restaurant.price_range %>
-  </p>
-
-  <p>
-    <strong>Overall rating:</strong>
-    <%= restaurant.overall_rating %>
-  </p>
-
+<div class="card mb-3">
+  <div class="row no-gutters">
+    <div class="col-md-4">
+      <img src="" class="card-img" alt="Restaurant Image">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title mb-1" style="font-size: 40px;"><%= restaurant.name %></h5>
+        <div class="text" style="font-size: 15px;">
+          <div class="hover-box" style="display: inline-block; background-color: #a3a3a0; padding: 5px 10px; border-radius: 5px;">
+            <%= restaurant.cuisine %>
+          </div>
+          <div class="hover-box" style="display: inline-block; background-color: #a3a3a0; padding: 5px 10px; border-radius: 5px;">
+            Overall Rating: <%= restaurant.overall_rating %>
+          </div>
+           <div class="hover-box" style="display: inline-block; background-color: #a3a3a0; padding: 5px 10px; border-radius: 5px;">
+           Price Range: <%= restaurant.price_range %>
+          </div>
+          <div class="hover-box" style="display: inline-block; background-color: #a3a3a0; padding: 5px 10px; border-radius: 5px;">
+          <%= restaurant.address %>
+          </div>
+          <div class="hover-box" style="display: inline-block; background-color: #a3a3a0; padding: 5px 10px; border-radius: 5px;">
+          <%= restaurant.website %>
+          </div>
+          
+        </div>
+        <div class="text" style="font-size: 20px;">
+        <p></p>
+        Comments: <p></p>
+        </div>
+        <div class="text-secondary" style="font-size: 14px;">
+          <!-- Additional text or content here -->
+        </div>
+        <a href="<%= restaurant_url(restaurant) %>" class="btn btn-primary">View Details</a>
+      </div>
+    </div>
+  </div>
 </div>
