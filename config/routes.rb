@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :users
   match '/users', to: 'users#index', via: 'get'
   resources :users, only: [:show]
+  get 'requests/form', to: 'requests#form'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
