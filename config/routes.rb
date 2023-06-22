@@ -7,8 +7,8 @@ Rails.application.routes.draw do
   resources :restaurants
   root 'home#index'
   resources :users
-  match '/users',   to: 'users#index',   via: 'get'
-  
+  match '/users', to: 'users#index', via: 'get'
+  resources :users, only: [:show]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

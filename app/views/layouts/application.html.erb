@@ -25,15 +25,18 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    var notification = document.querySelector(".alert");
+  var notifications = document.querySelectorAll(".alert:not(#password-alert)");
 
-    if (notification) {
-      setTimeout(function() {
+  if (notifications.length > 0) {
+    setTimeout(function() {
+      notifications.forEach(function(notification) {
         notification.classList.add("fade");
         setTimeout(function() {
           notification.remove();
         }, 500); // Fade-out duration (in milliseconds)
-      }, 2000); // Display duration (in milliseconds)
-    }
-  });
+      });
+    }, 2000); // Display duration (in milliseconds)
+  }
+});
+
 </script>

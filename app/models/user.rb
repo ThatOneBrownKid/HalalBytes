@@ -14,4 +14,11 @@ class User < ApplicationRecord
   def set_default_admin
     self.admin = false
   end
+
+
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+
+  public :full_name
 end
