@@ -6,9 +6,13 @@ Rails.application.routes.draw do
   }
   resources :restaurants
   root 'home#index'
-  resources :users
-  match '/users',   to: 'users#index',   via: 'get'
-  
+  resources :users, only: [:edit, :update, :show] do
+    get 'edit', on: :collection, to: 'users#edit'
+  end
+  match '/users', to: 'users#index', via: 'get'
+  get 'requests/form', to: 'requests#form'
+
+  put '/users', to: 'users/registrations#update'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

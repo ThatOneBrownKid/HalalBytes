@@ -1,52 +1,230 @@
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
- <body>
-  <section class="h-100">
-    <div class="container h-100">
-      <div class="row justify-content-sm-center h-100">
-        <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
-          <div class="text-center my-5">
-            <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
-          </div>
-          <div class="card shadow-lg">
-            <div class="card-body p-5">
-              <h1 class="fs-4 card-title fw-bold mb-4">
-                <%= action_name == "edit" ? "Edit" : "Register" %>
-              </h1>
-              <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-                <%= devise_error_messages! %>
+  <body>
+    <section class="h-100">
+      <div class="container h-100">
+        <div class="row justify-content-sm-center h-100">
+          <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
+            <div class="text-center my-5">
+              <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
+            </div>
+            <div class="card shadow-lg">
+              <div class="card-body" style="padding: 38px;">
+                <h1 class="fs-4 card-title fw-bold mb-4">
+                  <%= action_name == "edit" ? "Edit" : "Register" %>
+                </h1>
+                <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
 
-                <div class="mb-3">
-                  <%= f.label :first_name, class: "mb-2 text-muted" %>
-                  <%= f.text_field :first_name, class: "form-control", required: true, autofocus: true %>
-                </div>
+                  <div class="mb-3">
+                    <%= f.label :first_name, class: "mb-2 text-muted" %>
+                    <%= f.text_field :first_name, class: "form-control", required: true, autofocus: true, value: resource.first_name&.downcase&.capitalize %>
+                    <% if resource.errors.has_key?(:first_name) %>
+                      <div class="text-danger ">
+                        <%= resource.errors[:first_name].join(", ") %>
+                      </div>
+                    <% end %>
+                  </div>
 
-                <div class="mb-3">
-                  <%= f.label :last_name, class: "mb-2 text-muted" %>
-                  <%= f.text_field :last_name, class: "form-control", required: true %>
-                </div>
+                  <div class="mb-3">
+                    <%= f.label :last_name, class: "mb-2 text-muted" %>
+                    <%= f.text_field :last_name, class: "form-control", required: true, value: resource.last_name&.downcase&.capitalize %>
+                    <% if resource.errors.has_key?(:last_name) %>
+                      <div class="text-danger small">
+                        <%= resource.errors[:last_name].join(", ") %>
+                      </div>
+                    <% end %>
+                  </div>
 
-                <div class="mb-3">
-                  <%= f.label :email, class: "mb-2 text-muted" %>
-                  <%= f.email_field :email, class: "form-control", required: true %>
-                </div>
+                  <div class="mb-3">
+                    <%= f.label :email, class: "mb-2 text-muted" %>
+                    <%= f.email_field :email, class: "form-control", required: true, value: resource.last_name&.downcase%>
+                    <% if resource.errors.has_key?(:email) %>
+                      <div class="text-danger small">
+                        <%= resource.errors.full_messages_for(:email).first %>
+                      </div>
+                    <% end %>
+                  </div>
 
-                <div class="mb-3">
-                  <%= f.label :password, class: "mb-2 text-muted" %>
-                  <%= f.password_field :password, class: "form-control", required: true %>
-                </div>
+                  <div>
+                    <div class="mb-0">
+                      <%= f.label :password, class: "mb-2 text-muted", id: "password" %>
+                      <%= f.password_field :password, class: "form-control rounded mt-1", placeholder: "", id: "password-input", aria: { label: "password" }, aria_describedby: "password" %>
+                      <div class="valid-feedback">Valid</div>
+                      <div class="invalid-feedback">Invalid</div>
+                      <% if resource.errors.has_key?(:password) %>
+                        <div class="text-danger small">
+                          <%= resource.errors.full_messages_for(:password).first %>
+                        </div>
+                      <% end %>
+                    </div>
 
-                <div class="align-items-center d-flex">
-                  <%= f.submit action_name == "edit" ? "Confirm" : "Register", class: "btn btn-primary ms-auto" %>
-                </div>
-              <% end %>
+                    <div class="col-6 mt-0 mt-xxl-0 w-auto h-auto">
+                      <div class="alert px-4 py-1 mb-0 d-none" role="alert" data-mdb-color="warning" id="password-alert">
+                        <ul class="list-unstyled mb-0 small">
+                          <li class="requirements leng">
+                            <i class="bi bi-check text-success me-1"></i>
+                            <i class="bi bi-x text-danger me-2"></i>
+                            At least 8 characters
+                          </li>
+                          <li class="requirements big-letter">
+                            <i class="bi bi-check text-success me-1"></i>
+                            <i class="bi bi-x text-danger me-2"></i>
+                            At least 1 uppercase letter
+                          </li>
+                          <li class="requirements num">
+                            <i class="bi bi-check text-success me-1"></i>
+                            <i class="bi bi-x text-danger me-2"></i>
+                            At least 1 number
+                          </li>
+                          <li class="requirements special-char">
+                            <i class="bi bi-check text-success me-1"></i>
+                            <i class="bi bi-x text-danger me-2"></i>
+                            At least 1 special character
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="align-items-center d-flex">
+                    <%= f.submit action_name == "edit" ? "Confirm" : "Register", class: "btn btn-primary ms-auto" %>
+                  </div>
+                <% end %>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-</body>
-
-
+    </section>
+  </body>
 <% end %>
 
+<style>
+    .wrong .bi-check {
+        display: none;
+    }
+
+    .good .bi-x {
+        display: none;
+    }
+
+    .valid-feedback,
+    .invalid-feedback {
+        margin-left: 0;
+    }
+</style>
+
+<script>
+    addEventListener("DOMContentLoaded", (event) => {
+        const password = document.getElementById("password-input");
+        const passwordAlert = document.getElementById("password-alert");
+        const requirements = document.querySelectorAll(".requirements");
+        let lengBoolean, bigLetterBoolean, numBoolean, specialCharBoolean;
+        let leng = document.querySelector(".leng");
+        let bigLetter = document.querySelector(".big-letter");
+        let num = document.querySelector(".num");
+        let specialChar = document.querySelector(".special-char");
+        const specialChars = "!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?`~";
+        const numbers = "0123456789";
+
+        requirements.forEach((element) => element.classList.add("wrong"));
+
+        password.addEventListener("focus", () => {
+            passwordAlert.classList.remove("d-none");
+            if (!password.classList.contains("is-valid")) {
+                password.classList.add("is-invalid");
+            }
+        });
+
+        password.addEventListener("input", () => {
+            let value = password.value;
+            if (value.length < 8) {
+                lengBoolean = false;
+            } else if (value.length > 7) {
+                lengBoolean = true;
+            }
+
+            if (value.toLowerCase() == value) {
+                bigLetterBoolean = false;
+            } else {
+                bigLetterBoolean = true;
+            }
+
+            numBoolean = false;
+            for (let i = 0; i < value.length; i++) {
+                for (let j = 0; j < numbers.length; j++) {
+                    if (value[i] == numbers[j]) {
+                        numBoolean = true;
+                    }
+                }
+            }
+
+            specialCharBoolean = false;
+            for (let i = 0; i < value.length; i++) {
+                for (let j = 0; j < specialChars.length; j++) {
+                    if (value[i] == specialChars[j]) {
+                        specialCharBoolean = true;
+                    }
+                }
+            }
+
+            if (
+                lengBoolean == true &&
+                bigLetterBoolean == true &&
+                numBoolean == true &&
+                specialCharBoolean == true
+            ) {
+                password.classList.remove("is-invalid");
+                password.classList.add("is-valid");
+
+                requirements.forEach((element) => {
+                    element.classList.remove("wrong");
+                    element.classList.add("good");
+                });
+                passwordAlert.classList.remove("alert-warning");
+                passwordAlert.classList.add("alert-success");
+            } else {
+                password.classList.remove("is-valid");
+                password.classList.add("is-invalid");
+
+                passwordAlert.classList.add("alert-warning");
+                passwordAlert.classList.remove("alert-success");
+
+                if (lengBoolean == false) {
+                    leng.classList.add("wrong");
+                    leng.classList.remove("good");
+                } else {
+                    leng.classList.add("good");
+                    leng.classList.remove("wrong");
+                }
+
+                if (bigLetterBoolean == false) {
+                    bigLetter.classList.add("wrong");
+                    bigLetter.classList.remove("good");
+                } else {
+                    bigLetter.classList.add("good");
+                    bigLetter.classList.remove("wrong");
+                }
+
+                if (numBoolean == false) {
+                    num.classList.add("wrong");
+                    num.classList.remove("good");
+                } else {
+                    num.classList.add("good");
+                    num.classList.remove("wrong");
+                }
+
+                if (specialCharBoolean == false) {
+                    specialChar.classList.add("wrong");
+                    specialChar.classList.remove("good");
+                } else {
+                    specialChar.classList.add("good");
+                    specialChar.classList.remove("wrong");
+                }
+            }
+        });
+
+        password.addEventListener("blur", () => {
+            passwordAlert.classList.add("d-none");
+        });
+    });
+</script>

@@ -1,43 +1,470 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<head>
+	<meta charset="UTF-8">
+	<title>Account Settings UI Design</title>
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
 
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+<section class="py-5 my-5">
+		<div class="container">
+			<h1 class="mb-5"></h1>
+			<div class="bg-white shadow rounded-lg d-block d-sm-flex">
+				<div class="profile-tab-nav border-right">
+					<div class="p-4">
+						<div class="img-circle text-center mb-3">
+							<%# <%= image_tag current_user.profile_picture.url, alt: "Profile Picture", class: "shadow" %>
+						</div>
+						<h4 class="text-center"><%= current_user.full_name %></h4>
+					</div>
+					<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+						<a class="nav-link active" id="account-tab" data-toggle="pill" href="#account" role="tab" aria-controls="account" aria-selected="true">
+							<i class="fa fa-home text-center mr-1"></i> 
+							Account
+						</a>
+						<a class="nav-link" id="password-tab" data-toggle="pill" href="#password" role="tab" aria-controls="password" aria-selected="false">
+								<span class="d-flex align-items-center">
+    							<i class="fa fa-key text-center mr-1"></i>
+    							<span class="ml-1">Password</span>
+  							</span>
+						</a>
+						<a class="nav-link" id="security-tab" data-toggle="pill" href="#security" role="tab" aria-controls="security" aria-selected="false">
+							<i class="fa fa-user text-center mr-1"></i> 
+							Security
+						</a>
+						<a class="nav-link" id="application-tab" data-toggle="pill" href="#application" role="tab" aria-controls="application" aria-selected="false">
+							<span class="d-flex align-items-center">
+								<i class="fa fa-tv text-center mr-1"></i> 
+								<span class="ml-1">Application</span>
+							</span>
+						</a>
+						<a class="nav-link" id="notification-tab" data-toggle="pill" href="#notification" role="tab" aria-controls="notification" aria-selected="false">
+							<span class="d-flex align-items-center">
+								<i class="fa fa-bell text-center mr-1"></i> 
+								<span class="ml-1">Notification</span>
+							</span>
+						</a>
+					</div>
+				</div>
+				<div class="tab-content p-4 p-md-5" id="v-pills-tabContent" style="width: 600px;">
+					<div class="tab-pane fade show active f" id="account" role="tabpanel" aria-labelledby="account-tab">
+		           <div class="d-flex align-items-center justify-content-between mb-3">
+                  <h3 class="mb-0">Account Settings</h3>
+                  <button id="editButton" type="button" class="btn btn-light"><i class="bi bi-pencil-square"></i></button>
+                 </div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>First Name</label>
+								  	<%= f.text_field :first_name, autofocus: true, autocomplete: "given-name", class: "form-control", disabled: true %>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>Last Name</label>
+                    <%= f.text_field :last_name, autocomplete: "family-name", class: "form-control", disabled: true %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>Email</label>
+								  	<%= f.email_field :email, autocomplete: "email", class: "form-control", disabled: true %>
+								</div>
+							</div>
+						</div>
 
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+						<div>
+              <div class="Actions" >
+                <%= f.submit "Update",id:"updateButton", class: "btn btn-primary", hidden: true%>
+                <button type="button" class="btn btn-light" id="cancelButton" hidden>Cancel</button>
+              </div>
+							<%# <%= link_to "Delete Account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete, class: "btn btn-danger" %> 
+						</div>
+					</div>
+					<div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+						<h3 class="mb-4">Password Settings</h3>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>Old password</label>
+								  	<input type="password" class="form-control">
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<%= f.label :password, class: "mb-2 text-muted", id: "password" %>
+								  	<%= f.password_field :password, class: "form-control rounded mt-1", placeholder: "", id: "password-input", aria: { label: "password" }, aria_describedby: "password" %>
+                    <div class="valid-feedback">Valid</div>
+                    <div class="invalid-feedback">Invalid</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group"style="margin-top: 0px;">
+								  	<%= f.label :password_confirmation, class: "mb-2 text-muted", id: "password" %>
+								  	<%= f.password_field :password_confirmation, class: "form-control rounded mt-1", placeholder: "", id: "confirm-password", aria: { label: "password-confirmation" }, aria_describedby: "password-confirmation" %>
+								    <div class="valid-feedback">Valid</div>
+                    <div class="invalid-feedback">Invalid</div>
+                </div>
+							</div>
+
+              <div class="col-6 mt-0 mt-xxl-0 w-auto h-auto mb-2">
+                      <div class="alert px-4 py-1 mb-0 d-none" role="alert" data-mdb-color="warning" id="password-alert">
+                        <ul class="list-unstyled mb-0 small">
+                          <li class="requirements leng">
+                            <i class="bi bi-check text-success me-1"></i>
+                            <i class="bi bi-x text-danger me-2"></i>
+                            At least 8 characters
+                          </li>
+                          <li class="requirements big-letter">
+                            <i class="bi bi-check text-success me-1"></i>
+                            <i class="bi bi-x text-danger me-2"></i>
+                            At least 1 uppercase letter
+                          </li>
+                          <li class="requirements num">
+                            <i class="bi bi-check text-success me-1"></i>
+                            <i class="bi bi-x text-danger me-2"></i>
+                            At least 1 number
+                          </li>
+                          <li class="requirements special-char">
+                            <i class="bi bi-check text-success me-1"></i>
+                            <i class="bi bi-x text-danger me-2"></i>
+                            At least 1 special character
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+						</div>
+
+
+            
+						<div>
+							<button class="btn btn-primary">Update</button>
+							<button class="btn btn-light">Cancel</button>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
+						<h3 class="mb-4">Security Settings</h3>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>Login</label>
+								  	<input type="text" class="form-control">
+									<%# <small class="text-muted">Last login: <%= current_user.last_sign_in_at %>
+								</div>
+							</div>
+						</div>
+						<div>
+							<button class="btn btn-primary">Update</button>
+							<button class="btn btn-light">Cancel</button>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="application" role="tabpanel" aria-labelledby="application-tab">
+						<h3 class="mb-4">Application Settings</h3>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+								  	<label>Theme</label>
+								  	<select class="form-control">
+								  		<option>Light</option>
+								  		<option>Dark</option>
+								  	</select>
+								</div>
+							</div>
+						</div>
+						<div>
+							<button class="btn btn-primary">Update</button>
+							<button class="btn btn-light">Cancel</button>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="notification" role="tabpanel" aria-labelledby="notification-tab">
+						<h3 class="mb-4">Notification Settings</h3>
+						<div class="form-group">
+							<div class="custom-control custom-switch">
+							  	<input type="checkbox" class="custom-control-input" id="emailNotifications">
+							  	<label class="custom-control-label" for="emailNotifications">Email Notifications</label>
+							</div>
+							<div class="custom-control custom-switch">
+							  	<input type="checkbox" class="custom-control-input" id="pushNotifications">
+							  	<label class="custom-control-label" for="pushNotifications">Push Notifications</label>
+							</div>
+						</div>
+						<div>
+							<button class="btn btn-primary">Update</button>
+							<button class="btn btn-light">Cancel</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
   <% end %>
 
-  <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em><%= @minimum_password_length %> characters minimum</em>
-    <% end %>
-  </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
+<style>
+    .wrong .bi-check {
+        display: none;
+    }
 
-  <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-  </div>
+    .good .bi-x {
+        display: none;
+    }
 
-  <div class="actions">
-    <%= f.submit "Update" %>
-  </div>
-<% end %>
+    .valid-feedback,
+    .invalid-feedback {
+        margin-left: 0;
+    }
 
-<h3>Cancel my account</h3>
+    .error {
+      border: 2px solid red;
+      box-shadow: 0 0 5px red;
+    }
 
-<div>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
+    .success {
+      border: 2px solid green;
+      box-shadow: 0 0 5px green;
+    }
 
-<%= link_to "Back", :back %>
+    .icon {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 0.5;
+      transition: opacity 0.3s;
+    }
+
+    .error .icon {
+      background-image: url("red_x.png");
+    }
+
+    .success .icon {
+      background-image: url("green_check.png");
+    }
+
+    .error:focus,
+    .success:focus {
+      outline: none;
+      box-shadow: 0 0 5px red;
+    }
+
+    .error:focus .icon,
+    .success:focus .icon {
+      opacity: 1;
+    }
+</style>
+
+
+
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+
+    // Handle edit button click event
+    $('#editButton').click(function() {
+      $(this).hide();
+      $('#cancelButton, #updateButton').prop('hidden', false);
+      $('input[type="text"], input[type="email"]').prop('disabled', false);
+      $('#cancelButton').show();
+    });
+  });
+</script>
+
+<script>
+  $(document).ready(function() {
+
+    // Handle edit button click event
+    $('#cancelButton').click(function() {
+      $(this).hide();
+      $('#cancelButton, #updateButton').prop('hidden', true);
+      $('input[type="text"], input[type="email"]').prop('disabled', true);
+      $('#editButton').show();
+    });
+  });
+</script>
+
+
+<script>
+    addEventListener("DOMContentLoaded", (event) => {
+        const password = document.getElementById("password-input");
+        const passwordAlert = document.getElementById("password-alert");
+        const requirements = document.querySelectorAll(".requirements");
+        let lengBoolean, bigLetterBoolean, numBoolean, specialCharBoolean;
+        let leng = document.querySelector(".leng");
+        let bigLetter = document.querySelector(".big-letter");
+        let num = document.querySelector(".num");
+        let specialChar = document.querySelector(".special-char");
+        const specialChars = "!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?`~";
+        const numbers = "0123456789";
+
+        requirements.forEach((element) => element.classList.add("wrong"));
+
+        password.addEventListener("focus", () => {
+            passwordAlert.classList.remove("d-none");
+            if (!password.classList.contains("is-valid")) {
+                password.classList.add("is-invalid");
+            }
+        });
+
+        password.addEventListener("input", () => {
+            let value = password.value;
+            if (value.length < 8) {
+                lengBoolean = false;
+            } else if (value.length > 7) {
+                lengBoolean = true;
+            }
+
+            if (value.toLowerCase() == value) {
+                bigLetterBoolean = false;
+            } else {
+                bigLetterBoolean = true;
+            }
+
+            numBoolean = false;
+            for (let i = 0; i < value.length; i++) {
+                for (let j = 0; j < numbers.length; j++) {
+                    if (value[i] == numbers[j]) {
+                        numBoolean = true;
+                    }
+                }
+            }
+
+            specialCharBoolean = false;
+            for (let i = 0; i < value.length; i++) {
+                for (let j = 0; j < specialChars.length; j++) {
+                    if (value[i] == specialChars[j]) {
+                        specialCharBoolean = true;
+                    }
+                }
+            }
+
+            if (
+                lengBoolean == true &&
+                bigLetterBoolean == true &&
+                numBoolean == true &&
+                specialCharBoolean == true
+            ) {
+                password.classList.remove("is-invalid");
+                password.classList.add("is-valid");
+
+                requirements.forEach((element) => {
+                    element.classList.remove("wrong");
+                    element.classList.add("good");
+                });
+                passwordAlert.classList.remove("alert-warning");
+                passwordAlert.classList.add("alert-success");
+            } else {
+                password.classList.remove("is-valid");
+                password.classList.add("is-invalid");
+
+                passwordAlert.classList.add("alert-warning");
+                passwordAlert.classList.remove("alert-success");
+
+                if (lengBoolean == false) {
+                    leng.classList.add("wrong");
+                    leng.classList.remove("good");
+                } else {
+                    leng.classList.add("good");
+                    leng.classList.remove("wrong");
+                }
+
+                if (bigLetterBoolean == false) {
+                    bigLetter.classList.add("wrong");
+                    bigLetter.classList.remove("good");
+                } else {
+                    bigLetter.classList.add("good");
+                    bigLetter.classList.remove("wrong");
+                }
+
+                if (numBoolean == false) {
+                    num.classList.add("wrong");
+                    num.classList.remove("good");
+                } else {
+                    num.classList.add("good");
+                    num.classList.remove("wrong");
+                }
+
+                if (specialCharBoolean == false) {
+                    specialChar.classList.add("wrong");
+                    specialChar.classList.remove("good");
+                } else {
+                    specialChar.classList.add("good");
+                    specialChar.classList.remove("wrong");
+                }
+            }
+        });
+
+        password.addEventListener("blur", () => {
+            passwordAlert.classList.add("d-none");
+        });
+    });
+</script>
+
+<script>
+    addEventListener("DOMContentLoaded", (event) => {
+        const password = document.getElementById("password-input");
+        const passwordConfirm = document.getElementById("confirm-password");
+        const passwordAlert = document.getElementById("password-alert");
+         let passEqualBoolean;
+
+        passwordConfirm.addEventListener("focus", () => {
+            passwordAlert.classList.remove("d-none");
+            if (!passwordConfirm.classList.contains("is-valid")) {
+                passwordConfirm.classList.add("is-invalid");
+            }
+        });
+
+        passwordConfirm.addEventListener("input", () => {
+            let value = passwordConfirm.value;
+            let pass = password.value;
+
+            if(value != pass ) {
+              passEqualBoolean = false;
+            } else if (value == pass) {
+              passEqualBoolean = true;
+            }
+
+            if (
+                passEqualBoolean == true
+            ) {
+                passwordConfirm.classList.remove("is-invalid");
+                passwordConfirm.classList.add("is-valid");
+
+                requirements.forEach((element) => {
+                    element.classList.remove("wrong");
+                    element.classList.add("good");
+                });
+                passwordAlert.classList.remove("alert-warning");
+                passwordAlert.classList.add("alert-success");
+            } else {
+                passwordConfirm.classList.remove("is-valid");
+                passwordConfirm.classList.add("is-invalid");
+
+                passwordAlert.classList.add("alert-warning");
+                passwordAlert.classList.remove("alert-success");
+
+                if (passEqualBoolean == false) {
+                    leng.classList.add("wrong");
+                    leng.classList.remove("good");
+                } else {
+                    leng.classList.add("good");
+                    leng.classList.remove("wrong");
+                }
+            }
+        });
+
+        passwordConfirm.addEventListener("blur", () => {
+            passwordAlert.classList.add("d-none");
+        });
+    });
+</script>
