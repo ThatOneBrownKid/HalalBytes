@@ -27,8 +27,9 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
               <li class="nav-item">
-                <%= link_to "Account", current_user, class: "dropdown-item" %>
+                <%= link_to "Account", edit_user_registration_path, class: "dropdown-item" %>
               </li>
+
               <li>
                 <%= button_to 'Sign out', destroy_user_session_path, method: :delete, class: "dropdown-item", form_class: "nav-item" %>
               </li>

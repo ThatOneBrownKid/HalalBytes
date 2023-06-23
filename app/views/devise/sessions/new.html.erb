@@ -1,5 +1,5 @@
 <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <body>
+  
   <section class="h-100">
     <div class="container h-100">
       <div class="row justify-content-sm-center h-100">
@@ -24,6 +24,16 @@
                   <%= f.password_field :password, class: "form-control" %>
                 </div>
 
+                <% if flash[:alert] || flash[:notice] %>
+                  <div class="alert alert-danger", id="login-alert">
+                    <% if flash[:alert] %>
+                      <%= flash[:alert] %>
+                    <% elsif flash[:notice] %>
+                       <%= flash[:notice] %>
+                    <% end %>
+                  </div>
+                <% end %>
+                
                 <div class="d-flex align-items-center">
                   <%= f.submit "Login", class: "btn btn-primary ms-auto" %>
                 </div>

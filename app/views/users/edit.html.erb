@@ -26,20 +26,26 @@
 							Account
 						</a>
 						<a class="nav-link" id="password-tab" data-toggle="pill" href="#password" role="tab" aria-controls="password" aria-selected="false">
-							<i class="fa fa-key text-center mr-1"></i> 
-							Password
+								<span class="d-flex align-items-center">
+    							<i class="fa fa-key text-center mr-1"></i>
+    							<span class="ml-1">Password</span>
+  							</span>
 						</a>
 						<a class="nav-link" id="security-tab" data-toggle="pill" href="#security" role="tab" aria-controls="security" aria-selected="false">
 							<i class="fa fa-user text-center mr-1"></i> 
 							Security
 						</a>
 						<a class="nav-link" id="application-tab" data-toggle="pill" href="#application" role="tab" aria-controls="application" aria-selected="false">
-							<i class="fa fa-tv text-center mr-1"></i> 
-							Application
+							<span class="d-flex align-items-center">
+								<i class="fa fa-tv text-center mr-1"></i> 
+								<span class="ml-1">Application</span>
+							</span>
 						</a>
 						<a class="nav-link" id="notification-tab" data-toggle="pill" href="#notification" role="tab" aria-controls="notification" aria-selected="false">
-							<i class="fa fa-bell text-center mr-1"></i> 
-							Notification
+							<span class="d-flex align-items-center">
+								<i class="fa fa-bell text-center mr-1"></i> 
+								<span class="ml-1">Notification</span>
+							</span>
 						</a>
 					</div>
 				</div>
@@ -71,18 +77,7 @@
 								  	<%# <input type="text" class="form-control" value="<%= current_user.phone_number %>
 								</div>
 							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-								  	<label>Company</label>
-								  	<%# <input type="text" class="form-control" value="<%= current_user.company %>
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group">
-								  	<label>Designation</label>
-								  	<%# <input type="text" class="form-control" value="<%= current_user.designation %>
-								</div>
-							</div>
+
 							<div class="col-md-12">
 								<div class="form-group">
 								  	<label>Bio</label>
