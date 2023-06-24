@@ -1,9 +1,9 @@
-<body style="background-color: #f2f2f2;">
+<body style="background-color: #FFFFFF;">
 <div class="row" >
   <div class="col-md-2">
     <!-- Filters section -->
     <!-- Place your filters content here -->
-    
+
   </div>
   <div class="col-md-9">
     <!-- Restaurants section -->
@@ -11,9 +11,7 @@
     <div id="restaurants" >
       <% @restaurants.each do |restaurant| %>
         <%= render restaurant %>
-        <p>
-          <%= link_to "Show this restaurant", restaurant %>
-        </p>
+
       <% end %>
     </div>
     <%= link_to "New restaurant", new_restaurant_path %>
