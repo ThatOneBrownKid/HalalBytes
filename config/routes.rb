@@ -2,7 +2,8 @@ Rails.application.routes.draw do
   get 'users/index'
   devise_for :users, controllers: {
     registrations: 'users/registrations',
-    sessions: 'users/sessions'
+    sessions: 'users/sessions', 
+    passwords: 'users/passwords'
   }
   resources :restaurants
   root 'home#index'
@@ -12,7 +13,9 @@ Rails.application.routes.draw do
   match '/users', to: 'users#index', via: 'get'
   get 'requests/form', to: 'requests#form'
 
-  put '/users', to: 'users/registrations#update'
+  patch '/users/basic_info', to: 'users/registrations#update', as: :update_basic_info
+  patch '/users/password', to: 'users/passwords#update', as: :update_password
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

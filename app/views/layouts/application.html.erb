@@ -10,12 +10,21 @@
 
   <body>
     <% flash.each do |key, value| %>
-    <% if key.to_s == 'notice' %>
-      <div class="alert alert-dark fixed-top start-50 translate-middle-x" style="margin-top: 80px; width: fit-content; max-width: 100%;" role="alert">
-        <%= value %>
-      </div>
+      <% if key.to_s == 'notice' %>
+        <div class="alert alert-dark fixed-top start-50 translate-middle-x" style="margin-top: 80px; width: fit-content; max-width: 100%;" role="alert">
+          <%= value %>
+        </div>
+      <% end %>
     <% end %>
-  <% end %>
+
+    <% flash.each do |key, value| %>
+      <% if key.to_s == 'error' %>
+        <div class="alert alert-dark fixed-top start-50 translate-middle-x" style="margin-top: 80px; width: fit-content; max-width: 100%; background-color: rgba(255, 0, 0, 0.5);
+          color: white;" role="alert">
+          <%= value %>
+        </div>
+      <% end %>
+    <% end %>
     
       <%= render 'home/navbar'%>
       <%= yield %>
@@ -38,5 +47,24 @@
     }, 2000); // Display duration (in milliseconds)
   }
 });
-
 </script>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+  var notifications = document.querySelectorAll(".alert.error");
+
+  if (notifications.length > 0) {
+    setTimeout(function() {
+      notifications.forEach(function(notification) {
+        notification.classList.add("fade");
+        setTimeout(function() {
+          notification.remove();
+        }, 500); // Fade-out duration (in milliseconds)
+      });
+    }, 2000); // Display duration (in milliseconds)
+  }
+});
+</script>
+
+
