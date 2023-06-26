@@ -21,7 +21,11 @@
                 <i class="bi bi-check-lg text-primary"></i>
             <% end %>
           </td>
-          <td><%= link_to "View Profile", user %></td>
+          <td>
+            <% if current_user.admin? %>
+              <%= link_to "View Profile", edit_user_path(user) %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
       </tbody>
