@@ -15,7 +15,7 @@
 				<div class="profile-tab-nav border-right">
 					<div class="p-4">
 						<div class="img-circle text-center mb-3">
-							<%= image_tag @user.resized_profile_picture, alt: "Profile Picture", class: "image" %>
+							<%# <%= image_tag current_user.profile_picture.url, alt: "Profile Picture", class: "shadow" %>
 						</div>
 						<h4 class="text-center"><%= current_user.full_name %></h4>
 					</div>

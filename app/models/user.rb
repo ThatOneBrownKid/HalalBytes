@@ -2,10 +2,6 @@ class User < ApplicationRecord
   before_validation :format_names
   before_create :set_default_admin
 
-  has_one_attached :profile_picture do |attachable|
-    attachable.variant :thumb, resize_to_limit: [250, 250]
-end
-
   # Devise modules
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
@@ -22,10 +18,6 @@ end
     "#{first_name} #{last_name}"
   end
 
-  def profile_picture_url
-    profile_picture.attached? ? profile_picture : default_profile_picture
-  end
-
   private
 
   def format_names
@@ -40,9 +32,4 @@ end
   def set_default_admin
     self.admin = false
   end
-  
-  def default_profile_picture
-    'blank-profile.png'
-  end
-
 end

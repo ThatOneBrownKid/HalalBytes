@@ -16,22 +16,7 @@
 				<div class="profile-tab-nav border-right">
 					<div class="p-4">
 						<div class="img-circle text-center mb-3">
-							<%= form_for @user, url: user_path(@user), method: :patch, html: { multipart: true } do |f| %>
-  <div class="image-container">
-    <% if @user.profile_picture.attached? %>
-  <%= image_tag @user.profile_picture.variant(resize: "250x250"), alt: "Profile Picture", class: "image" %>
-<% else %>
-  <%= image_tag "blank-profile.png", size:"250x250", alt: "Default Profile Picture", class: "image" %>
-<% end %>
-    <div class="edit-button">
-      <%= f.file_field :profile_picture, id: "profile-picture-field", style: "display: none" %>
-      <label for="profile-picture-field" class="edit-link">
-        <i class="bi bi-pencil-square"></i>
-      </label>
-    </div>
-  </div>
-  <%= f.submit "Update Profile Picture", id: "submit-profile-picture", style: "display: none" %>
-<% end %>
+							<%# <%= image_tag current_user.profile_picture.url, alt: "Profile Picture", class: "shadow" %>
 						</div>
 						<h4 class="text-center"><%= @user.full_name %></h4>
 					</div>
@@ -64,7 +49,7 @@
 						</a>
 					</div>
 				</div>
-				<div class="tab-content p-4 p-md-5" id="v-pills-tabContent" style="width: 811px;">
+				<div class="tab-content p-4 p-md-5" id="v-pills-tabContent" style="width: 600px;">
 					<div class="tab-pane fade show active f" id="account" role="tabpanel" aria-labelledby="account-tab">
 		           <div class="d-flex align-items-center justify-content-between mb-3">
                   <h3 class="mb-0">Account Settings</h3>
@@ -271,29 +256,6 @@
     .success:focus .icon {
       opacity: 1;
     }
-
-	.image-container {
-  position: relative;
-  display: inline-block;
-}
-
-.image {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-
-.edit-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.image-container:hover .edit-button {
-  opacity: 1;
-}
 </style>
 
 
@@ -560,10 +522,4 @@ addEventListener("DOMContentLoaded", (event) => {
     checkValidity();
   });
 });
-</script>
-
-<script>
-  document.getElementById("profile-picture-field").addEventListener("change", function() {
-    document.getElementById("submit-profile-picture").click();
-  });
 </script>
