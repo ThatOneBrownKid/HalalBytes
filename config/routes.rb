@@ -12,7 +12,10 @@ Rails.application.routes.draw do
   match '/users', to: 'users#index', via: 'get'
   get 'requests/form', to: 'requests#form'
 
-  put '/users', to: 'users/registrations#update'
+  patch '/users/basic_info', to: 'users/registrations#update', as: :update_basic_info
+
+  
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

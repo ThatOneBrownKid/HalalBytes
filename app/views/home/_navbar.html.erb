@@ -12,7 +12,7 @@
           </li>
         <% end %>
         <li class="nav-item">
-          <a class="nav-link" href=" /restaurants">Resturants</a>
+          <a class="nav-link active" href=" /restaurants">Resturants</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" href="<%= requests_form_path %>">Requests</a>
@@ -26,6 +26,12 @@
               <i class="bi bi-person-circle" style="font-size: 20px"></i> <%= current_user.first_name %> <%= current_user.last_name %>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <% if current_user.admin? %>
+                <li class="nav-item">
+                  <%= link_to "Add Restaurant", new_restaurant_path, class: "dropdown-item" %>
+                </li>
+              <% end %>
+
               <li class="nav-item">
                 <%= link_to "Account", edit_user_registration_path, class: "dropdown-item" %>
               </li>

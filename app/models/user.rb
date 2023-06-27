@@ -6,6 +6,10 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  # Custom validations for first_name and last_name
+  validates :first_name, format: { with: /\A[a-zA-Z]+\z/, message: "can only contain letters" }
+  validates :last_name, format: { with: /\A[a-zA-Z]+\z/, message: "can only contain letters" }
+
   def admin?
     admin
   end

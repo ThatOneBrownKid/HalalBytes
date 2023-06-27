@@ -8,7 +8,6 @@
 </head>
 
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
 <section class="py-5 my-5">
 		<div class="container">
 			<h1 class="mb-5"></h1>
@@ -55,6 +54,7 @@
                   <h3 class="mb-0">Account Settings</h3>
                   <button id="editButton" type="button" class="btn btn-light"><i class="bi bi-pencil-square"></i></button>
                  </div>
+                 <%= form_with(model: current_user, url: registration_path(current_user), method: :patch) do |f| %>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
@@ -76,22 +76,28 @@
 								</div>
 							</div>
 						</div>
+            
 
 						<div>
               <div class="Actions" >
                 <%= f.submit "Update",id:"updateButton", class: "btn btn-primary", hidden: true%>
                 <button type="button" class="btn btn-light" id="cancelButton" hidden>Cancel</button>
               </div>
+              <%end%>
 							<%# <%= link_to "Delete Account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete, class: "btn btn-danger" %> 
 						</div>
 					</div>
 					<div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+          <div class="d-flex align-items-center justify-content-between mb-3">
 						<h3 class="mb-4">Password Settings</h3>
+            <button id="editButton2" type="button" class="btn btn-light"><i class="bi bi-pencil-square"></i></button>
+          </div>
+            <%= form_with(model: current_user, url: registration_path(current_user), method: :patch) do |f| %>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
-								  	<label>Old password</label>
-								  	<input type="password" class="form-control">
+								  	<label>Current password</label>
+								  	<%= f.password_field :current_password, class: "form-control rounded mt-1", placeholder: "", id: "current-password", aria: { label: "password" }, aria_describedby: "password", disabled: true %> 
 								</div>
 							</div>
 						</div>
@@ -99,7 +105,7 @@
 							<div class="col-md-6">
 								<div class="form-group">
 								  	<%= f.label :password, class: "mb-2 text-muted", id: "password" %>
-								  	<%= f.password_field :password, class: "form-control rounded mt-1", placeholder: "", id: "password-input", aria: { label: "password" }, aria_describedby: "password" %>
+								  	<%= f.password_field :password, class: "form-control rounded mt-1", placeholder: "", id: "password-input", aria: { label: "password" }, aria_describedby: "password", disabled: true %> 
                     <div class="valid-feedback">Valid</div>
                     <div class="invalid-feedback">Invalid</div>
 								</div>
@@ -107,7 +113,7 @@
 							<div class="col-md-6">
 								<div class="form-group"style="margin-top: 0px;">
 								  	<%= f.label :password_confirmation, class: "mb-2 text-muted", id: "password" %>
-								  	<%= f.password_field :password_confirmation, class: "form-control rounded mt-1", placeholder: "", id: "confirm-password", aria: { label: "password-confirmation" }, aria_describedby: "password-confirmation" %>
+								  	<%= f.password_field :password_confirmation, class: "form-control rounded mt-1", placeholder: "", id: "confirm-password", aria: { label: "password-confirmation" }, aria_describedby: "password-confirmation", disabled: true %>
 								    <div class="valid-feedback">Valid</div>
                     <div class="invalid-feedback">Invalid</div>
                 </div>
@@ -139,17 +145,16 @@
                         </ul>
                       </div>
                     </div>
-						</div>
-
-
-            
-						<div>
-							<button class="btn btn-primary">Update</button>
-							<button class="btn btn-light">Cancel</button>
-						</div>
+						  
+              <div class="Actions" >
+                <%= f.submit "Update",id:"updateButton2", class: "btn btn-primary", hidden: true, disabled: true%>
+                <button type="button" class="btn btn-light" id="cancelButton2" hidden>Cancel</button>
+              </div>
+              <%end%>
+              </div>
 					</div>
 					<div class="tab-pane fade" id="security" role="tabpanel" aria-labelledby="security-tab">
-						<h3 class="mb-4">Security Settings</h3>
+						<h3 class="mb-4">Reviews</h3>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
@@ -165,7 +170,7 @@
 						</div>
 					</div>
 					<div class="tab-pane fade" id="application" role="tabpanel" aria-labelledby="application-tab">
-						<h3 class="mb-4">Application Settings</h3>
+						<h3 class="mb-4"></h3>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group">
@@ -203,7 +208,7 @@
 			</div>
 		</div>
 	</section>
-  <% end %>
+
 
 
 <style>
@@ -292,6 +297,38 @@
     });
   });
 </script>
+
+
+
+<script>
+  $(document).ready(function() {
+
+    // Handle edit button click event
+    $('#editButton2').click(function() {
+      $(this).hide();
+      $('#cancelButton2, #updateButton2').prop('hidden', false);
+      $('input[type="password"], input[type="current-password"], input[type="password-confirmation"]').prop('disabled', false);
+      $('#cancelButton2').show();
+    });
+  });
+</script>
+
+<script>
+  $(document).ready(function() {
+
+    // Handle edit button click event
+    $('#cancelButton2').click(function() {
+      $(this).hide();
+      $('#cancelButton2, #updateButton2').prop('hidden', true);
+      $('input[type="password"], input[type="current-password"], input[type="password-confirmation"]').prop('disabled', true);
+      $('#editButton2').show();
+    });
+  });
+</script>
+
+
+
+
 
 
 <script>
@@ -407,7 +444,14 @@
         password.addEventListener("blur", () => {
             passwordAlert.classList.add("d-none");
         });
+        
+        const formFields = document.querySelectorAll("input, select, textarea");
+        formFields.forEach((field) => {
+        field.addEventListener("blur", () => {
+            passwordAlert.classList.add("d-none");
+        });
     });
+});
 </script>
 
 <script>
@@ -417,12 +461,6 @@
         const passwordAlert = document.getElementById("password-alert");
          let passEqualBoolean;
 
-        passwordConfirm.addEventListener("focus", () => {
-            passwordAlert.classList.remove("d-none");
-            if (!passwordConfirm.classList.contains("is-valid")) {
-                passwordConfirm.classList.add("is-invalid");
-            }
-        });
 
         passwordConfirm.addEventListener("input", () => {
             let value = passwordConfirm.value;
@@ -463,8 +501,32 @@
             }
         });
 
-        passwordConfirm.addEventListener("blur", () => {
-            passwordAlert.classList.add("d-none");
-        });
-    });
+});
+</script>
+
+<script>
+addEventListener("DOMContentLoaded", (event) => {
+  const passwordInput = document.getElementById("password-input");
+  const confirmPassword = document.getElementById("confirm-password");
+  const updateButton2 = document.getElementById("updateButton2");
+
+  const checkValidity = () => {
+    if (
+      passwordInput.classList.contains("is-valid") &&
+      confirmPassword.classList.contains("is-valid")
+    ) {
+      updateButton2.disabled = false;
+    } else {
+      updateButton2.disabled = true;
+    }
+  };
+
+  passwordInput.addEventListener("input", () => {
+    checkValidity();
+  });
+
+  confirmPassword.addEventListener("input", () => {
+    checkValidity();
+  });
+});
 </script>

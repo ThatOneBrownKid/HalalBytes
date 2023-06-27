@@ -1,88 +1,128 @@
-  <style>
-    label {
-      display: block;
+<style>
+.contact-card {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Updated shadow */
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto; /* Center the contact card */
+      # margin-top: 50px;
+    }
+    
+    .contact-card h2 {
+      font-size: 24px;
       margin-bottom: 10px;
     }
-    input[type="text"], textarea {
-      width: 300px;
-      padding: 5px;
-      font-size: 16px;
+    
+    .contact-card p {
+      margin-bottom: 10px;
     }
-    textarea {
-      height: 100px;
+    
+    .contact-card label {
+      display: block;
+      margin-bottom: 5px;
     }
-    input[type="submit"] {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 10px;
+    
+    .contact-card input,
+    .contact-card textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
     }
-    .form-center {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-    .alert {
+    
+    # .contact-card button {
+    #   background-color: #ff7b00;
+    #   color: #fff;
+    #   border: none;
+    #   padding: 10px 20px;
+    #   border-radius: 4px;
+    #   cursor: pointer;
+    #   margin-top: 10px;
+    # }
+    
+    # .contact-card button:hover {
+    #   background-color: #e0ab24;
+    # }
+    
+    /* Flash Alert */
+    .flash-alert {
       display: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #ffc107;
-      color: #333;
-      border-radius: 5px;
+      background-color: #C0C0C0;
+      color: #fff;
+      text-align: center;
+      padding: 10px;
+      border-radius: 4px;
       margin-top: 10px;
     }
-    .fade {
-      opacity: 1;
-      transition: opacity 0.5s ease-in-out;
+    .contact-info {
+      text-align: center;
+      margin-top: 40px;
     }
-    .fade.out {
-      opacity: 0;
+    
+    .contact-info p {
+      margin-bottom: 10px;
+    }
+    
+    .contact-info .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 10px;
+    }
+    
+    .contact-info .logo {
+      display: inline-block;
+      margin: 0 10px;
+      height: 40px;
+      width: 40px;
     }
   </style>
+  <section class="h-100">
+    <div class="container h-100">
+      <div class="row justify-content-sm-center h-100">
+        <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
+          <div class="text-center my-5">
+            <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<div class="contact-card">
+  <h2>Got A Request?</h2>
+  <p>Cant find your favorite restaurant? Feel free to request it here, and our team will do the rest.</p>
+  
+  <form id="contact-form">
+    <label for="name">Restaurant Name</label>
+    <input class= "form-control" type="text" id="name" name="name" required>
+    
+    <label for="email">Location</label>
+    <input class= "form-control" type="email" id="email" name="email" required>
+    
+    <label for="message">Details</label>
+    <textarea class= "form-control" id="message" name="message" rows="4" required></textarea>
+    
+    <button class = "btn btn-primary mt-2" type="submit">Send</button>
+  </form>
 
-<body>
-  <center>
-    <h1 style="margin-bottom: 20px;">Add Your Favorite Restaurant!</h1>
-    <p>Cant find your favorite restaurant on our website?</p>
-    <p>Fill out a form, and our team will do the rest :)</p>
-    <form id="restaurantForm" class="form-center">
-      <label for="name">Restaurant Name:</label>
-      <input type="text" id="name" name="name" required>
-
-      <label for="location">Location:</label>
-      <input type="text" id="location" name="location" required>
-
-      <label for="description">Description:</label>
-      <textarea id="description" name="description" required></textarea>
-
-      <input type="submit" value="Submit Request">
-    </form>
-    <div id="flashMessage" class="alert"></div>
-  </center>
+  <div id="flash-alert" class="flash-alert"></div>
 
   <script>
-    document.getElementById("restaurantForm").addEventListener("submit", function(event) {
-      event.preventDefault();
-      var name = document.getElementById("name").value;
-      var location = document.getElementById("location").value;
-      var description = document.getElementById("description").value;
+    // Flash alert after form submission
+    var contactForm = document.getElementById('contact-form');
+    var flashAlert = document.getElementById('flash-alert');
 
-      // Here, you can perform additional validation or send the data to a server for processing
-
-      // Clear form fields after submission
-      document.getElementById("name").value = "";
-      document.getElementById("location").value = "";
-      document.getElementById("description").value = "";
-
-      var flashMessage = document.getElementById("flashMessage");
-      flashMessage.textContent = "Thank you for your request! We will review it soon.";
-      flashMessage.style.display = "block";
-      flashMessage.classList.add("fade");
+    contactForm.addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent form submission
+      flashAlert.textContent = 'Message sent! Thank you for contacting us.';
+      flashAlert.style.display = 'block';
+      contactForm.reset(); // Clear form inputs
       setTimeout(function() {
-        flashMessage.classList.add("out");
-        setTimeout(function() {
-          flashMessage.remove();
-        }, 500); // Fade-out duration (in milliseconds)
-      }, 2000); // Display duration (in milliseconds)
+        flashAlert.style.display = 'none'; // Hide flash alert after 3 seconds
+      }, 3000);
     });
   </script>
+</div>

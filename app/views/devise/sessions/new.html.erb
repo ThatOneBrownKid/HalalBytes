@@ -21,7 +21,14 @@
                     <%= f.label :password, class: "text-muted" %>
                     <%= link_to t("devise.passwords.new.forgot_password"), new_user_password_path, class: "float-end" %>
                   </div>
-                  <%= f.password_field :password, class: "form-control" %>
+                  <div class="input-group">
+                    <%= f.password_field :password, class: "form-control", id: "password-input" %>
+                    <div class="input-group-append">
+                      <button id="toggle-password" type="button" class="btn btn-light">
+                        <span id="eye-icon" class="bi-eye-slash"></span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 <% if flash[:alert] || flash[:notice] %>
@@ -52,3 +59,42 @@
 </body>
 
 <% end %>
+
+<style>
+#toggle-password {
+  cursor: pointer;
+  background-color: transparent;
+  border-top: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+  border-radius: 0 0.25rem 0.25rem 0;
+  box-shadow: none;
+}
+
+#toggle-password:focus {
+  outline: none;
+}
+
+.btn-icon {
+  padding: 0;
+}
+</style>
+
+
+<script>
+document.getElementById("toggle-password").addEventListener("click", function() {
+  var passwordInput = document.getElementById("password-input");
+  var eyeIcon = document.getElementById("eye-icon");
+
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    eyeIcon.classList.remove("bi-eye-slash");
+    eyeIcon.classList.add("bi-eye");
+  } else {
+    passwordInput.type = "password";
+    eyeIcon.classList.remove("bi-eye");
+    eyeIcon.classList.add("bi-eye-slash");
+  }
+});
+
+</script>
