@@ -16,8 +16,24 @@
 				<div class="profile-tab-nav border-right">
 					<div class="p-4">
 						<div class="img-circle text-center mb-3">
-							<%# <%= image_tag current_user.profile_picture.url, alt: "Profile Picture", class: "shadow" %>
-						</div>
+  <%= form_for @user, url: user_path(@user), method: :patch, html: { multipart: true } do |f| %>
+    <div class="image-container">
+      <% if @user.profile_picture.attached? %>
+        <%= image_tag @user.profile_picture.variant(resize_to_fill: [250, 250]), alt: "Profile Picture", class: "image" %>
+      <% else %>
+        <%= image_tag "blank-profile.png", size:"250x250", alt: "Default Profile Picture", class: "image" %>
+      <% end %>
+      <div class="edit-button">
+        <%= f.file_field :profile_picture, id: "profile-picture-field" %>
+        <label for="profile-picture-field" class="edit-link" id="profile-picture-label">
+          <i class="bi bi-pencil-square"></i>
+        </label>
+        </label>
+      </div>
+    </div>
+    <%= f.submit "Update Profile Picture", id: "submit-profile-picture", style: "display: none" %>
+  <% end %>
+</div>
 						<h4 class="text-center"><%= @user.full_name %></h4>
 					</div>
 					<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
@@ -49,7 +65,7 @@
 						</a>
 					</div>
 				</div>
-				<div class="tab-content p-4 p-md-5" id="v-pills-tabContent" style="width: 600px;">
+				<div class="tab-content p-4 p-md-5" id="v-pills-tabContent" style="width: 811px;">
 					<div class="tab-pane fade show active f" id="account" role="tabpanel" aria-labelledby="account-tab">
 		           <div class="d-flex align-items-center justify-content-between mb-3">
                   <h3 class="mb-0">Account Settings</h3>
@@ -256,6 +272,39 @@
     .success:focus .icon {
       opacity: 1;
     }
+
+    -
+	.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.edit-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.image-container:hover .edit-button {
+  opacity: 1;
+}
+
+#profile-picture-field {
+  display: none;
+}
 </style>
 
 
@@ -522,4 +571,48 @@ addEventListener("DOMContentLoaded", (event) => {
     checkValidity();
   });
 });
+</script>
+
+<script>
+  document.getElementById("profile-picture-field").addEventListener("change", function() {
+    document.getElementById("submit-profile-picture").click();
+  });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const imageContainer = document.querySelector(".image-container");
+  const profilePictureLabel = document.getElementById("profile-picture-label");
+
+  // Function to determine the label color based on the background brightness
+  function setLabelColor() {
+    const computedStyle = getComputedStyle(imageContainer);
+    const backgroundColor = computedStyle.backgroundColor;
+    const brightness = getBrightness(backgroundColor);
+
+    // Adjust the threshold value according to your needs
+    const threshold = 128;
+
+    // Set the label color based on the brightness threshold
+    if (brightness > threshold) {
+      profilePictureLabel.style.color = "black";
+    } else {
+      profilePictureLabel.style.color = "white";
+    }
+  }
+
+  // Function to calculate the brightness of a color
+  function getBrightness(color) {
+    const rgb = color.match(/\d+/g);
+    const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+    return brightness;
+  }
+
+  // Call the setLabelColor function initially
+  setLabelColor();
+
+  // Call the setLabelColor function whenever the window is resized
+  window.addEventListener("resize", setLabelColor);
+});
+
 </script>

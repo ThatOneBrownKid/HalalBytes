@@ -49,7 +49,16 @@ class UsersController < ApplicationController
   end
   
   
-  
+  def update_profile_picture
+    @user = current_user
+    if @user.update(user_params)
+      # Successfully updated profile picture
+      redirect_to @user, notice: "Profile picture was successfully updated."
+    else
+      # Handle errors
+      render :edit_profile_picture
+    end
+  end
   
   
   
@@ -59,7 +68,7 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation)
+    params.require(:user).permit(:first_name, :last_name, :email, :password, :password_confirmation, :profile_picture)
   end  
 
 end
