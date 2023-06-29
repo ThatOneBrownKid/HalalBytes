@@ -1,3 +1,50 @@
+  <section class="h-100">
+    <div class="container h-100">
+      <div class="row justify-content-sm-center h-100">
+        <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
+          <div class="text-center my-5">
+            <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+<div class="contact-card">
+  <h2>Got A Request?</h2>
+  <p>Cant find your favorite restaurant? Feel free to request it here, and our team will do the rest.</p>
+  
+  <form id="contact-form">
+    <label for="name">Restaurant Name</label>
+    <input class= "form-control" type="text" id="name" name="name" required>
+    
+    <label for="email">Location</label>
+    <input class= "form-control" type="email" id="email" name="email" required>
+    
+    <label for="message">Details</label>
+    <textarea class= "form-control" id="message" name="message" rows="4" required></textarea>
+    
+    <button class = "btn btn-primary mt-2" type="submit">Send</button>
+  </form>
+
+  <div id="flash-alert" class="flash-alert"></div>
+
+  <script>
+    // Flash alert after form submission
+    var contactForm = document.getElementById('contact-form');
+    var flashAlert = document.getElementById('flash-alert');
+
+    contactForm.addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent form submission
+      flashAlert.textContent = 'Message sent! Thank you for contacting us.';
+      flashAlert.style.display = 'block';
+      contactForm.reset(); // Clear form inputs
+      setTimeout(function() {
+        flashAlert.style.display = 'none'; // Hide flash alert after 3 seconds
+      }, 3000);
+    });
+  </script>
+</div>
+
 <style>
 .contact-card {
       background-color: #fff;
@@ -65,49 +112,3 @@
       width: 40px;
     }
   </style>
-  <section class="h-100">
-    <div class="container h-100">
-      <div class="row justify-content-sm-center h-100">
-        <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
-          <div class="text-center my-5">
-            <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-<div class="contact-card">
-  <h2>Got A Request?</h2>
-  <p>Cant find your favorite restaurant? Feel free to request it here, and our team will do the rest.</p>
-  
-  <form id="contact-form">
-    <label for="name">Restaurant Name</label>
-    <input class= "form-control" type="text" id="name" name="name" required>
-    
-    <label for="email">Location</label>
-    <input class= "form-control" type="email" id="email" name="email" required>
-    
-    <label for="message">Details</label>
-    <textarea class= "form-control" id="message" name="message" rows="4" required></textarea>
-    
-    <button class = "btn btn-primary mt-2" type="submit">Send</button>
-  </form>
-
-  <div id="flash-alert" class="flash-alert"></div>
-
-  <script>
-    // Flash alert after form submission
-    var contactForm = document.getElementById('contact-form');
-    var flashAlert = document.getElementById('flash-alert');
-
-    contactForm.addEventListener('submit', function(event) {
-      event.preventDefault(); // Prevent form submission
-      flashAlert.textContent = 'Message sent! Thank you for contacting us.';
-      flashAlert.style.display = 'block';
-      contactForm.reset(); // Clear form inputs
-      setTimeout(function() {
-        flashAlert.style.display = 'none'; // Hide flash alert after 3 seconds
-      }, 3000);
-    });
-  </script>
-</div>

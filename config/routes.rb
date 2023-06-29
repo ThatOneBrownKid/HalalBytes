@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get 'users/index'
+  get '/terms_and_services', to: 'home#terms_and_services'
   devise_for :users, controllers: {
     registrations: 'users/registrations',
     sessions: 'users/sessions'
