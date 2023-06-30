@@ -15,10 +15,20 @@
           <select id="cuisine-select" class="form-control mb-2" style="margin-left: 10px; background-color: #f2f2f2;">
             <option value="">All</option>
             <option value="middle eastern">middle eastern</option>
-            <option value="Mexican">Mexican</option>
+            <option value="Sd">Sd</option>
             <!-- Add more cuisine options as needed -->
           </select>
         </div>
+        <div class="form-group" style="width: 80%;">
+            <label for="price-range-select" style="margin-left: 10px;">Price Range:</label>
+            <select id="price-range-select" class="form-control mb-2" style="margin-left: 10px; background-color: #f2f2f2;">
+              <option value="">All</option>
+              <option value="22">$</option>
+              <option value="50">$$</option>
+              <option value="3">$$$</option>
+              <!-- Add more price range options as needed -->
+            </select>
+          </div>
         <button type="submit" class="btn btn-primary"  style="margin-left: 10px;">Apply Filters</button>
       </form>
       </div>
@@ -37,6 +47,45 @@
 </div>
 </div>
 </div>
+<!--pulls cusine data-->
+<script>
+$(document).ready(function() {
+  // Retrieve the cuisine data from your backend
+  // Replace the URL with your actual endpoint to fetch the cuisine data
+  $.ajax({
+    url: '/api/cuisines', // Replace with your endpoint
+    method: 'GET',
+    success: function(data) {
+      // Populate the cuisine filter dropdown with the retrieved data
+      var cuisineSelect = $('#cuisine-select');
+
+      // Clear existing options
+      cuisineSelect.empty();
+
+      // Add the "All" option
+      cuisineSelect.append($('<option>', {
+        value: '',
+        text: 'All'
+      }));
+
+      // Add each cuisine option
+      data.forEach(function(cuisine) {
+        cuisineSelect.append($('<option>', {
+          value: cuisine,
+          text: cuisine
+        }));
+      });
+    },
+    error: function() {
+      console.log('Failed to retrieve cuisine data.');
+    }
+  });
+
+  // Rest of your code...
+
+});
+</script>
+<!--filter logic-->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function() {
@@ -47,21 +96,25 @@
       // Get the selected filter values
       var searchInput = $('#search-input').val().toLowerCase();
       var selectedCuisine = $('#cuisine-select').val().toLowerCase();
-
+      var selectedPriceRange = $('#price-range-select').val();
       // Loop through each restaurant card
       $('#restaurants .card').each(function() {
         var card = $(this);
         var name = card.find('.card-title').text().toLowerCase();
         var cuisine = card.find('.hover-box:first-child').text().toLowerCase();
+         var priceRange = parseInt(card.find('.hover-box:eq(2)').text()); // Convert price range to an integer
 
         // Check if the card matches the filter criteria
         var showCard = true;
         if (searchInput && name.indexOf(searchInput) === -1) {
           showCard = false; // Filter by name
         }
-        if (selectedCuisine && cuisine !== selectedCuisine) {
+        if (selectedCuisine && cuisine.indexOf(selectedCuisine) === -1) {
           showCard = false; // Filter by cuisine
         }
+     if (selectedPriceRange && (priceRange > parseInt(selectedPriceRange) || isNaN(priceRange))) {
+  showCard = false; // Filter by price range
+}
 
         // Show/hide the card based on the filter result
         card.toggle(showCard);
