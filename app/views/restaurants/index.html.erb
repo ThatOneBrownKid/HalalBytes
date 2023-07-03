@@ -1,11 +1,11 @@
 <body style="background-color: #FFFFFF;">
 <div class="row" style="margin-left: 0px;">
   <div class="col-md-2 ml-2">
-  <div class="card mb-3 shadow rounded" style="width: 100%; height: 100%; border-radius: 0; background-color: #f2f2f2; margin-top: 56px">
+  <div class="card mb-3 rounded-0 border-0 border-right" style="width: 100%; height: 100%; border-radius: 0; background-color: #FFFFFF; margin-top: 56px">
     <!-- Filters section -->
     <!-- Place your filters content here -->
-      <h3>Filters</h3>
-      <form id="filter-form">
+    <h3 class="text-center">Filters</h3>
+      <form id="filter-form" class="d-flex flex-column align-items-center">
         <div class="form-group" style="width: 80%;">
           <label for="search-input"  style="margin-left: 10px;">Search:</label>
           <input type="text" id="search-input" class="form-control" placeholder="Search restaurants" style="margin-left: 10px; background-color: #f2f2f2;">
@@ -35,7 +35,6 @@
   </div>
   <div class="col-md-9">
     <!-- Restaurants section -->
-    <h1>Restaurants</h1>
     <div id="restaurants" >
       <% @restaurants.each do |restaurant| %>
         <%= render restaurant %>
@@ -44,9 +43,7 @@
     </div>
   </div>
 </div>
-</div>
-</div>
-</div>
+</body>
 <!--pulls cusine data-->
 <script>
 $(document).ready(function() {

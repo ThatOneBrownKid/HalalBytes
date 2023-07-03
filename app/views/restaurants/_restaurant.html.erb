@@ -1,6 +1,6 @@
 <div class="row">
  <div class="col">
-   <div class="card mb-3 shadow" style="width: 100%; height: 300px; background-color: #f2f2f2;">
+   <div class="card mt-3 rounded-0 border-0 border-bottom" style="width: 100%; height: 300px;  border-radius: 10px; border-bottom: 10px;">
   <div class="row no-gutters">
     <div class="col-md-4" >
       <%= image_tag("Restaurant_Näsinneula.jpg", class: "card-img", alt: "Restaurant Image", style:"width: 90%; height: 85%; margin-left:5px;  margin-top:15px") %>
@@ -9,19 +9,19 @@
       <div class="card-body">
         <h5 class="card-title mb-1" style="font-size: 40px;"><%= restaurant.name %></h5>
         <div class="text" style="font-size: 14px;">
-          <div class="hover-box" style="display: inline-block; background-color: #a3a3a0; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+          <div class="hover-box shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
             <%= restaurant.cuisine %>
           </div>
-          <div class="hover-box mb-1 mt-1" style="display: inline-block; background-color: #a3a3a0; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
             Overall Rating: <%= restaurant.overall_rating %>
           </div>
-           <div class="hover-box mb-1 mt-1" style="display: inline-block; background-color: #a3a3a0; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+           <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
            <%= restaurant.price_range %>
           </div>
-          <div class="hover-box mb-1 mt-1" style="display: inline-block; background-color: #a3a3a0; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
           <%= restaurant.address %>
           </div>
-          <div class="hover-box mb-1 mt-1" style="display: inline-block; background-color: #a3a3a0; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
           <%= restaurant.website %>
           </div>
           
@@ -30,8 +30,18 @@
         <div class="text-secondary" style="font-size: 14px;">
          Comments: <p></p>
         </div>
-        <a href="<%= restaurant_url(restaurant) %>" class="btn btn" style="background-color: #dc3545;  color: white;">View Details</a>
+        <a href="<%= restaurant_url(restaurant) %>" class="btn btn-danger" style="background-color: #dc3545;  color: white;">View Details</a>
       </div>
     </div>
     </div>
   </div>
+<!--card hover-->
+<style>
+  .card {
+    transition: box-shadow 0.3s;
+  }
+  .card:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+  
+</style>
