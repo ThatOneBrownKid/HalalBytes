@@ -1,10 +1,106 @@
-<p style="color: green"><%= notice %></p>
-
-<%= render @restaurant %>
-
-<div>
-  <%= link_to "Edit this restaurant", edit_restaurant_path(@restaurant) %> |
-  <%= link_to "Back to restaurants", restaurants_path %>
-
-  <%= button_to "Destroy this restaurant", @restaurant, method: :delete %>
+<div class="row">
+ <div class="col mt-3 shadow">
+   <div class="card mt-3 rounded-0 border-0 border-bottom" style="width: 100%; height: 500px;  border-radius: 10px; border-bottom: 10px;">
+  <div class="row no-gutters">
+    <div class="col-md-4" >
+<div id="imageCarousel" class="carousel slide" data-ride="carousel">
+  <% if @restaurant.images.attached? %>
+    <div class="carousel-inner">
+      <% @restaurant.images.each_with_index do |image, index| %>
+        <div class="carousel-item <%= 'active' if index.zero? %>">
+          <%= image_tag image, class: "card-img", alt: "Restaurant Image" %>
+          <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only"></span>
+          </a>
+          <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next" style="right: -25px;">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only"></span>
+          </a>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <%= image_tag "Restaurant_Näsinneula.jpg", class: "card-img", alt: "Restaurant Image" %>
+  <% end %>
 </div>
+        </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title mb-1" style="font-size: 40px;"><%= @restaurant.name %></h5>
+        <div class="text" style="font-size: 14px;">
+          <div class="hover-box shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+            <%= @restaurant.cuisine %>
+          </div>
+          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+            Overall Rating: <%= @restaurant.overall_rating %>
+          </div>
+           <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+           <%= @restaurant.price_range %>
+          </div>
+          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+          <%= @restaurant.address %>
+          </div>
+          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+          <%= @restaurant.website %>
+          </div>
+          
+        </div>
+        <p></p>
+        <div class="text-secondary" style="font-size: 14px;">
+         Comments: <p></p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </div>
+  <% if current_user.admin? %>
+      <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
+      <%= form.file_field :images, multiple: true, class: 'form-control' %>
+      <%= form.submit 'Upload Images', class: 'btn btn-primary mt-3' %>
+      <% end %>
+  <% end %>
+<!--card hover-->
+<style>
+  .card {
+    transition: box-shadow 0.3s;
+  }
+  .card:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  }
+  
+    .card-img {
+    width: 600px;
+    height: 450px;
+    margin-left: 25px;
+    margin-top: 15px;
+    object-fit: cover;
+  }
+</style>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.5.0/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+<script>
+  $(document).ready(function() {
+    // Enable the carousel functionality
+    $("#imageCarousel").carousel();
+
+    // Handle carousel navigation
+    $(".carousel-control-prev").click(function() {
+      $("#imageCarousel").carousel("prev");
+    });
+
+    $(".carousel-control-next").click(function() {
+      $("#imageCarousel").carousel("next");
+    });
+  });
+</script>
+
+<%# <div>
+  <%= link_to "Edit this restaurant", edit_restaurant_path(@restaurant) %> 
+  <%# <%= link_to "Back to restaurants", restaurants_path %>
+
+  <%# <%= button_to "Destroy this restaurant", @restaurant, method: :delete %> 
+<%# </div> %> 
