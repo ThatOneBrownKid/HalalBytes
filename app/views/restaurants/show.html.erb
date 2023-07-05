@@ -8,15 +8,24 @@
     <div class="carousel-inner">
       <% @restaurant.images.each_with_index do |image, index| %>
         <div class="carousel-item <%= 'active' if index.zero? %>">
+        <div class="image-container" style="position: relative;">
           <%= image_tag image, class: "card-img", alt: "Restaurant Image" %>
-          <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only"></span>
-          </a>
-          <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next" style="right: -25px;">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only"></span>
-          </a>
+          <% if current_user.admin? %>
+            <%= button_to delete_image_restaurant_path(@restaurant, image), method: :delete, remote: true, class: "btn delete-image-btn bg-transparent" , style: "position: absolute; top: 10px; right: 10px;border-width: 0px;left: 580px;bottom: 410px;" do %>
+              <i class="bi bi-trash text-white"></i> 
+            <% end %>
+          <% end %>
+        </div>
+          <% if @restaurant.images.count > 1 %>
+            <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev" style="height: 400px;top: 47.5;top: 40px;">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="sr-only"></span>
+            </a>
+            <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next" style="right: -25px;height: 400px;top: 47.5;top: 40px;">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="sr-only"></span>
+            </a>
+          <% end %>
         </div>
       <% end %>
     </div>
@@ -54,13 +63,14 @@
     </div>
     </div>
   </div>
+
   <% if current_user.admin? %>
-      <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
-      <%= form.file_field :images, multiple: true, class: 'form-control' %>
-      <%= form.submit 'Upload Images', class: 'btn btn-primary mt-3' %>
-      <% end %>
+    <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
+      <%= form.file_field :images, multiple: true, class: 'form-control', id: 'image-upload' %>
+      <%= form.submit 'Upload Images', class: 'btn btn-primary mt-3', id: 'upload-button', disabled: true %>
+    <% end %>
   <% end %>
-<!--card hover-->
+
 <style>
   .card {
     transition: box-shadow 0.3s;
@@ -69,13 +79,18 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   }
   
-    .card-img {
+  .card-img {
     width: 600px;
     height: 450px;
     margin-left: 25px;
     margin-top: 15px;
     object-fit: cover;
   }
+
+  .delete-image-btn:hover .bi-trash {
+    color: red !important;
+  }
+
 </style>
 
 
@@ -94,6 +109,20 @@
 
     $(".carousel-control-next").click(function() {
       $("#imageCarousel").carousel("next");
+    });
+  });
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const uploadButton = document.getElementById('upload-button');
+    const imageUpload = document.getElementById('image-upload');
+
+    imageUpload.addEventListener('change', function() {
+      if (imageUpload.files.length > 0) {
+        uploadButton.disabled = false;
+      } else {
+        uploadButton.disabled = true;
+      }
     });
   });
 </script>

@@ -48,6 +48,13 @@ class RestaurantsController < ApplicationController
     end
   end
 
+  def delete_image
+    @restaurant = Restaurant.find(params[:id])
+    image = @restaurant.images.find(params[:image_id])
+    image.purge
+    redirect_to @restaurant, notice: "Image successfully deleted."
+  end
+
   # DELETE /restaurants/1 or /restaurants/1.json
   def destroy
     @restaurant.destroy

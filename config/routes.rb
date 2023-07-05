@@ -5,7 +5,11 @@ Rails.application.routes.draw do
     registrations: 'users/registrations',
     sessions: 'users/sessions'
   }
-  resources :restaurants
+  resources :restaurants do
+    member do
+      delete 'images/:image_id', action: :delete_image, as: :delete_image
+    end
+  end
   root 'home#index'
   resources :users, only: [:edit, :update, :show] do
     get 'edit', on: :collection, to: 'users#edit'
