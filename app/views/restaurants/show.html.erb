@@ -11,10 +11,11 @@
         <div class="image-container" style="position: relative;">
           <%= image_tag image, class: "card-img", alt: "Restaurant Image" %>
           <% if current_user.admin? %>
-            <%= button_to delete_image_restaurant_path(@restaurant, image), method: :delete, remote: true, class: "btn delete-image-btn bg-transparent" , style: "position: absolute; top: 10px; right: 10px;border-width: 0px;left: 580px;bottom: 410px;" do %>
+            <%= button_to delete_image_restaurant_path(@restaurant, image), method: :delete, remote: true, class: "btn delete-image-btn bg-transparent" , style: "position: absolute; top: 10px; right: 10px;border-width: 0px; left: 580px; bottom: 410px; visibility: hidden; transition: visibility 0.3s;" do %>
               <i class="bi bi-trash text-white"></i> 
             <% end %>
           <% end %>
+          
         </div>
           <% if @restaurant.images.count > 1 %>
             <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev" style="height: 400px;top: 47.5;top: 40px;">
@@ -64,10 +65,31 @@
     </div>
   </div>
 
+
   <% if current_user.admin? %>
     <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
-      <%= form.file_field :images, multiple: true, class: 'form-control', id: 'image-upload' %>
-      <%= form.submit 'Upload Images', class: 'btn btn-primary mt-3', id: 'upload-button', disabled: true %>
+      <label for="image-upload" class="btn mt-3">
+        <i class="bi bi-cloud-upload"></i>
+        <%= form.file_field :images, multiple: true, class: 'form-control', id: 'image-upload', style: 'display: none;' %>
+      </label>
+
+      <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="uploadModalLabel">Upload Files</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Would you like to upload <span id="fileCount"></span> file(s)?</p>
+            </div>
+            <div class="modal-footer">
+              <%= form.submit 'Upload', class: 'btn btn-primary', id: 'uploadFilesBtn', disabled: true %>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
     <% end %>
   <% end %>
 
@@ -91,40 +113,48 @@
     color: red !important;
   }
 
+  .image-container:hover .delete-image-btn {
+    visibility: visible !important;
+  }
+
 </style>
 
 
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.5.0/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
 <script>
   $(document).ready(function() {
-    // Enable the carousel functionality
-    $("#imageCarousel").carousel();
+  // Enable the carousel functionality
+  $("#imageCarousel").carousel();
 
-    // Handle carousel navigation
-    $(".carousel-control-prev").click(function() {
-      $("#imageCarousel").carousel("prev");
-    });
-
-    $(".carousel-control-next").click(function() {
-      $("#imageCarousel").carousel("next");
-    });
+  // Handle carousel navigation
+  $(".carousel-control-prev").click(function() {
+    $("#imageCarousel").carousel("prev");
   });
 
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const uploadButton = document.getElementById('upload-button');
-    const imageUpload = document.getElementById('image-upload');
-
-    imageUpload.addEventListener('change', function() {
-      if (imageUpload.files.length > 0) {
-        uploadButton.disabled = false;
-      } else {
-        uploadButton.disabled = true;
-      }
-    });
+  $(".carousel-control-next").click(function() {
+    $("#imageCarousel").carousel("next");
   });
+
+  // Open modal when file input changes
+  $("#image-upload").change(function() {
+    const fileCount = $(this)[0].files.length;
+    $("#fileCount").text(fileCount);
+    $("#uploadModal").modal("show");
+  });
+
+  // Enable/disable upload button based on file selection
+  $("#image-upload").on("input", function() {
+    const fileCount = $(this)[0].files.length;
+    const uploadBtn = $("#uploadFilesBtn");
+    if (fileCount > 0) {
+      uploadBtn.prop("disabled", false);
+    } else {
+      uploadBtn.prop("disabled", true);
+    }
+  });
+});
 </script>
 
 <%# <div>
