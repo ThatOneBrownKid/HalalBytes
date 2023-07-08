@@ -10,7 +10,7 @@ Rails.application.configure do
 
   config.active_storage.variant_processor = :mini_magick
 
-
+  config.active_storage.replace_on_assign_to_many = false
   # Do not eager load code on boot.
   config.eager_load = false
 

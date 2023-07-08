@@ -1,137 +1,137 @@
 <section class="h-100">
-    <div class="container h-100">
-      <div class="row justify-content-sm-center h-100">
-        <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
-          <div class="text-center my-5">
-            <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
-          </div>
+  <div class="container h-100">
+    <div class="row justify-content-sm-center h-100">
+      <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
+        <div class="text-center my-5">
+          <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
         </div>
       </div>
     </div>
-  </section>
-<div class="contact-card">  
-  <form id="contact-form">
-  <%= form_with(model: restaurant) do |form| %>
-  <% if restaurant.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(restaurant.errors.count, "error") %> prohibited this restaurant from being saved:</h2>
+  </div>
+</section>
 
-      <ul>
-        <% restaurant.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+<div class="contact-card">  
+  <%= form_with(model: restaurant, id: 'restaurant-form') do |form| %>
+    <% if restaurant.errors.any? %>
+      <div style="color: red">
+        <h2><%= pluralize(restaurant.errors.count, "error") %> prohibited this restaurant from being saved:</h2>
+
+        <ul>
+          <% restaurant.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= form.label :name, style: "display: block" %>
+      <%= form.text_field :name, class: "form-control" %>
+    </div>
+
+    <div>
+      <%= form.label :address, style: "display: block" %>
+      <%= form.text_field :address, class: "form-control" %>
+    </div>
+
+    <div>
+      <%= form.label :phone, style: "display: block" %>
+      <%= form.text_field :phone, class: "form-control" %>
+    </div>
+
+    <div>
+      <%= form.label :website, style: "display: block" %>
+      <%= form.text_field :website, class: "form-control" %>
+    </div>
+
+    <div>
+      <%= form.label :cuisine, style: "display: block" %>
+      <%= form.text_field :cuisine, class: "form-control" %>
+    </div>
+
+    <div>
+      <%= form.label :price_range, style: "display: block" %>
+      <%= form.text_field :price_range, class: "form-control" %>
+    </div>
+
+    <div>
+      <%= form.label :overall_rating, style: "display: block" %>
+      <%= form.number_field :overall_rating, class: "form-control" %>
+    </div>
+
+    <div>
+      <%= form.submit 'Submit', class: 'btn btn-primary mt-2', type: 'submit' %>
     </div>
   <% end %>
-
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name, class:"form-control" %>
-  </div>
-
-  <div>
-    <%= form.label :address, style: "display: block" %>
-    <%= form.text_field :address, class:"form-control" %>
-  </div>
-
-  <div>
-    <%= form.label :phone, style: "display: block" %>
-    <%= form.text_field :phone, class:"form-control" %>
-  </div>
-
-  <div>
-    <%= form.label :website, style: "display: block" %>
-    <%= form.text_field :website, class:"form-control" %>
-  </div>
-
-  <div>
-    <%= form.label :cuisine, style: "display: block" %>
-    <%= form.text_field :cuisine, class:"form-control" %>
-  </div>
-
-  <div>
-    <%= form.label :price_range, style: "display: block" %>
-    <%= form.text_field :price_range, class:"form-control" %>
-  </div>
-
-  <div>
-    <%= form.label :overall_rating, style: "display: block" %>
-    <%= form.number_field :overall_rating, class:"form-control" %>
-  </div>
-
-  <div>
-    <%= form.submit 'Submit', class: 'btn btn-primary mt-2', type: 'submit' %>
-
-  </div>
-<% end %>
 
   <div id="flash-alert" class="flash-alert"></div>
 </div>
 
 <style>
-.contact-card {
-      background-color: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Updated shadow */
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto; /* Center the contact card */
-    }
-    
-    .contact-card h2 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    
-    .contact-card p {
-      margin-bottom: 10px;
-    }
-    
-    .contact-card label {
-      display: block;
-      margin-bottom: 5px;
-    }
-    
-    .contact-card input,
-    .contact-card textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      resize: vertical;
-    }
-    
-    /* Flash Alert */
-    .flash-alert {
-      display: none;
-      background-color: #C0C0C0;
-      color: #fff;
-      text-align: center;
-      padding: 10px;
-      border-radius: 4px;
-      margin-top: 10px;
-    }
-    .contact-info {
-      text-align: center;
-      margin-top: 40px;
-    }
-    
-    .contact-info p {
-      margin-bottom: 10px;
-    }
-    
-    .contact-info .logo-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 10px;
-    }
-    
-    .contact-info .logo {
-      display: inline-block;
-      margin: 0 10px;
-      height: 40px;
-      width: 40px;
-    }
-  </style>
+  .contact-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .contact-card h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .contact-card p {
+    margin-bottom: 10px;
+  }
+  
+  .contact-card label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .contact-card input,
+  .contact-card textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+  }
+  
+  /* Flash Alert */
+  .flash-alert {
+    display: none;
+    background-color: #C0C0C0;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+  }
+  
+  .contact-info {
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  .contact-info p {
+    margin-bottom: 10px;
+  }
+  
+  .contact-info .logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .contact-info .logo {
+    display: inline-block;
+    margin: 0 10px;
+    height: 40px;
+    width: 40px;
+  }
+</style>
