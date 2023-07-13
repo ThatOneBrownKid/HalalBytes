@@ -64,6 +64,15 @@
     </div>
   <% end %>
 
+  <%= form_tag(scrape_google_restaurants_path, method: :post) do %>
+    <div>
+      <%= label_tag :google_link, 'Google Link', style: 'display: block' %>
+      <%= text_field_tag :google_link, params[:google_link], class: 'form-control' %>
+    </div>
+
+    <%= submit_tag 'Scrape Google', class: 'btn btn-primary mt-2', type: 'submit' %>
+  <% end %>
+
   <div id="flash-alert" class="flash-alert"></div>
 </div>
 

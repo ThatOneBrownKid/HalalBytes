@@ -33,7 +33,7 @@
         <%= image_tag "Restaurant_Näsinneula.jpg", class: "card-img", alt: "Restaurant Image" %>
         <% end %>
         
-        <% if current_user.admin? %>
+        <% if signed_in? && current_user.admin? %>
         <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
         <label for="image-upload" class="btn btn-primary image-upload-btn" style= "margin-top: 10px; margin-left: 250px">
         <i class="bi bi-cloud-upload"></i> Upload Pictures
