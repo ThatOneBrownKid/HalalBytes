@@ -37,21 +37,23 @@
                 </div>
 
                 <% if flash[:alert] || flash[:notice] %>
-                  <div class="alert alert-danger", id="login-alert">
-                    <% if flash[:alert] %>
-                      <%= flash[:alert] %>
-                    <% elsif flash[:notice] %>
-                       <%= flash[:notice] %>
-                    <% end %>
-                  </div>
+                  <% if flash[:alert] || (flash[:notice] && flash[:notice] != "You will receive an email with instructions on how to reset your password in a few minutes.") %>
+                    <div class="alert alert-danger" id="login-alert">
+                      <% if flash[:alert] %>
+                        <%= flash[:alert] %>
+                      <% elsif flash[:notice] && flash[:notice] != "You will receive an email with instructions on how to reset your password in a few minutes." %>
+                        <%= flash[:notice] %>
+                      <% end %>
+                    </div>
+                  <% end %>
                 <% end %>
-                
+
                 <div class="d-flex align-items-center">
                   <%= f.submit "Login", class: "btn btn-primary ms-auto" %>
                 </div>
               <% end %>
             </div>
-            <div class="card-footer py-3 border-0">
+            <div class="card-footer py-3 border-0 bg-white">
               <div class="text-center">
                 Don't have an account? <%= link_to "Create One", new_user_registration_path %>
               </div>

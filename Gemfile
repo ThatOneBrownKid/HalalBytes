@@ -31,6 +31,8 @@ gem 'devise', '~> 4.9', '>= 4.9.2'
 
 gem "font-awesome-sass", "~> 6.4.0"
 
+gem 'mail'
+
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
