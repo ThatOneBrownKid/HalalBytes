@@ -97,7 +97,7 @@ $(document).ready(function() {
       // Loop through each restaurant card
       $('#restaurants .card').each(function() {
         var card = $(this);
-        var name = card.find('.card1-title').text().toLowerCase();
+        var name = card.find('.card-title').text().toLowerCase();
         var cuisine = card.find('.hover-box:first-child').text().toLowerCase();
          var priceRange = parseInt(card.find('.hover-box:eq(2)').text()); // Convert price range to an integer
 
