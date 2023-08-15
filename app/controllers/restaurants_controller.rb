@@ -68,31 +68,6 @@ class RestaurantsController < ApplicationController
     end
   end
 
-  def scrape_google
-    google_link = params[:google_link]
-    page = Nokogiri::HTML(URI.open(google_link))
-  
-    @restaurant = Restaurant.new
-    
-    #Returant Name
-    restaurant_name_element = page.at_css('h1.DUwDvf.fontHeadlineLarge')
-    @restaurant.name = restaurant_name_element&.text&.strip if restaurant_name_element
-    
-  
-    # Output scraped information to the console
-    puts "Scraped Information:"
-    puts "Name: #{@restaurant&.name}"
-    
-  
-    render :scrape_google
-  end
-  
-  
-  
-  
-
-  
-
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_restaurant

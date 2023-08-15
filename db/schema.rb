@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_27_232202) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_15_010110) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,6 +52,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_27_232202) do
     t.integer "overall_rating"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "monday"
+    t.string "tuesday"
+    t.string "wednesday"
+    t.string "thursday"
+    t.string "friday"
+    t.string "saturday"
+    t.string "sunday"
   end
 
   create_table "users", force: :cascade do |t|
@@ -65,6 +72,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_27_232202) do
     t.string "first_name"
     t.string "last_name"
     t.boolean "admin"
+    t.boolean "owner", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
