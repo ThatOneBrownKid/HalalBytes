@@ -27,6 +27,12 @@ class RestaurantsController < ApplicationController
   def create
     @restaurant = Restaurant.new(restaurant_params)
 
+    # Attach default image if no images are provided
+    unless params[:restaurant][:images].present?
+      default_image_path = Rails.root.join('app', 'assets', 'images', 'default-restaurant-image.jpg')
+      @restaurant.images.attach(io: File.open(default_image_path), filename: 'default-restaurant-image.jpg', content_type: 'image/jpeg')
+    end
+
     respond_to do |format|
       if @restaurant.save
         format.html { redirect_to restaurant_url(@restaurant), notice: "Restaurant was successfully created." }

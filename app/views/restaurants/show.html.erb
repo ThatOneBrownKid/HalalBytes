@@ -1,169 +1,35 @@
-<div class="row">
-<div class="col mt-3 shadow">
-<div class="card mt-3 rounded-0 border-0 border-bottom" style="width: 100%; height: 520px;  border-radius: 10px; border-bottom: 10px;">
-<a href="<%= @restaurant.website %>" target="_blank" rel="noopener noreferrer" style="position: absolute; top: 10px; right: 10px; font-size: 24px; color: black; text-decoration: none;" title="Visit Website">
-                <i class="bi bi-globe2"></i>
-            </a>
-  <div class="row no-gutters">
-    <div class="col-md-4" >
-      <div id="imageCarousel" class="carousel slide" data-ride="carousel">
-        <% if @restaurant.images.attached? %>
-        <div class="carousel-inner">
-          <% @restaurant.images.each_with_index do |image, index| %>
-          <div class="carousel-item <%= 'active' if index.zero? %>">
-            <div class="image-container" style="position: relative;">
-              <%= image_tag image, class: "card-img", alt: "Restaurant Image" %>
-              <% if current_user.admin? %>
-              <%= button_to delete_image_restaurant_path(@restaurant, image), method: :delete, remote: true, class: "btn delete-image-btn bg-transparent" , style: "position: absolute; top: 10px; right: 10px;border-width: 0px; left: 580px; bottom: 410px; visibility: hidden; transition: visibility 0.3s;" do %>
-              <i class="bi bi-trash text-white"></i> 
-              <% end %>
-              <% end %>
-            </div>
-            <% if @restaurant.images.count > 1 %>
-            <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev" style="height: 400px;top: 47.5;top: 40px;">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only"></span>
-            </a>
-            <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next" style="right: -25px;height: 400px;top: 47.5;top: 40px;">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only"></span>
-            </a>
-            <% end %>
-          </div>
-          <% end %>
-        </div>
-        <% else %>
-        <%= image_tag "Restaurant_Näsinneula.jpg", class: "card-img", alt: "Restaurant Image" %>
-        <% end %>
-        
-        <% if signed_in? && current_user.admin? %>
-        <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
-        <label for="image-upload" class="btn btn-primary image-upload-btn" style= "margin-top: 10px; margin-left: 250px">
-        <i class="bi bi-cloud-upload"></i> Upload Pictures
-        <%= form.file_field :images, multiple: true, class: 'form-control', id: 'image-upload', style: 'display: none;' %>
-        </label>
-        <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="uploadModalLabel">Upload Files</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <p>Would you like to upload <span id="fileCount"></span> file(s)?</p>
-              </div>
-              <div class="modal-footer">
-                <%= form.submit 'Upload', class: 'btn btn-primary', id: 'uploadFilesBtn', disabled: true %>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <% end %>
-        <% end %>
-      </div>
+<div class="image-container" style="position: relative; width: 100%; height: 40vh; overflow: hidden;">
+  <% if @restaurant.images.attached? %>
+    <%= image_tag @restaurant.images.first.variant(resize_to_fill: [1000, 200]), class: "card-img", alt: "Restaurant Image", style: "object-fit: cover; width: 100%; height: 100%;" %>
+  <% else %>
+    <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image", style: "object-fit: cover; width: 100%; height: 100%;" %> 
+  <% end %>
+  <div class="restaurant-info" style="position: absolute; bottom: 30px; left: 10px;">
+    <div class="restaurant-name" style="color: white; font-size: 40px; font-weight: bold;">
+      <%= @restaurant.name %>
     </div>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title mb-1" style="font-size: 40px;"><%= @restaurant.name %></h5>
-        <div class="text" style="font-size: 14px;">
-          <div class="hover-box shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
-            <%= @restaurant.cuisine %>
-          </div>
-          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
-            Overall Rating: <%= @restaurant.overall_rating %>
-          </div>
-          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
-            <%= @restaurant.price_range %>
-          </div>
-          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
-            <%= @restaurant.address %>
-          </div>
-          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
-            <%= @restaurant.website %>
-          </div>
-        </div>
-        <p></p>
-        <div class="text-secondary" style="font-size: 14px;">
-          Comments: 
-          <p></p>
-        </div>
-      </div>
+    <div class="restaurant-rating" style="font-size: 25px; font-weight: bold;">
+        <% rating = @restaurant.overall_rating %>
+        <% (1..5).each do |i| %>
+          <% filled_stars = [i, rating].min %>
+          <span class="star <%= 'filled' if i <= filled_stars %>">&#9733;</span>
+        <% end %>
     </div>
   </div>
 </div>
 
 <style>
-  .card {
-    transition: box-shadow 0.3s;
-  }
-  .card:hover {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  }
-  
-  .card-img {
-    width: 600px;
-    height: 450px;
-    margin-left: 25px;
-    margin-top: 15px;
-    object-fit: cover;
-  }
+.star-rating {
+  font-size: 50px;
+}
 
-  .image-upload-btn:hover .bi-cloud-upload {
-    color: blue!important;
-  }
+.star {
+  display: inline-block;
+  font-size: inherit;
+  color: #FFFFFF; /* Default star color */
+}
 
-  .delete-image-btn:hover .bi-trash {
-    color: red !important;
-  }
-
-  .image-container:hover .delete-image-btn {
-    visibility: visible !important;
-  }
-
+.star.filled {
+  color: #FFAC2D; /* Filled star color */
+}
 </style>
-
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-
-<script>
-  $(document).ready(function() {
-  // Enable the carousel functionality
-  $("#imageCarousel").carousel();
-
-  // Handle carousel navigation
-  $(".carousel-control-prev").click(function() {
-    $("#imageCarousel").carousel("prev");
-  });
-
-  $(".carousel-control-next").click(function() {
-    $("#imageCarousel").carousel("next");
-  });
-
-  // Open modal when file input changes
-  $("#image-upload").change(function() {
-    const fileCount = $(this)[0].files.length;
-    $("#fileCount").text(fileCount);
-    $("#uploadModal").modal("show");
-  });
-
-  // Enable/disable upload button based on file selection
-  $("#image-upload").on("input", function() {
-    const fileCount = $(this)[0].files.length;
-    const uploadBtn = $("#uploadFilesBtn");
-    if (fileCount > 0) {
-      uploadBtn.prop("disabled", false);
-    } else {
-      uploadBtn.prop("disabled", true);
-    }
-  });
-});
-</script>
-
-<%# <div>
-  <%= link_to "Edit this restaurant", edit_restaurant_path(@restaurant) %> 
-  <%# <%= link_to "Back to restaurants", restaurants_path %>
-
-  <%# <%= button_to "Destroy this restaurant", @restaurant, method: :delete %> 
-<%# </div> %> 

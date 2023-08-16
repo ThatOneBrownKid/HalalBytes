@@ -1,11 +1,13 @@
 <div class="row">
     <div class="col">
         <div class="card mt-3 rounded-0 border-0 border-bottom" style="width: 100%; height: 300px; border-radius: 10px; border-bottom: 10px;">
-            <a href="<%= restaurant.website %>" target="_blank" rel="noopener noreferrer" style="position: absolute; top: 10px; right: 10px; font-size: 24px; color: black; text-decoration: none;">
-                <i class="bi bi-globe2"></i>
-            </a>
+            <div class="d-flex justify-content-end">
+                <a href="<%= restaurant.website %>" target="_blank" rel="noopener noreferrer" style="font-size: 24px; color: black; text-decoration: none; margin-right: 5px">
+                    <i class="bi bi-globe2"></i>
+                </a>
+            </div>
             <div class="row no-gutters">
-                <div class="col-md-4">
+                <div class="col-md-4 mb-3 mb-md-0">
                     <div id="imageCarousel" class="carousel slide" data-ride="carousel">
                         <% if restaurant.images.attached? %>
                         <div class="carousel-inner">
@@ -23,7 +25,7 @@
                             </div>
                             <% end %>
                         </div>
-                        <% else %> <%= image_tag "Restaurant_Näsinneula.jpg", class: "card-img", alt: "Restaurant Image" %> <% end %>
+                        <% else %> <%= image_tag "sdefault-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image" %> <% end %>
                     </div>
                 </div>
                 <div class="col-md-8">
