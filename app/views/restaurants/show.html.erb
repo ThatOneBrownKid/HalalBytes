@@ -8,15 +8,42 @@
     <div class="restaurant-name" style="color: white; font-size: 40px; font-weight: bold;">
       <%= @restaurant.name %>
     </div>
-    <div class="restaurant-rating" style="font-size: 25px; font-weight: bold;">
-        <% rating = @restaurant.overall_rating %>
-        <% (1..5).each do |i| %>
-          <% filled_stars = [i, rating].min %>
-          <span class="star <%= 'filled' if i <= filled_stars %>">&#9733;</span>
+    <div class="restaurant-rating d-inline" style="font-size: 20px; font-weight: bold;">
+        <% @restaurant.overall_rating.to_i.times do%>
+          <i class="bi bi-star-fill red"></i>
+        <% end %>   
+        <% (5-@restaurant.overall_rating.to_i).times do%>
+          <i class="bi bi-star-fill gray"></i>
         <% end %>
+        <div class="d-inline text-white">
+          <%=@restaurant.overall_rating%>
+        </div>
+        <div class="restaurant-open-close d-inline" style="font-size: 20px; font-weight: bold;">
+        <%= @restaurant.current_open_status %></div>
+        </div>
     </div>
   </div>
 </div>
+
+<div class="container-fluid p-3">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="rounded p-3 border">
+        <div class="d-block text-black" id="Resturant Address">
+          <p class="d-inline" style="font-weight: bold;"> Address: </p> 
+          <%=@restaurant.address%>
+        </div>
+        <div class="d-block text-black" id="Resturant Address">
+          <p class="d-inline" style="font-weight: bold;"> Hours: </p> 
+          <span id="current-day" style="font-style: italic;"></span> <%= @restaurant.send(Time.now.strftime("%A").downcase) %></span>
+          <p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <style>
 .star-rating {
@@ -32,4 +59,21 @@
 .star.filled {
   color: #FFAC2D; /* Filled star color */
 }
+
+.red{
+  color: #DC3545;
+}
+
+.gray{
+  color: #D3D3D3;
+}
 </style>
+
+<script>
+  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const currentDayIndex = new Date().getDay();
+  const currentDayName = daysOfWeek[currentDayIndex];
+
+  const currentDayElement = document.getElementById("current-day");
+  currentDayElement.textContent = currentDayName;
+</script>
