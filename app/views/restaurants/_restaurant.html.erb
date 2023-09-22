@@ -1,75 +1,38 @@
 <div class="row">
-    <div class="col">
-        <div class="card mt-3 rounded-0 border-0 border-bottom" style="width: 100%; height: 300px; border-radius: 10px; border-bottom: 10px;">
-            <div class="row no-gutters">
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <div id="imageCarousel" class="carousel slide" data-ride="carousel">
-                        <% if restaurant.images.attached? %>
-                        <div class="carousel-inner">
-                            <% restaurant.images.each_with_index do |image, index| %>
-                            <div class="carousel-item <%= 'active' if index.zero? %>">
-                                <%= image_tag image, class: "card-img", alt: "Restaurant Image" %>
-                                <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev" style="left: 10px;">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="sr-only"></span>
-                                </a>
-                                <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next" style="right: 20px;">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="sr-only"></span>
-                                </a>
-                            </div>
-                            <% end %>
-                        </div>
-                        <% else %> <%= image_tag "sdefault-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image" %> <% end %>
-                    </div>
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-end">
-                            <a href="<%= restaurant.website %>" target="_blank" rel="noopener noreferrer" style="font-size: 24px; color: black; text-decoration: none; margin-right: 5px">
-                                <i class="bi bi-globe2"></i>
-                            </a>
-                        </div>
-                        <h5 class="card-title mb-1" style="font-size: 40px;">
-                            <a href="<%= restaurant_url(restaurant) %>" class="custom-link" style="color: black; text-decoration: none;">
-                                <%= restaurant.name %>
-                            </a>
-                        </h5>
-                        <!--rating stars-->
-                        <% restaurant.overall_rating.to_i.times do%>
-                        <i class="bi bi-star-fill red"></i>
-                        <% end %> <% (5-restaurant.overall_rating.to_i).times do%>
-                        <i class="bi bi-star-fill gray"></i>
-                        <% end %>
-
-                        <div class="text-secondary" style="font-size: 14px;">
-                            <div class="hover-box shadow-sm rounded border mt-2" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold; color: black; font-size: 14px;">
-                                <%= restaurant.cuisine %>
-                            </div>
-
-                            <!--price range-->
-                            <% restaurant.price_range.to_i.times do%>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="18" fill="gray" class="bi bi-currency-dollar" viewBox="0 0 12 10">
-                                <path
-                                    d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"
-                                />
-                            </svg>
-                            <% end %>
-
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-dot" viewBox="0 0 16 16">
-                                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
-                            </svg>
-                            <%= restaurant.address %>
-                        </div>
-                        <p></p>
-                        <div class="text-secondary" style="font-size: 14px;">
-                            Description:
-                            <p></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+ <div class="col">
+   <div class="card mt-3 rounded-0 border-0 border-bottom" style="width: 100%; height: 300px;  border-radius: 10px; border-bottom: 10px;">
+  <div class="row no-gutters">
+    <div class="col-md-4" >
+      <%= image_tag("Restaurant_Näsinneula.jpg", class: "card-img", alt: "Restaurant Image", style:"width: 90%; height: 85%; margin-left:5px;  margin-top:15px") %>
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title mb-1" style="font-size: 40px;"><%= restaurant.name %></h5>
+        <div class="text" style="font-size: 14px;">
+          <div class="hover-box shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+            <%= restaurant.cuisine %>
+          </div>
+          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+            Overall Rating: <%= restaurant.overall_rating %>
+          </div>
+           <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+           <%= restaurant.price_range %>
+          </div>
+          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+          <%= restaurant.address %>
+          </div>
+          <div class="hover-box mb-1 mt-1 shadow-sm rounded border" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold;">
+          <%= restaurant.website %>
+          </div>
+          
         </div>
+        <p></p>
+        <div class="text-secondary" style="font-size: 14px;">
+         Comments: <p></p>
+        </div>
+        <a href="<%= restaurant_url(restaurant) %>" class="btn btn-danger" style="background-color: #dc3545;  color: white;">View Details</a>
+      </div>
+    </div>
     </div>
 </div>
 
