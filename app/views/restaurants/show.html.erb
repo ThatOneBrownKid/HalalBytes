@@ -17,9 +17,14 @@
         <% end %>
         <div class="d-inline text-white">
           <%=@restaurant.overall_rating%>
+          <i class="bi bi-dot"></i>
         </div>
         <div class="restaurant-open-close d-inline" style="font-size: 20px; font-weight: bold;">
-        <%= @restaurant.current_open_status %></div>
+          <% if @restaurant.open? %>
+            <span style="color: green;">Open</span>
+          <% else %>
+            <span style="color: red;">Closed</span>
+          <% end %>
         </div>
     </div>
   </div>
@@ -35,9 +40,43 @@
         </div>
         <div class="d-block text-black" id="Resturant Address">
           <p class="d-inline" style="font-weight: bold;"> Hours: </p> 
-          <span id="current-day" style="font-style: italic;"></span> <%= @restaurant.send(Time.now.strftime("%A").downcase) %></span>
-          <p>
-        </div>
+          <span class="current-label" id="current-day" style="font-style: italic;"></span>
+          <span> <%= @restaurant.hours(Time.now.strftime("%A").downcase) %></span>
+          <span class="dropdown" onclick="toggleHours()"> 
+            <i id="dropdown-icon" class="bi bi-caret-down-fill"></i> 
+          </span>
+          <div class="d-block text-black d-none" id="RestaurantHours">
+            <div class="d-block text-black">
+              <span class="day-label">Sunday:</span>
+              <span class="hours"><%= @restaurant.hours("Sunday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Monday:</span>
+              <span class="hours"><%= @restaurant.hours("Monday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Tuesday:</span>
+              <span class="hours"><%= @restaurant.hours("Tuesday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Wednesday:</span>
+              <span class="hours"><%= @restaurant.hours("Wednesday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Thursday:</span>
+              <span class="hours"><%= @restaurant.hours("Thursday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Friday:</span>
+              <span class="hours"><%= @restaurant.hours("Friday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Saturday:</span>
+              <span class="hours"><%= @restaurant.hours("Saturday") %></span>
+            </div>
+          </div>
+
+
 
       </div>
     </div>
@@ -67,13 +106,112 @@
 .gray{
   color: #D3D3D3;
 }
+
+.dropdown {
+  display: inline-block;
+  width: 20px; 
+  text-align: right;
+  margin-right: 10px; 
+  cursor: pointer;
+}
+
+.current-label {
+  display: inline-block;
+  width: 66px; 
+  text-align: right;
+  margin-right: 10px; 
+
+}
+
+.day-label {
+  display: inline-block;
+  width: 120px; 
+  text-align: right;
+  margin-right: 10px;
+}
+
+.hours {
+  display: inline-block;
+}
 </style>
 
+
+
+<style>
+  /* CSS to add fade-in animation */
+  .day-label,
+  .hours {
+    opacity: 0; /* Start with 0 opacity */
+    transition: opacity 0.5s ease; /* Add a transition effect */
+  }
+
+  /* Apply the animation to each row individually */
+  .day-label:nth-child(1),
+  .hours:nth-child(1) {
+    animation: fadeIn 0.5s ease 0.5s 1 normal forwards;
+  }
+
+  .day-label:nth-child(2),
+  .hours:nth-child(2) {
+    animation: fadeIn 0.5s ease 1s 1 normal forwards;
+  }
+
+  /* Repeat for other rows, adjusting the delay as needed */
+</style>
+
+<script>
+    // Function to toggle the icon, div visibility, and apply animation
+    function toggleHours() {
+      const icon = document.getElementById("dropdown-icon");
+      const hoursDiv = document.getElementById("RestaurantHours");
+
+      if (icon.classList.contains("bi-caret-down-fill")) {
+        // Toggle to left icon
+        icon.classList.remove("bi-caret-down-fill");
+        icon.classList.add("bi-caret-left-fill");
+
+        // Toggle the visibility of the div
+        hoursDiv.classList.remove("d-none");
+
+        // Trigger animation for each row
+        const dayLabels = hoursDiv.querySelectorAll(".day-label");
+        const hoursSpans = hoursDiv.querySelectorAll(".hours");
+
+        dayLabels.forEach((label, index) => {
+          setTimeout(() => {
+            label.style.opacity = "1";
+            hoursSpans[index].style.opacity = "1";
+          }, 10 * index); // Adjust the delay as needed
+        });
+      } else {
+        // Toggle to down icon, hide div, and reset opacity
+        icon.classList.remove("bi-caret-left-fill");
+        icon.classList.add("bi-caret-down-fill");
+
+        // Toggle the visibility of the div
+        hoursDiv.classList.add("d-none");
+
+        // Reset opacity to 0 for all rows
+        const dayLabels = hoursDiv.querySelectorAll(".day-label");
+        const hoursSpans = hoursDiv.querySelectorAll(".hours");
+
+        dayLabels.forEach((label) => {
+          label.style.opacity = "0";
+        });
+
+        hoursSpans.forEach((hours) => {
+          hours.style.opacity = "0";
+        });
+      }
+    }
+  </script>
 <script>
   const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const currentDayIndex = new Date().getDay();
   const currentDayName = daysOfWeek[currentDayIndex];
+  const currentDayWithColon = currentDayName + ":";
 
   const currentDayElement = document.getElementById("current-day");
-  currentDayElement.textContent = currentDayName;
+  currentDayElement.textContent = currentDayWithColon;
 </script>
+
