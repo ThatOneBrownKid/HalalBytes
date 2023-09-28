@@ -30,7 +30,7 @@
   </div>
 </div>
 
-<div class="container-fluid p-3">
+<div class="container-fluid pt-3">
   <div class="row">
     <div class="col-md-3">
       <div class="rounded p-3 border">
@@ -75,9 +75,35 @@
               <span class="hours"><%= @restaurant.hours("Saturday") %></span>
             </div>
           </div>
+          <div class="d-block text-black" id="Resturant Phone">
+            <p class="d-inline" style="font-weight: bold;"> Phone: </p> 
+            <%= @restaurant.phone %>
+          </div><div class="d-block text-black" id="Resturant Website">
+            <p class="d-inline" style="font-weight: bold;"> Website: </p> 
+            <a href="<%= @restaurant.website %>" target="_blank"><%= @restaurant.website %></a>
+          </div>
 
 
 
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" tabindex="-1" id="imagePreviewModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Image Previews</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="imagePreviews"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="uploadImages()">Confirm</button>
       </div>
     </div>
   </div>
@@ -106,10 +132,8 @@
 .gray{
   color: #D3D3D3;
 }
-
 .dropdown {
   display: inline-block;
-  width: 20px; 
   text-align: right;
   margin-right: 10px; 
   cursor: pointer;
@@ -133,31 +157,27 @@
 .hours {
   display: inline-block;
 }
+
+/* CSS to add fade-in animation */
+.day-label,
+.hours {
+  opacity: 0; /* Start with 0 opacity */
+  transition: opacity 0.5s ease; /* Add a transition effect */
+}
+
+/* Apply the animation to each row individually */
+.day-label:nth-child(1),
+.hours:nth-child(1) {
+  animation: fadeIn 0.5s ease 0.5s 1 normal forwards;
+}
+
+.day-label:nth-child(2),
+.hours:nth-child(2) {
+  animation: fadeIn 0.5s ease 1s 1 normal forwards;
+}
+
 </style>
 
-
-
-<style>
-  /* CSS to add fade-in animation */
-  .day-label,
-  .hours {
-    opacity: 0; /* Start with 0 opacity */
-    transition: opacity 0.5s ease; /* Add a transition effect */
-  }
-
-  /* Apply the animation to each row individually */
-  .day-label:nth-child(1),
-  .hours:nth-child(1) {
-    animation: fadeIn 0.5s ease 0.5s 1 normal forwards;
-  }
-
-  .day-label:nth-child(2),
-  .hours:nth-child(2) {
-    animation: fadeIn 0.5s ease 1s 1 normal forwards;
-  }
-
-  /* Repeat for other rows, adjusting the delay as needed */
-</style>
 
 <script>
     // Function to toggle the icon, div visibility, and apply animation
@@ -214,4 +234,5 @@
   const currentDayElement = document.getElementById("current-day");
   currentDayElement.textContent = currentDayWithColon;
 </script>
+
 
