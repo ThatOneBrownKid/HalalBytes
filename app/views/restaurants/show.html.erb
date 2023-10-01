@@ -4,7 +4,7 @@
   <% else %>
     <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image", style: "object-fit: cover; width: 100%; height: 100%;" %> 
   <% end %>
-  <div class="restaurant-info" style="position: absolute; bottom: 30px; left: 10px;">
+  <div class="restaurant-info d-inline" style="position: absolute; bottom: 5%; left: 1%;">
     <div class="restaurant-name" style="color: white; font-size: 40px; font-weight: bold;">
       <%= @restaurant.name %>
     </div>
@@ -28,6 +28,37 @@
         </div>
     </div>
   </div>
+  <div class="gallery-button" style="position: absolute; bottom: 5%; right: 1%;">
+  <% if current_user.admin? %>
+    <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
+      <label for="image-upload" class="btn btn-secondary image-upload-btn">
+        <i class="bi bi-cloud-upload"></i> <p class="upload d-inline">Upload</p>
+        <%= form.file_field :images, multiple: true, class: 'form-control', id: 'image-upload', style: 'display: none;', onchange: 'previewImages()' %>
+      </label>
+      <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="uploadModalLabel">Upload Images</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="imagePreviews"></div>
+            </div>
+            <div class="modal-body">
+              <p>Would you like to upload <span id="fileCount"></span> file(s)?</p>
+            </div>
+            <div class="modal-footer">
+              <%= form.submit 'Upload', class: 'btn btn-primary', id: 'uploadFilesBtn', disabled: true %>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+  </div>
+  
 </div>
 
 <div class="container-fluid pt-3">
@@ -176,6 +207,14 @@
   animation: fadeIn 0.5s ease 1s 1 normal forwards;
 }
 
+.image-upload-btn:hover .bi-cloud-upload {
+  color: DeepSkyBlue!important;
+}
+
+.image-upload-btn:hover .upload {
+  color: DeepSkyBlue!important;
+}
+
 </style>
 
 
@@ -235,4 +274,70 @@
   currentDayElement.textContent = currentDayWithColon;
 </script>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
 
+<script>
+  $(document).ready(function() {
+  // Enable the carousel functionality
+  $("#imageCarousel").carousel();
+
+  // Handle carousel navigation
+  $(".carousel-control-prev").click(function() {
+    $("#imageCarousel").carousel("prev");
+  });
+
+  $(".carousel-control-next").click(function() {
+    $("#imageCarousel").carousel("next");
+  });
+
+  // Open modal when file input changes
+  $("#image-upload").change(function() {
+    const fileCount = $(this)[0].files.length;
+    $("#fileCount").text(fileCount);
+    $("#uploadModal").modal("show");
+  });
+
+  // Enable/disable upload button based on file selection
+  $("#image-upload").on("input", function() {
+    const fileCount = $(this)[0].files.length;
+    const uploadBtn = $("#uploadFilesBtn");
+    if (fileCount > 0) {
+      uploadBtn.prop("disabled", false);
+    } else {
+      uploadBtn.prop("disabled", true);
+    }
+  });
+});
+</script>
+
+<script>
+function previewImages() {
+    const input = document.getElementById('image-upload');
+    const previewDiv = document.getElementById('imagePreviews');
+    previewDiv.innerHTML = ''; // Clear previous previews
+
+    if (input.files && input.files[0]) {
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100px';
+                img.style.marginRight = '10px';
+                previewDiv.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+        });
+
+        // Update the file count
+        document.getElementById('fileCount').textContent = input.files.length;
+
+        // Enable the upload button
+        document.getElementById('uploadFilesBtn').disabled = false;
+
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
+        modal.show();
+    }
+}
+</script>
