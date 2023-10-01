@@ -31,7 +31,7 @@
   <div class="gallery-button" style="position: absolute; bottom: 5%; right: 1%;">
   <% if current_user.admin? %>
     <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
-      <label for="image-upload" class="btn btn-secondary image-upload-btn">
+      <label for="image-upload" class="btn btn-secondary image-upload-btn d-inline">
         <i class="bi bi-cloud-upload"></i> <p class="upload d-inline">Upload</p>
         <%= form.file_field :images, multiple: true, class: 'form-control', id: 'image-upload', style: 'display: none;', onchange: 'previewImages()' %>
       </label>
@@ -57,6 +57,9 @@
       </div>
     <% end %>
   <% end %>
+  </div>
+  <div class="gallery-button" style="position: absolute; bottom: 3%; right: 7%;">
+    <button class="btn btn-primary ml-2 " id="openGalleryBtn">Gallery</button>
   </div>
   
 </div>
@@ -122,23 +125,49 @@
 </div>
 
 
-<div class="modal" tabindex="-1" id="imagePreviewModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Image Previews</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div id="imagePreviews"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="uploadImages()">Confirm</button>
-      </div>
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="galleryModalLabel">Image Gallery</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+             <div class="row">
+
+                <div class="col-8 d-block image-carousel"  >
+                  <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                      <% @restaurant.images.each_with_index do |image, index| %>
+                        <div class="carousel-item <%= 'active' if index == 0 %>">
+                            <%= image_tag image.variant(resize_to_limit: [nil, 500]), class: "d-block w-100", alt: "Restaurant Image" %>
+                        </div>
+                        <% end %>
+                    </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      </button>
+                  </div>
+                </div>
+                <!-- Scrollable container for images -->
+                <div class="scrollable-gallery-container col-4 d-block">
+                    <div class="row" id="galleryImages">
+                        <% @restaurant.images.each do |image| %>
+                            <div class="col-4">
+                                <%= image_tag image.variant(resize_to_limit: [100, 100]), class: "img-thumbnail", alt: "Restaurant Image" %>
+                            </div>
+                        <% end %>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
+
 
 
 <style>
@@ -215,8 +244,26 @@
   color: DeepSkyBlue!important;
 }
 
+.scrollable-gallery-container {
+  max-height: 500px;  /* Adjust this value based on your desired modal height */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.image-carousel{
+  max-height: 500px;
+}
+
+#imageCarousel .carousel-item img {
+    max-height: 500px;
+    width: auto; /* This ensures the width adjusts according to the aspect ratio */
+    margin: 0 auto; /* Centers the image in case it's narrower than the container */
+}
+
 </style>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
 
 <script>
     // Function to toggle the icon, div visibility, and apply animation
@@ -340,4 +387,26 @@ function previewImages() {
         modal.show();
     }
 }
+
+// Open the gallery modal
+document.getElementById('openGalleryBtn').addEventListener('click', function() {
+    const modal = new bootstrap.Modal(document.getElementById('galleryModal'));
+    modal.show();
+});
+
+
+$(document).ready(function() {
+    $('#imageCarousel').on('slide.bs.carousel', function(event) {
+        // Deselect all thumbnails
+        $('#galleryImages .img-thumbnail').removeClass('border-primary');
+
+        // Highlight the corresponding thumbnail
+        $($('#galleryImages .img-thumbnail')[event.to]).addClass('border-primary');
+    });
+
+    $('#galleryImages .img-thumbnail').click(function() {
+        const index = $('#galleryImages .img-thumbnail').index(this);
+        $('#imageCarousel').carousel(index);
+    });
+});
 </script>
