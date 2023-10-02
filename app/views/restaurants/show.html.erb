@@ -1,1 +1,516 @@
- 
+ <div class="image-container" style="position: relative; width: 100%; height: 40vh; overflow: hidden;">
+  <% if @restaurant.images.attached? %>
+    <%= image_tag @restaurant.images.first.variant(resize_to_fill: [1000, 200]), class: "card-img", alt: "Restaurant Image", style: "object-fit: cover; width: 100%; height: 100%;" %>
+  <% else %>
+    <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image", style: "object-fit: cover; width: 100%; height: 100%;" %> 
+  <% end %>
+  <% if current_user.admin? %>
+  <div class="edit-button" style="position: absolute; top: 5%; right: 1%;">
+    <button class="btn btn-light" id="editImagesBtn" data-bs-toggle="modal" data-bs-target="#editGalleryModal">
+      <i class="bi bi-pencil-square"></i>
+    </button>
+  <% end %>
+  </div>
+  <div class="restaurant-info d-inline" style="position: absolute; bottom: 5%; left: 1%;">
+    <div class="restaurant-name" style="color: white; font-size: 40px; font-weight: bold;">
+      <%= @restaurant.name %>
+    </div>
+    <div class="restaurant-rating d-inline" style="font-size: 20px; font-weight: bold;">
+        <% @restaurant.overall_rating.to_i.times do%>
+          <i class="bi bi-star-fill red"></i>
+        <% end %>   
+        <% (5-@restaurant.overall_rating.to_i).times do%>
+          <i class="bi bi-star-fill gray"></i>
+        <% end %>
+        <div class="d-inline text-white">
+          <%=@restaurant.overall_rating%>
+          <i class="bi bi-dot"></i>
+        </div>
+        <div class="restaurant-open-close d-inline" style="font-size: 20px; font-weight: bold;">
+          <% if @restaurant.open? %>
+            <span style="color: green;">Open</span>
+          <% else %>
+            <span style="color: red;">Closed</span>
+          <% end %>
+        </div>
+    </div>
+  </div>
+  <div class="gallery-button" style="position: absolute; bottom: 5%; right: 5%;">
+  <% if current_user.admin? %>
+    <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
+      <label for="image-upload" class="btn btn-secondary image-upload-btn d-inline">
+        <i class="bi bi-cloud-upload"></i> <p class="upload d-inline">Upload</p>
+        <%= form.file_field :images, multiple: true, class: 'form-control', id: 'image-upload', style: 'display: none;', onchange: 'previewImages()' %>
+      </label>
+      <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="uploadModalLabel">Upload Images</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="imagePreviews"></div>
+            </div>
+            <div class="modal-body">
+              <p>Would you like to upload <span id="fileCount"></span> file(s)?</p>
+            </div>
+            <div class="modal-footer">
+              <%= form.submit 'Upload', class: 'btn btn-primary', id: 'uploadFilesBtn', disabled: true %>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+  </div>
+  <div class="gallery-button" style="position: absolute; bottom: 3%; right: 1%;">
+    <button class="btn btn-primary ml-2 " id="openGalleryBtn">Gallery</button>
+  </div>
+</div>
+
+<div class="container-fluid pt-3">
+  <div class="row">
+    <div class="col-md-3">
+      <div class="rounded p-3 border">
+        <div class="d-block text-black" id="Resturant Address">
+          <p class="d-inline" style="font-weight: bold;"> Address: </p> 
+          <%=@restaurant.address%>
+        </div>
+        <div class="d-block text-black" id="Resturant Address">
+          <p class="d-inline" style="font-weight: bold;"> Hours: </p> 
+          <span class="current-label" id="current-day" style="font-style: italic;"></span>
+          <span> <%= @restaurant.hours(Time.now.strftime("%A").downcase) %></span>
+          <span class="dropdown" onclick="toggleHours()"> 
+            <i id="dropdown-icon" class="bi bi-caret-down-fill"></i> 
+          </span>
+          <div class="d-block text-black d-none" id="RestaurantHours">
+            <div class="d-block text-black">
+              <span class="day-label">Sunday:</span>
+              <span class="hours"><%= @restaurant.hours("Sunday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Monday:</span>
+              <span class="hours"><%= @restaurant.hours("Monday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Tuesday:</span>
+              <span class="hours"><%= @restaurant.hours("Tuesday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Wednesday:</span>
+              <span class="hours"><%= @restaurant.hours("Wednesday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Thursday:</span>
+              <span class="hours"><%= @restaurant.hours("Thursday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Friday:</span>
+              <span class="hours"><%= @restaurant.hours("Friday") %></span>
+            </div>
+            <div class="d-block text-black">
+              <span class="day-label">Saturday:</span>
+              <span class="hours"><%= @restaurant.hours("Saturday") %></span>
+            </div>
+          </div>
+          <div class="d-block text-black" id="Resturant Phone">
+            <p class="d-inline" style="font-weight: bold;"> Phone: </p> 
+            <%= @restaurant.phone %>
+          </div><div class="d-block text-black" id="Resturant Website">
+            <p class="d-inline" style="font-weight: bold;"> Website: </p> 
+            <a href="<%= @restaurant.website %>" target="_blank"><%= @restaurant.website %></a>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="galleryModalLabel">Image Gallery</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+             <div class="row">
+
+                <div class="col-8 d-block image-carousel"  >
+                  <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                      <% @restaurant.images.each_with_index do |image, index| %>
+                        <div class="carousel-item <%= 'active' if index == 0 %>">
+                            <%= image_tag image.variant(resize_to_limit: [nil, 500]), class: "d-block w-100", alt: "Restaurant Image" %>
+                        </div>
+                        <% end %>
+                    </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      </button>
+                  </div>
+                </div>
+                <!-- Scrollable container for images -->
+                <div class="scrollable-gallery-container col-4 d-block">
+                    <div class="row" id="galleryImages">
+                        <% @restaurant.images.each do |image| %>
+                            <div class="col-4">
+                                <%= image_tag image.variant(resize_to_limit: [100, 100]), class: "img-thumbnail", alt: "Restaurant Image" %>
+                            </div>
+                        <% end %>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editGalleryModal" tabindex="-1" aria-labelledby="editGalleryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editGalleryModalLabel">Edit Image Gallery</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Scrollable container for images -->
+                    <div class="scrollable-edit-gallery-container col-12 d-block">
+                        <div class="row" id="editableGalleryImages">
+                            <% @restaurant.images.each do |image| %>
+                              <div class="col-3 draggable-image">
+                                <div class="image-wrapper ">
+                                  <%= image_tag image.variant(resize_to_limit: [100, 100]), class: "img-thumbnail editable-image", alt: "Restaurant Image", data: { image_id: image.id } %>
+                                  <%= button_to delete_image_restaurant_path(@restaurant, image), method: :delete, remote: true, class: "btn btn-danger btn-sm delete-image-btn" do %>
+                                    <i class="bi bi-trash text-white"></i> 
+                                  <% end %>
+                                </div>
+                              </div>
+                            <% end %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <!-- Add more buttons here if necessary -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+.star-rating {
+  font-size: 50px;
+}
+
+.star {
+  display: inline-block;
+  font-size: inherit;
+  color: #FFFFFF; /* Default star color */
+}
+
+.star.filled {
+  color: #FFAC2D; /* Filled star color */
+}
+
+.red{
+  color: #DC3545;
+}
+
+.gray{
+  color: #D3D3D3;
+}
+.dropdown {
+  display: inline-block;
+  text-align: right;
+  margin-right: 10px; 
+  cursor: pointer;
+}
+
+.current-label {
+  display: inline-block;
+  width: 66px; 
+  text-align: right;
+  margin-right: 10px; 
+
+}
+
+.day-label {
+  display: inline-block;
+  width: 120px; 
+  text-align: right;
+  margin-right: 10px;
+}
+
+.hours {
+  display: inline-block;
+}
+
+/* CSS to add fade-in animation */
+.day-label,
+.hours {
+  opacity: 0; /* Start with 0 opacity */
+  transition: opacity 0.5s ease; /* Add a transition effect */
+}
+
+/* Apply the animation to each row individually */
+.day-label:nth-child(1),
+.hours:nth-child(1) {
+  animation: fadeIn 0.5s ease 0.5s 1 normal forwards;
+}
+
+.day-label:nth-child(2),
+.hours:nth-child(2) {
+  animation: fadeIn 0.5s ease 1s 1 normal forwards;
+}
+
+.image-upload-btn:hover .bi-cloud-upload {
+  color: DeepSkyBlue!important;
+}
+
+.image-upload-btn:hover .upload {
+  color: DeepSkyBlue!important;
+}
+
+.scrollable-gallery-container {
+  max-height: 500px;  /* Adjust this value based on your desired modal height */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.image-carousel{
+  max-height: 500px;
+}
+
+#imageCarousel .carousel-item img {
+    max-height: 500px;
+    width: auto; /* This ensures the width adjusts according to the aspect ratio */
+    margin: 0 auto; /* Centers the image in case it's narrower than the container */
+}
+
+.edit-button .btn {
+    background-color: rgba(255, 255, 255, 0.7);  /* semi-transparent white */
+    border-radius: 50%;                          /* make it circular */
+}
+.edit-button .btn:hover {
+    background-color: rgba(255, 255, 255, 0.9);  /* less transparent on hover */
+}
+
+.image-wrapper {
+    position: relative;
+    display: inline-block; 
+}
+
+.editable-image {
+    max-width: 100%; /* Make sure the image does not overflow its container */
+    display: block;  /* This removes any extra space below the image */
+}
+
+.delete-image-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10; /* Ensure it's above the image */
+}
+
+.draggable-image {
+    position: relative;
+    display: inline-block; /* Added this */
+    cursor: move;
+}
+
+.delete-image-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    z-index: 10; /* Ensure it's above the image */
+    width: 25px;  /* Set a fixed width */
+    height: 25px;  /* Set a fixed height */
+    border-radius: 50%;  /* Make it round */
+    padding: 0;  /* Remove padding to ensure the button remains round */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-image-btn .bi-trash {
+    font-size: 0.7rem;  /* Adjust this value as needed */
+}
+
+.ui-sortable-placeholder {
+    border: 2px dashed #aaa;
+    visibility: visible !important;
+    height: 100px !important; /* Adjust according to your images' height */
+    width: 100px !important;
+}
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-beta1/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script>
+    // Function to toggle the icon, div visibility, and apply animation
+    function toggleHours() {
+      const icon = document.getElementById("dropdown-icon");
+      const hoursDiv = document.getElementById("RestaurantHours");
+
+      if (icon.classList.contains("bi-caret-down-fill")) {
+        // Toggle to left icon
+        icon.classList.remove("bi-caret-down-fill");
+        icon.classList.add("bi-caret-left-fill");
+
+        // Toggle the visibility of the div
+        hoursDiv.classList.remove("d-none");
+
+        // Trigger animation for each row
+        const dayLabels = hoursDiv.querySelectorAll(".day-label");
+        const hoursSpans = hoursDiv.querySelectorAll(".hours");
+
+        dayLabels.forEach((label, index) => {
+          setTimeout(() => {
+            label.style.opacity = "1";
+            hoursSpans[index].style.opacity = "1";
+          }, 10 * index); // Adjust the delay as needed
+        });
+      } else {
+        // Toggle to down icon, hide div, and reset opacity
+        icon.classList.remove("bi-caret-left-fill");
+        icon.classList.add("bi-caret-down-fill");
+
+        // Toggle the visibility of the div
+        hoursDiv.classList.add("d-none");
+
+        // Reset opacity to 0 for all rows
+        const dayLabels = hoursDiv.querySelectorAll(".day-label");
+        const hoursSpans = hoursDiv.querySelectorAll(".hours");
+
+        dayLabels.forEach((label) => {
+          label.style.opacity = "0";
+        });
+
+        hoursSpans.forEach((hours) => {
+          hours.style.opacity = "0";
+        });
+      }
+    }
+  </script>
+<script>
+  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const currentDayIndex = new Date().getDay();
+  const currentDayName = daysOfWeek[currentDayIndex];
+  const currentDayWithColon = currentDayName + ":";
+
+  const currentDayElement = document.getElementById("current-day");
+  currentDayElement.textContent = currentDayWithColon;
+</script>
+
+<script>
+  $(document).ready(function() {
+  // Enable the carousel functionality
+  $("#imageCarousel").carousel();
+
+  // Handle carousel navigation
+  $(".carousel-control-prev").click(function() {
+    $("#imageCarousel").carousel("prev");
+  });
+
+  $(".carousel-control-next").click(function() {
+    $("#imageCarousel").carousel("next");
+  });
+
+  // Open modal when file input changes
+  $("#image-upload").change(function() {
+    const fileCount = $(this)[0].files.length;
+    $("#fileCount").text(fileCount);
+    $("#uploadModal").modal("show");
+  });
+
+  // Enable/disable upload button based on file selection
+  $("#image-upload").on("input", function() {
+    const fileCount = $(this)[0].files.length;
+    const uploadBtn = $("#uploadFilesBtn");
+    if (fileCount > 0) {
+      uploadBtn.prop("disabled", false);
+    } else {
+      uploadBtn.prop("disabled", true);
+    }
+  });
+});
+</script>
+
+<script>
+function previewImages() {
+    const input = document.getElementById('image-upload');
+    const previewDiv = document.getElementById('imagePreviews');
+    previewDiv.innerHTML = ''; // Clear previous previews
+
+    if (input.files && input.files[0]) {
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.width = '100px';
+                img.style.marginRight = '10px';
+                previewDiv.appendChild(img);
+            }
+            reader.readAsDataURL(file);
+        });
+
+        // Update the file count
+        document.getElementById('fileCount').textContent = input.files.length;
+
+        // Enable the upload button
+        document.getElementById('uploadFilesBtn').disabled = false;
+
+        // Show the modal
+        const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
+        modal.show();
+    }
+}
+
+// Open the gallery modal
+document.getElementById('openGalleryBtn').addEventListener('click', function() {
+    const modal = new bootstrap.Modal(document.getElementById('galleryModal'));
+    modal.show();
+});
+
+
+$(document).ready(function() {
+    $('#imageCarousel').on('slide.bs.carousel', function(event) {
+        // Deselect all thumbnails
+        $('#galleryImages .img-thumbnail').removeClass('border-primary');
+
+        // Highlight the corresponding thumbnail
+        $($('#galleryImages .img-thumbnail')[event.to]).addClass('border-primary');
+    });
+
+    $('#galleryImages .img-thumbnail').click(function() {
+        const index = $('#galleryImages .img-thumbnail').index(this);
+        $('#imageCarousel').carousel(index);
+    });
+});
+
+$("#editableGalleryImages").sortable({
+    items: '.draggable-image',
+    placeholder: "ui-sortable-placeholder",
+    forcePlaceholderSize: true,
+    refreshPositions: true,
+    tolerance: "pointer",  // Add this line
+    start: function(event, ui) {
+        var width = ui.item.outerWidth();
+        ui.placeholder.width(width);
+        var height = ui.item.outerHeight();
+        ui.placeholder.height(height);
+    }
+});
+</script>
