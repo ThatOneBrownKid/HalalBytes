@@ -1,7 +1,7 @@
 
    <div class="card mt-3 rounded-0 border-0 border-bottom" style="width: 100%; height: 250px; ">
       <div class="row no-gutters">
-         <div class="col-5 no-padding">
+         <div class="col-5 ">
             <div id="imageCarousel" class="card-img" data-ride="carousel">
                <% if restaurant.images.attached? %>
                <div class="carousel-inner">
@@ -22,7 +22,7 @@
                <% else %> <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image" %> <% end %>
             </div>
          </div>
-         <div class="col-7 no-padding">
+         <div class="col-7">
             <div class="card-body">
                
                <h5 class="card-title mb-1">
@@ -59,8 +59,6 @@
             </div>
          </div>
       </div>
-   </div>
-
 <!--col no padding-->
 <style>
 .nopadding {

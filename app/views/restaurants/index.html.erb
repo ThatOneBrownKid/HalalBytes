@@ -1,6 +1,6 @@
 <body style="background-color: #FFFFFF;">
    <div class="row no-gutters" style="margin-left: 0px;">
-      <div class="col-2 no-padding">
+      <div class="col-2 min-vh-100">
          <div class="card mb-3 rounded-0 border-0 border-right" style="width: 100%; height: 100%; border-radius: 0; background-color: #FFFFFF; margin-top: 56px; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1)">
             <!-- Filters section -->
             <!-- Place your filters content here -->
@@ -33,15 +33,20 @@
             </form>
          </div>
       </div>
-      <div class="col-10 no-padding">
+      <div class="col-10 min-vh-100 ">
+
          <!-- Restaurants section -->
          <div id="restaurants" >
+
             <% @restaurants.each do |restaurant| %>
+            
             <%= render restaurant %>
+            
             <% end %>
+            </div>
          </div>
+
       </div>
-   </div>
 </body>
 
 <!--filter size-->
@@ -99,41 +104,3 @@ $(document).ready(function() {
   // Rest of your code...
 
 });
-</script>
-<!--filter logic-->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-  $(document).ready(function() {
-    // Filter form submission
-    $('#filter-form').submit(function(e) {
-      e.preventDefault(); // Prevent default form submission
-
-      // Get the selected filter values
-      var searchInput = $('#search-input').val().toLowerCase();
-      var selectedCuisine = $('#cuisine-select').val().toLowerCase();
-      var selectedPriceRange = $('#price-range-select').val();
-      // Loop through each restaurant card
-      $('#restaurants .card').each(function() {
-        var card = $(this);
-        var name = card.find('.card-title').text().toLowerCase();
-        var cuisine = card.find('.hover-box:first-child').text().toLowerCase();
-         var priceRange = parseInt(card.find('.hover-box:eq(2)').text()); // Convert price range to an integer
-
-        // Check if the card matches the filter criteria
-        var showCard = true;
-        if (searchInput && name.indexOf(searchInput) === -1) {
-          showCard = false; // Filter by name
-        }
-        if (selectedCuisine && cuisine.indexOf(selectedCuisine) === -1) {
-          showCard = false; // Filter by cuisine
-        }
-     if (selectedPriceRange && (priceRange > parseInt(selectedPriceRange) || isNaN(priceRange))) {
-  showCard = false; // Filter by price range
-}
-
-        // Show/hide the card based on the filter result
-        card.toggle(showCard);
-      });
-    });
-  });
-</script>
