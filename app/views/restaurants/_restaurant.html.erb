@@ -1,72 +1,126 @@
-<div class="row">
-    <div class="col">
-        <div class="card mt-3 rounded-0 border-0 border-bottom" style="width: 100%; height: 300px; border-radius: 10px; border-bottom: 10px;">
-            <div class="row no-gutters">
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <div id="imageCarousel" class="carousel slide" data-ride="carousel">
-                        <% if restaurant.images.attached? %>
-                        <div class="carousel-inner">
-                            <% restaurant.images.each_with_index do |image, index| %>
-                            <div class="carousel-item <%= 'active' if index.zero? %>">
-                                <%= image_tag image, class: "card-img", alt: "Restaurant Image" %>
-                                <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev" style="left: 10px;">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="sr-only"></span>
-                                </a>
-                                <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next" style="right: 20px;">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="sr-only"></span>
-                                </a>
-                            </div>
-                            <% end %>
-                        </div>
-                        <% else %> <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image" %> <% end %>
-                    </div>
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-end">
-                            <a href="<%= restaurant.website %>" target="_blank" rel="noopener noreferrer" style="font-size: 24px; color: black; text-decoration: none; margin-right: 5px">
-                                <i class="bi bi-globe2"></i>
-                            </a>
-                        </div>
-                        <h5 class="card-title mb-1" style="font-size: 40px;">
-                            <a href="<%= restaurant_url(restaurant) %>" class="custom-link" style="color: black; text-decoration: none;">
-                                <%= restaurant.name %>
-                            </a>
-                        </h5>
-                        <!--rating stars-->
-                        <% restaurant.overall_rating.to_i.times do%>
-                        <i class="bi bi-star-fill red"></i>
-                        <% end %> <% (5-restaurant.overall_rating.to_i).times do%>
-                        <i class="bi bi-star-fill gray"></i>
-                        <% end %>
 
-                        <div class="text-secondary" style="font-size: 14px;">
-                            <div class="hover-box shadow-sm rounded border mt-2" style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold; color: black; font-size: 14px;">
-                                <%= restaurant.cuisine %>
-                            </div>
-
-                            <!--price range-->
-                            <% restaurant.price_range.to_i.times do%>
-                            <i class="bi bi-currency-dollar"></i>
-                            <% end %>
-
-                            <i class="bi bi-dot"></i>
-                            <%= restaurant.address %>
-                        </div>
-                        <p></p>
-                        <div class="text-secondary" style="font-size: 14px;">
-                            Description:
-                            <p></p>
-                        </div>
-                    </div>
-                </div>
+   <div class="card mt-3 rounded-0 border-0 border-bottom" style="width: 100%; height: 250px; ">
+      <div class="row no-gutters">
+         <div class="col-5 no-padding">
+            <div id="imageCarousel" class="card-img" data-ride="carousel">
+               <% if restaurant.images.attached? %>
+               <div class="carousel-inner">
+                  <% restaurant.images.each_with_index do |image, index| %>
+                  <div class="carousel-item <%= 'active' if index.zero? %>">
+                     <%= image_tag image, class: "card-img", alt: "Restaurant Image" %>
+                     <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev" style="left: 10px;">
+                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                     <span class="sr-only"></span>
+                     </a>
+                     <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next" style="right: 20px;">
+                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                     <span class="sr-only"></span>
+                     </a>
+                  </div>
+                  <% end %>
+               </div>
+               <% else %> <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image" %> <% end %>
             </div>
-        </div>
-    </div>
-</div>
+         </div>
+         <div class="col-7 no-padding">
+            <div class="card-body">
+               
+               <h5 class="card-title mb-1">
+                  <a href="<%= restaurant_url(restaurant) %>" class="custom-link" style="color: black; text-decoration: none;">
+                  <%= restaurant.name %>
+                  
+                  </a>
+                  
+               </div>
+               </h5>
+               
+               <!--rating stars-->
+               <% restaurant.overall_rating.to_i.times do%>
+               <i class="bi bi-star-fill red"></i>
+               <% end %> <% (5-restaurant.overall_rating.to_i).times do%>
+               <i class="bi bi-star-fill gray"></i>
+               <% end %>
+               <div class="text-secondary" style="font-size: 14px;">
+                 
+                  <!--price range-->
+                  <% restaurant.price_range.to_i.times do%>
+                  <i class="bi bi-currency-dollar"></i>
+                  <% end %>
+                  <i class="bi bi-dot"></i>
+                   <div class="hover-box " style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold; color: black; font-size: 14px;">
+                     <%= restaurant.cuisine %>
+                  </div>
+                  <%= restaurant.address %>
+               </div>
+               <p></p>
+               <div class="text-secondary" style="font-size: 14px;">
+                  
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
 
+<!--col no padding-->
+<style>
+.nopadding {
+   padding: 0 !important;
+   margin: 0 !important;
+}
+</style>
+<!--card body size-->
+
+<!--card image size-->
+
+<style>
+@media (min-width: 1200px) {
+  .card-img {
+    width: 390px;
+    height: 230px;
+     margin-left: 5px;
+    margin-top: 5px;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .card-img {
+     width: 300px;
+    height: 230px;
+    margin-left: 5px;
+    margin-top: 5px;
+    object-fit: cover;
+  }
+}
+
+@media (max-width: 999.98px) {
+  .card-img {
+    width: 100%;
+    height: 120px;
+  }
+}
+</style>       
+<!--card title size-->
+
+<style>
+@media (min-width: 1200px) {
+  .card-title {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .card-title {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 999.98px) {
+  .card-title {
+    font-size: 18px;
+  }
+}
+</style>
 <!--card hover-->
 
 <style>
@@ -76,13 +130,7 @@
   .card:hover {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   }
-  .card-img {
-    width: 400px;
-    height: 265px;
-    margin-left: 25px;
-    margin-top: 15px;
-    object-fit: cover;
-  }
+  
   .custom-link {
     color: black;
     text-decoration: none;
