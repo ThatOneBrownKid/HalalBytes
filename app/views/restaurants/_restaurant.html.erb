@@ -1,7 +1,7 @@
 
-   <div class="card mt-3 rounded-0 border-0 border-bottom" style="width: 100%; height: 250px; ">
-      <div class="row no-gutters">
-         <div class="col-5 ">
+   <div class="card mx-auto mt-3 px-2 rounded-0 border-0 border-bottom" style="width: 100%; height: 250px; ">
+      <div class="row no-gutters"  style="width: 105%;">
+         <div class="col-xs-12 col-sm-4 col-lg-4 px-2  ">
             <div id="imageCarousel" class="card-img" data-ride="carousel">
                <% if restaurant.images.attached? %>
                <div class="carousel-inner">
@@ -22,8 +22,8 @@
                <% else %> <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image" %> <% end %>
             </div>
          </div>
-         <div class="col-7">
-            <div class="card-body">
+         <div class=" col-xs-10 col-sm-7 col-lg-7 px-4">
+            <div class="card-body pb-0 ">
                
                <h5 class="card-title mb-1">
                   <a href="<%= restaurant_url(restaurant) %>" class="custom-link" style="color: black; text-decoration: none;">
@@ -73,9 +73,9 @@
 <style>
 @media (min-width: 1200px) {
   .card-img {
-    width: 390px;
+    width: 100%;
     height: 230px;
-     margin-left: 5px;
+    margin-left: 5px;
     margin-top: 5px;
     object-fit: cover;
   }
@@ -83,7 +83,7 @@
 
 @media (max-width: 1199.98px) {
   .card-img {
-     width: 300px;
+     width: 100%;
     height: 230px;
     margin-left: 5px;
     margin-top: 5px;
@@ -95,6 +95,9 @@
   .card-img {
     width: 100%;
     height: 120px;
+    margin-left: 0px;
+    margin-right: 0px;
+
   }
 }
 </style>       
