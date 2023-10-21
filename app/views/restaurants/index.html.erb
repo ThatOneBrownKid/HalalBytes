@@ -1,5 +1,55 @@
 <body style="background-color: #FFFFFF;">
    <div class="row no-gutters" style="margin-left: 0px; width: 100%;">
+      <div class="col-xs-2 col-sm-2 px-0 ">
+         <button type="button" class="btn btn-dark rounded-0" data-bs-toggle="modal" data-bs-target="#exampleModal" style="width: 100%">
+         <p class='fs-5' style='margin: 0px'>
+         Filters
+         </p>
+         </button>
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <h1 class="modal-title fs-5" id="exampleModalLabel">Filters</h1>
+                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                     <h3 class="text-center">Filters</h3>
+            <form id="filter-form" class="d-flex flex-column align-items-center">
+               <div class="form-group" style="width: 80%;">
+                  <label for="search-input"  style="margin-left: 10px;">Search:</label>
+                  <input type="text" id="search-input" class="form-control" placeholder="Search restaurants" style="margin-left: 10px; background-color: #f2f2f2;">
+               </div>
+               <div class="form-group" style="width: 80%;">
+                  <label for="cuisine-select"  style="margin-left: 10px;">Cuisine:</label>
+                  <select id="cuisine-select" class="form-control mb-2" style="margin-left: 10px; background-color: #f2f2f2;">
+                     <option value="">All</option>
+                     <% @restaurants.each do |restaurant| %>
+                     <option value="<%= restaurant.cuisine %>"><%= restaurant.cuisine %></option>
+                     <%end%>
+                  </select>
+               </div>
+               <div class="form-group" style="width: 80%;">
+                  <label for="price-range-select" style="margin-left: 10px;">Price Range:</label>
+                  <select id="price-range-select" class="form-control mb-2" style="margin-left: 10px; background-color: #f2f2f2;">
+                     <option value="">All</option>
+                     <option value="1">$</option>
+                     <option value="2">$$</option>
+                     <option value="3">$$$</option>
+                     <!-- Add more price range options as needed -->
+                  </select>
+               </div>
+               <button type="submit" class="btn btn-primary"  style="margin-left: 10px;">Apply Filters</button>
+            </form>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                     <button type="button" class="btn btn-primary">Save changes</button>
+                  </div>
+               </div>
+            </div>
+         </div>        
+      </div>
       <div class="col-xs-0 col-sm-0 col-xl-2 px-0 ">
          <div class="card mb-3 rounded-0 border-0 border-right" style="width: 100%; height: 100%; border-radius: 0; background-color: #FFFFFF; margin-top: 56px; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1)">
             <!-- Filters section -->
@@ -52,10 +102,25 @@
 <!--filter size-->
 
 <style>
-@media (max-width: 999.98px) {
-  .col-2 {
+@media (min-width: 1200px) {
+ .col-xs-2 {
     display:none;
   }
+  .col-sm-2 {
+    display:none;
+  }
+}
+@media (max-width: 1199.98px) {
+ .col-sm-0 {
+    display:none;
+  }
+}
+
+@media (max-width: 999.98px) {
+  .col-xs-0 {
+    display:none;
+  }
+  
   .col-10{
     width: 100%;
   }
