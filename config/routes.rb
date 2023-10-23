@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   get 'requests/form', to: 'requests#form'
 
   patch '/users/basic_info', to: 'users/registrations#update', as: :update_basic_info
-  post 'restaurants/scrape_google', to: 'restaurants#scrape_google', as: 'scrape_google_restaurants'
+  patch 'restaurants/:id/update_images_order', to: 'restaurants#update_images_order', as: 'update_images_order'
 
 
   

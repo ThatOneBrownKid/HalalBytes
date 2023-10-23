@@ -12,6 +12,7 @@ class RestaurantsController < ApplicationController
   # GET /restaurants/1 or /restaurants/1.json
   def show
     @restaurant = Restaurant.find(params[:id])
+    @ordered_images = @restaurant.ordered_images
   end
 
   # GET /restaurants/new
@@ -46,6 +47,28 @@ class RestaurantsController < ApplicationController
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @restaurant.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def update_images_order
+    respond_to do |format|
+      if params[:attachment].present?
+        ActiveRecord::Base.transaction do  # Wrap updates in a transaction
+          params[:attachment].each_with_index do |id, index|
+            image = ActiveStorage::Attachment.find_by(id: id)
+            if image
+              image.update!(position: index)
+            else
+              flash.now[:alert] = "Image not found with ID: #{id}"
+              raise ActiveRecord::Rollback  # Rollback the transaction
+            end
+          end
+        end
+        format.js { render js: "window.location.reload();" }
+
+      else
+        flash.now[:alert] = 'No images provided'
       end
     end
   end

@@ -54,4 +54,8 @@ class Restaurant < ApplicationRecord
     format_hours(hours_on_given_day)
   end
 
+  def ordered_images
+    images.joins(:blob).order("active_storage_attachments.position ASC")
+  end
+
 end

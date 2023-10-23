@@ -1,6 +1,7 @@
+ <body data-restaurant-id="<%= @restaurant.id %>">
  <div class="image-container" style="position: relative; width: 100%; height: 40vh; overflow: hidden;">
   <% if @restaurant.images.attached? %>
-    <%= image_tag @restaurant.images.first.variant(resize_to_fill: [1000, 200]), class: "card-img", alt: "Restaurant Image", style: "object-fit: cover; width: 100%; height: 100%;" %>
+    <%= image_tag @restaurant.ordered_images.first.variant(resize_to_fill: [1000, 200]), class: "card-img", alt: "Restaurant Image", style: "object-fit: cover; width: 100%; height: 100%;" %>
   <% else %>
     <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image", style: "object-fit: cover; width: 100%; height: 100%;" %> 
   <% end %>
@@ -35,6 +36,7 @@
         </div>
     </div>
   </div>
+
   <div class="gallery-button" style="position: absolute; bottom: 5%; right: 5%;">
   <% if current_user.admin? %>
     <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
@@ -141,7 +143,7 @@
                 <div class="col-8 d-block image-carousel"  >
                   <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
-                      <% @restaurant.images.each_with_index do |image, index| %>
+                      <% @ordered_images.each_with_index do |image, index| %>
                         <div class="carousel-item <%= 'active' if index == 0 %>">
                             <%= image_tag image.variant(resize_to_limit: [nil, 500]), class: "d-block w-100", alt: "Restaurant Image" %>
                         </div>
@@ -158,9 +160,9 @@
                 <!-- Scrollable container for images -->
                 <div class="scrollable-gallery-container col-4 d-block">
                     <div class="row" id="galleryImages">
-                        <% @restaurant.images.each do |image| %>
+                        <% @ordered_images.each do |image| %>
                             <div class="col-4">
-                                <%= image_tag image.variant(resize_to_limit: [100, 100]), class: "img-thumbnail", alt: "Restaurant Image" %>
+                                <%= image_tag image.variant(resize_to_limit: [100, 100]), class: "img-thumbnail", alt: "Restaurant Image", data: { image_id: image.id } %>
                             </div>
                         <% end %>
                     </div>
@@ -171,6 +173,7 @@
     </div>
 </div>
 
+<% if current_user.admin? %>
 <div class="modal fade" id="editGalleryModal" tabindex="-1" aria-labelledby="editGalleryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -183,9 +186,9 @@
                     <!-- Scrollable container for images -->
                     <div class="scrollable-edit-gallery-container col-12 d-block">
                         <div class="row" id="editableGalleryImages">
-                            <% @restaurant.images.each do |image| %>
+                            <% @ordered_images.each do |image| %>
                               <div class="col-3 draggable-image">
-                                <div class="image-wrapper ">
+                                <div id="<%= dom_id(image) %>" class="sort-me image-wrapper">
                                   <%= image_tag image.variant(resize_to_limit: [100, 100]), class: "img-thumbnail editable-image", alt: "Restaurant Image", data: { image_id: image.id } %>
                                   <%= button_to delete_image_restaurant_path(@restaurant, image), method: :delete, remote: true, class: "btn btn-danger btn-sm delete-image-btn" do %>
                                     <i class="bi bi-trash text-white"></i> 
@@ -198,13 +201,15 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <!-- Add more buttons here if necessary -->
+              <button type="button" class="btn btn-primary" id="confirmEditBtn">Confirm</button>
+              <button type="button" class="btn btn-danger" id="cancelEditBtn">Cancel</button>
             </div>
         </div>
     </div>
 </div>
+  <% end %>
 
+</body>
 
 <style>
 .star-rating {
@@ -500,17 +505,83 @@ $(document).ready(function() {
     });
 });
 
-$("#editableGalleryImages").sortable({
-    items: '.draggable-image',
-    placeholder: "ui-sortable-placeholder",
-    forcePlaceholderSize: true,
-    refreshPositions: true,
-    tolerance: "pointer",  // Add this line
-    start: function(event, ui) {
-        var width = ui.item.outerWidth();
-        ui.placeholder.width(width);
-        var height = ui.item.outerHeight();
-        ui.placeholder.height(height);
+$(document).ready(function() {
+    try {
+        const restaurantId = $('body').data('restaurant-id');
+        let originalOrder = [];
+
+        if (!restaurantId) {
+            console.error("Error: restaurantId not found.");
+            return;
+        }
+
+        if ($("#editableGalleryImages").length === 0) {
+            console.error("Error: #editableGalleryImages element not found.");
+            return;
+        }
+
+        // Get CSRF token from meta tag
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        $("#editableGalleryImages").sortable({
+            items: '.draggable-image',
+            placeholder: "ui-sortable-placeholder",
+            forcePlaceholderSize: true,
+            start: function(event, ui) {
+                originalOrder = $("#editableGalleryImages .editable-image").map(function() {
+                    return $(this).data("imageId");
+                }).get();
+            },
+            update: function(event, ui) {
+                // The update function will now just store the current order
+            }
+        });
+
+        // Confirm button click handler
+        $("#confirmEditBtn").click(function() {
+            var sortedIDs = $("#editableGalleryImages .editable-image").map(function() {
+                return $(this).data("imageId");
+            }).get();
+
+            $.ajax({
+                url: `/restaurants/${restaurantId}/update_images_order`,
+                type: "PATCH",
+                data: { attachment: sortedIDs },
+                dataType: "script",
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-CSRF-Token', csrfToken);
+                },
+                success: function(response) {
+                    // Close the modal
+                    $("#editGalleryModal").modal('hide');
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Show an error alert
+                    const errorAlert = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                                          'Error saving order: ' + errorThrown +
+                                          '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                                        '</div>');
+                    $('body').prepend(errorAlert);
+                    setTimeout(function() {
+                        errorAlert.alert('close');
+                    }, 3000); // Auto-hide after 3 seconds
+                }
+            });
+        });
+
+        // Cancel button click handler
+        $("#cancelEditBtn").click(function() {
+            // Revert to the original order
+            originalOrder.forEach(function(imageId, index) {
+                $(`#editableGalleryImages .editable-image[data-image-id='${imageId}']`).parent().appendTo("#editableGalleryImages");
+            });
+
+            // Close the modal
+            $("#editGalleryModal").modal('hide');
+        });
+
+    } catch (error) {
+        console.error("Error initializing sortable:", error);
     }
 });
 </script>

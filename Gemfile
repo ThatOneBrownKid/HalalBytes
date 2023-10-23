@@ -36,6 +36,10 @@ gem 'mail'
 
 gem 'wdm', '>= 0.1.0' if Gem.win_platform?
 
+gem 'jquery-rails'
+gem 'jquery-ui-rails'
+gem 'acts_as_list'
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 
