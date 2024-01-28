@@ -1,8 +1,6 @@
-require 'nokogiri'
-require 'open-uri'
-
 class RestaurantsController < ApplicationController
   before_action :set_restaurant, only: %i[ show edit update destroy ]
+  include RestaurantsHelper
 
   # GET /restaurants or /restaurants.json
   def index
@@ -27,11 +25,14 @@ class RestaurantsController < ApplicationController
   # POST /restaurants or /restaurants.json
   def create
     @restaurant = Restaurant.new(restaurant_params)
+    process_operating_times
+
     respond_to do |format|
       if @restaurant.save
         format.html { redirect_to restaurant_url(@restaurant), notice: "Restaurant was successfully created." }
         format.json { render :show, status: :created, location: @restaurant }
       else
+        flash.now[:alert] = @restaurant.errors.full_messages.join(', ')
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @restaurant.errors, status: :unprocessable_entity }
       end
@@ -40,11 +41,14 @@ class RestaurantsController < ApplicationController
 
   # PATCH/PUT /restaurants/1 or /restaurants/1.json
   def update
+    process_operating_times
+
     respond_to do |format|
       if @restaurant.update(restaurant_params)
         format.html { redirect_to restaurant_url(@restaurant), notice: "Restaurant was successfully updated." }
         format.json { render :show, status: :ok, location: @restaurant }
       else
+        flash.now[:alert] = @restaurant.errors.full_messages.join(', ')
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @restaurant.errors, status: :unprocessable_entity }
       end
@@ -91,6 +95,20 @@ class RestaurantsController < ApplicationController
   end
 
   private
+
+  def process_operating_times
+    %w[monday tuesday wednesday thursday friday saturday sunday].each do |day|
+      open_time = format_time(params[:restaurant]["#{day}_open"])
+      close_time = format_time(params[:restaurant]["#{day}_close"])
+      @restaurant.send("#{day}=", "#{open_time}#{close_time}") if open_time.present? && close_time.present?
+    end
+  end  
+  
+  def format_time(time_str)
+    # Ensure the time is exactly four characters long (e.g., '0900' for 9 AM)
+    Time.parse(time_str).strftime('%H%M') rescue ''
+  end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_restaurant
       @restaurant = Restaurant.find(params[:id])
@@ -98,6 +116,7 @@ class RestaurantsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def restaurant_params
-      params.require(:restaurant).permit(:name, :address, :phone, :website, :cuisine, :price_range, :overall_rating, images: [])
+      params.require(:restaurant).permit(:name, :address, :phone, :website, :cuisine, :price_range, :overall_rating, {images: []}, 
+      :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday)
     end
 end

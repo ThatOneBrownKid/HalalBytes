@@ -1,6 +1,6 @@
 class Restaurant < ApplicationRecord
   has_many_attached :images
-
+  before_save :ensure_website_format
 
   def open?
     current_day = Time.now.strftime('%A').downcase
@@ -58,4 +58,14 @@ class Restaurant < ApplicationRecord
     images.joins(:blob).order("active_storage_attachments.position ASC")
   end
 
+  validates :phone, format: { with: /\(\d{3}\) \d{3}-\d{4}/, message: "must be in the format (xxx) xxx-xxxx" }
+
+
+  private 
+
+  def ensure_website_format
+    if website.present? && !website.start_with?('http://', 'https://')
+      self.website = "https://www.#{website}"
+    end
+  end
 end

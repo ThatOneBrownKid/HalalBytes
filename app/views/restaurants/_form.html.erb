@@ -24,6 +24,14 @@
       </div>
     <% end %>
 
+    <% if restaurant.errors.any? %>
+  <div id="error_explanation" style="display: none;">
+    <% restaurant.errors.full_messages.each do |message| %>
+      <div class="error_message"><%= message %></div>
+    <% end %>
+  </div>
+<% end %>
+
     <div>
       <%= form.label :name, style: "display: block" %>
       <%= form.text_field :name, class: "form-control" %>
@@ -36,13 +44,14 @@
 
     <div>
       <%= form.label :phone, style: "display: block" %>
-      <%= form.text_field :phone, class: "form-control" %>
+      <%= form.telephone_field :phone, class: "form-control", id: "phone_field" %>
     </div>
 
     <div>
       <%= form.label :website, style: "display: block" %>
-      <%= form.text_field :website, class: "form-control" %>
+      <%= form.text_field :website, class: "form-control", value: @restaurant.website.blank? ? 'www.' : @restaurant.website %>
     </div>
+
 
     <div>
       <%= form.label :cuisine, style: "display: block" %>
@@ -51,7 +60,7 @@
 
     <div>
       <%= form.label :price_range, style: "display: block" %>
-      <%= form.text_field :price_range, class: "form-control" %>
+      <%= form.select :price_range, options_for_select([['1', 1], ['2', 2], ['3', 3]]), {}, {class: "form-control"} %>
     </div>
 
     <div>
@@ -60,8 +69,25 @@
     </div>
 
     <div>
+      <p>Hours of Operations:</p>
+      <% %w[sunday monday tuesday wednesday thursday friday saturday].each do |day| %>
+        <div class="form-group row">
+          <label class="col-sm-3 col-form-label"><%= day.capitalize %></label>
+          <div class="col-sm-4">
+            <%= form.time_field "#{day}_open", class: 'form-control time-input', value: extract_time(@restaurant.send(day), :open) %>
+          </div>
+          <label class="col-sm-1 col-form-label text-center">to</label>
+            <div class="col-sm-4">
+              <%= form.time_field "#{day}_close", class: 'form-control time-input', value: extract_time(@restaurant.send(day), :close) %>
+            </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div>
       <%= form.submit 'Submit', class: 'btn btn-primary mt-2', type: 'submit' %>
     </div>
+
   <% end %>
 
   <div id="flash-alert" class="flash-alert"></div>
@@ -100,6 +126,14 @@
     border-radius: 4px;
     resize: vertical;
   }
+
+  .time-input::-webkit-resizer {
+  display: none;
+  }
+
+  .time-input {
+    overflow: hidden; /* Hide overflow content */
+  }
   
   /* Flash Alert */
   .flash-alert {
@@ -135,3 +169,25 @@
     width: 40px;
   }
 </style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const phoneField = document.getElementById('phone_field');
+    
+    phoneField.addEventListener('input', function(e) {
+      let input = this.value.replace(/\D/g, ''); // Remove all non-digits
+      input = input.substring(0, 10); // Trim the input to 10 digits
+
+      let formattedInput = "";
+      for (let i = 0; i < input.length; i++) {
+        if (i === 0) formattedInput += "(";
+        if (i === 3) formattedInput += ") ";
+        if (i === 6) formattedInput += "-";
+        formattedInput += input[i];
+      }
+
+      this.value = formattedInput;
+    });
+  });
+</script>
+

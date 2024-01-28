@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_03_020546) do
+ActiveRecord::Schema[7.0].define(version: 2024_01_28_014728) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -49,8 +49,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_03_020546) do
     t.string "phone"
     t.string "website"
     t.string "cuisine"
-    t.string "price_range"
-    t.integer "overall_rating"
+    t.integer "price_range"
+    t.float "overall_rating"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "monday"
@@ -60,6 +60,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_03_020546) do
     t.string "friday"
     t.string "saturday"
     t.string "sunday"
+    t.boolean "keep", default: true, null: false
   end
 
   create_table "users", force: :cascade do |t|
