@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'restaurants/request_new', to: 'restaurants#request_new', as: :request_new_restaurants
+  post 'restaurants/request_create', to: 'restaurants#request_create', as: :request_create_restaurants
   get 'users/index'
   get '/terms_and_services', to: 'home#terms_and_services'
   devise_for :users, controllers: {
@@ -19,7 +21,6 @@ Rails.application.routes.draw do
 
   patch '/users/basic_info', to: 'users/registrations#update', as: :update_basic_info
   patch 'restaurants/:id/update_images_order', to: 'restaurants#update_images_order', as: 'update_images_order'
-
 
   
 

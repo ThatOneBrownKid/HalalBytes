@@ -1,3 +1,4 @@
+<% if current_user.admin? || (@restaurant.keep == false && @restaurant.requested_by == "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}") %>
  <body data-restaurant-id="<%= @restaurant.id %>">
  <div class="image-container" style="position: relative; width: 100%; height: 40vh; overflow: hidden;">
   <% if @restaurant.images.attached? %>
@@ -211,6 +212,10 @@
 
 </body>
 
+<% else %>
+  <p>You do not have permission to view this page.</p>
+<% end %>
+
 <style>
 .star-rating {
   font-size: 50px;
@@ -297,8 +302,8 @@
 
 #imageCarousel .carousel-item img {
     max-height: 500px;
-    width: auto; /* This ensures the width adjusts according to the aspect ratio */
-    margin: 0 auto; /* Centers the image in case it's narrower than the container */
+    width: auto; 
+    margin: 0 auto; 
 }
 
 .edit-button .btn {

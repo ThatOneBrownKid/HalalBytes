@@ -1,5 +1,6 @@
 class RestaurantsController < ApplicationController
-  before_action :set_restaurant, only: %i[ show edit update destroy ]
+  before_action :set_restaurant, only: [:show, :edit, :update, :destroy]
+  skip_before_action :set_restaurant, only: [:request_new, :request_create]
   include RestaurantsHelper
 
   # GET /restaurants or /restaurants.json
@@ -22,10 +23,37 @@ class RestaurantsController < ApplicationController
   def edit
   end
 
+  def request_new
+    @restaurant = Restaurant.new
+  end
+
+  # POST /restaurants/request_create
+  def request_create
+    @restaurant = Restaurant.new(restaurant_params)
+    process_operating_times
+    @restaurant.requested_by = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
+    @restaurant.keep = false
+    @restaurant.created_by = nil
+
+    respond_to do |format|
+      if @restaurant.save
+        format.html { redirect_to restaurant_url(@restaurant), notice: "Your request has been submitted." }
+        format.json { render :show, status: :created, location: @restaurant }
+      else
+        flash.now[:alert] = @restaurant.errors.full_messages.join(', ')
+        format.html { render :request_new, status: :unprocessable_entity }
+        format.json { render json: @restaurant.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   # POST /restaurants or /restaurants.json
   def create
     @restaurant = Restaurant.new(restaurant_params)
     process_operating_times
+    if user_signed_in?
+      @restaurant.created_by = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
+    end
 
     respond_to do |format|
       if @restaurant.save

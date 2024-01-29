@@ -1,6 +1,8 @@
 class Restaurant < ApplicationRecord
   has_many_attached :images
   before_save :ensure_website_format
+  validate :image_count_within_limit, on: :create
+  validates :phone, format: { with: /\(\d{3}\) \d{3}-\d{4}/, message: "must be in the format (xxx) xxx-xxxx" }
 
   def open?
     current_day = Time.now.strftime('%A').downcase
@@ -58,9 +60,6 @@ class Restaurant < ApplicationRecord
     images.joins(:blob).order("active_storage_attachments.position ASC")
   end
 
-  validates :phone, format: { with: /\(\d{3}\) \d{3}-\d{4}/, message: "must be in the format (xxx) xxx-xxxx" }
-
-
   private 
 
   def ensure_website_format
@@ -68,4 +67,11 @@ class Restaurant < ApplicationRecord
       self.website = "https://www.#{website}"
     end
   end
+
+  def image_count_within_limit
+    if images.attached? && images.length > 10
+      errors.add(:images, "Too many files uploaded. Maximum is 10.")
+    end
+  end
+  
 end
