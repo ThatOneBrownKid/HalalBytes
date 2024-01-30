@@ -11,7 +11,7 @@
   </div>
 </section>
 
-<div class="contact-card">  
+<div class="contact-card mb-5">  
   <%= form_with(model: restaurant, id: 'restaurant-form') do |form| %>
     <% if restaurant.errors.any? %>
       <div style="color: red">
@@ -101,7 +101,7 @@
 
     <div>
       <%= form.label :images, "Upload Images" %>
-      <%= form.file_field :images, multiple: true, direct_upload: true, class: 'time-input image-upload-field' %>
+      <%= form.file_field :images, multiple: true, direct_upload: true, class: 'time-input image-upload-field form control' %>
     </div>
 
     <div>

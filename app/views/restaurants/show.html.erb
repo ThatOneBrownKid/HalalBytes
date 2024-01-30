@@ -1,4 +1,4 @@
-<% if current_user.admin? || (@restaurant.keep == false && @restaurant.requested_by == "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}") %>
+<% if @restaurant.keep == true || (@restaurant.keep == false && (@restaurant.requested_by == "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}" || current_user.admin?)) %>
  <body data-restaurant-id="<%= @restaurant.id %>">
  <div class="image-container" style="position: relative; width: 100%; height: 40vh; overflow: hidden;">
   <% if @restaurant.images.attached? %>
@@ -6,13 +6,65 @@
   <% else %>
     <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image", style: "object-fit: cover; width: 100%; height: 100%;" %> 
   <% end %>
+
   <% if current_user.admin? %>
-  <div class="edit-button" style="position: absolute; top: 5%; right: 1%;">
-    <button class="btn btn-light" id="editImagesBtn" data-bs-toggle="modal" data-bs-target="#editGalleryModal">
-      <i class="bi bi-pencil-square"></i>
-    </button>
+  <div class="settings" style="position: absolute; top: 5%; right: 1%;">
+    <div class="dropdown ms-auto">
+      <i class="bi bi-three-dots-vertical" data-bs-toggle="dropdown" aria-expanded="false"></i>
+        <ul class="dropdown-menu">
+          <li>
+            <span class="dropdown-item" id="Upload Modal">
+
+              <div class="gallery-button">
+                <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
+                  <label for="image-upload">
+                    Upload Images
+                    <%= form.file_field :images, multiple: true, class: 'form-control', id: 'image-upload', style: 'display: none;', onchange: 'previewImages()' %>
+                  </label>
+                  <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="uploadModalLabel">Upload Images</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div id="imagePreviews"></div>
+                        </div>
+                        <div class="modal-body">
+                          <p>Would you like to upload <span id="fileCount"></span> file(s)?</p>
+                        </div>
+                        <div class="modal-footer">
+                          <%= form.submit 'Upload', class: 'btn btn-primary', id: 'uploadFilesBtn', disabled: true %>
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+
+            </span>
+          </li>
+          <li>
+            <span class="dropdown-item" id="editImagesBtn" data-bs-toggle="modal" data-bs-target="#editGalleryModal">
+              Edit Images
+            </span>
+          </li>
+          <li>
+            <%= link_to 'Edit Restaurant', edit_restaurant_path(@restaurant), class: 'dropdown-item btn btn-primary' %>
+          </li>
+          <li>
+            <%= link_to 'Delete Restaurant', restaurant_path(@restaurant),
+              method: :delete,
+              data: { confirm: 'Are you sure you want to delete this restaurant?' },
+              class: 'dropdown-item btn btn-danger' %>
+          </li>
+        </ul>
+    </div>
   <% end %>
   </div>
+
   <div class="restaurant-info d-inline" style="position: absolute; bottom: 5%; left: 1%;">
     <div class="restaurant-name" style="color: white; font-size: 40px; font-weight: bold;">
       <%= @restaurant.name %>
@@ -36,37 +88,6 @@
           <% end %>
         </div>
     </div>
-  </div>
-
-  <div class="gallery-button" style="position: absolute; bottom: 5%; right: 5%;">
-  <% if current_user.admin? %>
-    <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
-      <label for="image-upload" class="btn btn-secondary image-upload-btn d-inline">
-        <i class="bi bi-cloud-upload"></i> <p class="upload d-inline">Upload</p>
-        <%= form.file_field :images, multiple: true, class: 'form-control', id: 'image-upload', style: 'display: none;', onchange: 'previewImages()' %>
-      </label>
-      <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="uploadModalLabel">Upload Images</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div id="imagePreviews"></div>
-            </div>
-            <div class="modal-body">
-              <p>Would you like to upload <span id="fileCount"></span> file(s)?</p>
-            </div>
-            <div class="modal-footer">
-              <%= form.submit 'Upload', class: 'btn btn-primary', id: 'uploadFilesBtn', disabled: true %>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    <% end %>
-  <% end %>
   </div>
   <div class="gallery-button" style="position: absolute; bottom: 3%; right: 1%;">
     <button class="btn btn-primary ml-2 " id="openGalleryBtn">Gallery</button>
