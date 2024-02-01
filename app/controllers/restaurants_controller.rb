@@ -114,13 +114,21 @@ class RestaurantsController < ApplicationController
 
   # DELETE /restaurants/1 or /restaurants/1.json
   def destroy
+    keep_status = @restaurant.keep
     @restaurant.destroy
-
+  
     respond_to do |format|
-      format.html { redirect_to restaurants_url, notice: "Restaurant was successfully destroyed." }
-      format.json { head :no_content, status: :ok }
+      if keep_status == true
+        format.html { redirect_to restaurants_url, notice: "Restaurant was successfully deleted." }
+        format.json { head :no_content, status: :ok }
+      else
+        format.html { redirect_to all_requested_path, notice: "Restaurant was successfully deleted." }
+        format.json { head :no_content, status: :ok }
+      end
     end
   end
+  
+  
 
   def requested
     user_identifier = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
@@ -143,19 +151,7 @@ class RestaurantsController < ApplicationController
         format.js
       end
     end
-  end
-
-  def destroy_restaurant
-    @restaurant.destroy
-
-    respond_to do |format|
-      format.html { redirect_to restaurants_url, notice: "Restaurant was successfully destroyed." }
-      format.json { head :no_content, status: :ok }
-    end
-  end
-  
-  
-  
+  end  
 
   private
 

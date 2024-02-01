@@ -29,9 +29,10 @@
                             <%= link_to accept_restaurant_path(restaurant), method: :post, class: 'btn-icon', style: "color: Green", remote: true do %>
                               <i class="bi bi-check-circle-fill h1 m-1"></i>
                             <% end %>
-                            <%= link_to restaurant_path(restaurant), method: :delete, data: {turbo: "false" }, class: 'btn-icon', style: "color: Red", remote: true do %>
-                                <i class="bi bi-x-circle-fill h1 m-1"></i>
+                            <%= link_to restaurant_path(restaurant), method: :delete, data: { turbo: "false" }, class: 'btn-icon', style: "color: Red" do %>
+                              <i class="bi bi-x-circle-fill h1 m-1"></i>
                             <% end %>
+
                         </div>
                         <h5 class="card-title mb-1" style="font-size: 40px;">
                             <a href="<%= restaurant_url(restaurant) %>" class="custom-link" style="color: black; text-decoration: none;">
@@ -128,7 +129,6 @@
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.5.0/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
 <script>
   $(document).ready(function() {
