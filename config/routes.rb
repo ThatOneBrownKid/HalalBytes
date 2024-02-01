@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   get 'restaurants/request_new', to: 'restaurants#request_new', as: :request_new_restaurants
   post 'restaurants/request_create', to: 'restaurants#request_create', as: :request_create_restaurants
+  get 'requested_restaurants', to: 'restaurants#requested'
+  get 'all_requested', to: 'restaurants#all_requested'
   get 'users/index'
   get '/terms_and_services', to: 'home#terms_and_services'
   devise_for :users, controllers: {
@@ -10,6 +12,7 @@ Rails.application.routes.draw do
   resources :restaurants do
     member do
       delete 'images/:image_id', action: :delete_image, as: :delete_image
+      post 'accept' => 'restaurants#accept_restaurant'
     end
   end
   root 'home#index'

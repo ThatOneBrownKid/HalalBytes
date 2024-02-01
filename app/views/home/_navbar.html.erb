@@ -15,7 +15,7 @@
           <a class="nav-link active" href=" /restaurants">Resturants</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="<%= request_new_restaurants_path %>">Requests</a>
+          <a class="nav-link active" href="<%= request_new_restaurants_path %>">Request</a>
         </li>
       </ul>
 
@@ -31,6 +31,16 @@
                   <%= link_to "Add Restaurant", new_restaurant_path, class: "dropdown-item" %>
                 </li>
               <% end %>
+
+              <% if current_user.admin? %>
+                <li class="nav-item">
+                  <%= link_to "All Requests", all_requested_path, class: "dropdown-item" %>
+                </li>
+              <% end %>
+
+              <li class="nav-item">
+                <%= link_to 'My Requests', requested_restaurants_path, class: 'dropdown-item' %>
+              </li>
 
               <li class="nav-item">
                 <%= link_to "Account", edit_user_registration_path, class: "dropdown-item" %>

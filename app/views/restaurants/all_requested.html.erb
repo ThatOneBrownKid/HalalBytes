@@ -1,4 +1,5 @@
-<body style="background-color: #FFFFFF;">
+<% if current_user.admin? %>
+    <body style="background-color: #FFFFFF;">
    <div class="row" style="margin-left: 0px;">
       <div class="col-md-2 ml-2">
          <div class="card mb-3 rounded-0 border-0 border-right" style="width: 100%; height: 100%; border-radius: 0; background-color: #FFFFFF; margin-top: 56px; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1)">
@@ -36,12 +37,19 @@
       <div class="col-md-9">
          <!-- Restaurants section -->
          <div id="restaurants" >
-            <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants, as: :restaurant %>
+            <% if @restaurants.any? %>
+                <%= render partial: 'restaurants/partials/all_requested_restaurant', collection: @restaurants, as: :restaurant %>
+            <% else %>
+                <div class="d-flex flex-column align-items-center justify-content-center mt-5 mb-5">
+                    <h1 class="display-5 text-center mb-5">You have no requests at this time.</h1>
+                </div>
+            <% end %>
          </div>
       </div>
    </div>
 </body>
-<!--pulls cusine data-->
+<%end%>
+
 <script>
 $(document).ready(function() {
   // Retrieve the cuisine data from your backend

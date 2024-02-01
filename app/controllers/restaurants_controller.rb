@@ -118,7 +118,30 @@ class RestaurantsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to restaurants_url, notice: "Restaurant was successfully destroyed." }
-      format.json { head :no_content }
+      format.json { head :no_content, status: :ok }
+    end
+  end
+
+  def requested
+    user_identifier = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
+    @restaurants = Restaurant.where(requested_by: user_identifier)
+  end
+
+  def all_requested
+    @restaurants = Restaurant.where(keep: false)
+  end
+
+  def accept_restaurant
+    @restaurant = Restaurant.find(params[:id])
+
+    if @restaurant.update(keep: true)
+      # Restaurant 'keep' attribute updated successfully
+      format.html { redirect_to all_requested_path(@restaurant), notice: "Restaurant added successfully." }
+      format.json { render :show, status: :ok, location: @restaurant }
+    else
+      # Handle errors if the update fails
+      format.html { redirect_to all_requested_path(@restaurant), alert: "Failed to add restaurant." }
+      format.json { render json: @restaurant.errors, status: :unprocessable_entity }
     end
   end
 
