@@ -36,7 +36,8 @@
       <div class="col-md-9">
          <!-- Restaurants section -->
          <div id="restaurants" >
-            <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants, as: :restaurant %>
+            <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
+
          </div>
       </div>
    </div>

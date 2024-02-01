@@ -26,8 +26,8 @@
                 <div class="col-md-8">
                     <div class="card-body">
                         <div class="d-flex justify-content-end">
-                            <%= link_to accept_restaurant_path(restaurant), method: :post, class: 'btn-icon ', style: "color: Green", remote: true do %>
-                                <i class="bi bi-check-circle-fill h1"></i>
+                            <%= link_to accept_restaurant_path(restaurant), method: :post, class: 'btn-icon', style: "color: Green", remote: true do %>
+                              <i class="bi bi-check-circle-fill h1 m-1"></i>
                             <% end %>
                             <%= link_to restaurant_path(restaurant), method: :delete, data: {turbo: "false" }, class: 'btn-icon', style: "color: Red", remote: true do %>
                                 <i class="bi bi-x-circle-fill h1 m-1"></i>
