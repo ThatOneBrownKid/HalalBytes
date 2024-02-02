@@ -114,13 +114,21 @@ class RestaurantsController < ApplicationController
 
   # DELETE /restaurants/1 or /restaurants/1.json
   def destroy
+    keep_status = @restaurant.keep
     @restaurant.destroy
-
+  
     respond_to do |format|
-      format.html { redirect_to restaurants_url, notice: "Restaurant was successfully destroyed." }
-      format.json { head :no_content, status: :ok }
+      if keep_status == true
+        format.html { redirect_to restaurants_url, notice: "Restaurant was successfully deleted." }
+        format.json { head :no_content, status: :ok }
+      else
+        format.html { redirect_to all_requested_path, notice: "Restaurant was successfully deleted." }
+        format.json { head :no_content, status: :ok }
+      end
     end
   end
+  
+  
 
   def requested
     user_identifier = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
@@ -133,17 +141,18 @@ class RestaurantsController < ApplicationController
 
   def accept_restaurant
     @restaurant = Restaurant.find(params[:id])
-
-    if @restaurant.update(keep: true)
-      # Restaurant 'keep' attribute updated successfully
-      format.html { redirect_to all_requested_path(@restaurant), notice: "Restaurant added successfully." }
-      format.json { render :show, status: :ok, location: @restaurant }
-    else
-      # Handle errors if the update fails
-      format.html { redirect_to all_requested_path(@restaurant), alert: "Failed to add restaurant." }
-      format.json { render json: @restaurant.errors, status: :unprocessable_entity }
+  
+    respond_to do |format|
+      @restaurant.created_by = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
+      if @restaurant.update(keep: true)
+        flash[:notice] = "Restaurant added successfully."
+        format.js
+      else
+        flash[:alert] = "Failed to add restaurant."
+        format.js
+      end
     end
-  end
+  end  
 
   private
 
