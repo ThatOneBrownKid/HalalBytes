@@ -143,6 +143,7 @@ class RestaurantsController < ApplicationController
     @restaurant = Restaurant.find(params[:id])
   
     respond_to do |format|
+      @restaurant.created_by = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
       if @restaurant.update(keep: true)
         flash[:notice] = "Restaurant added successfully."
         format.js
