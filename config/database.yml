@@ -26,4 +26,4 @@ test:
 production:
   <<: *default
   #database: db/production.sqlite3 #old
-  url: <%= ENV ['DATABASE_URL'] %>
+  database: flatiron_mod3_production
