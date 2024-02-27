@@ -34,7 +34,7 @@ gem "font-awesome-sass", "~> 6.4.0"
 
 gem 'mail'
 
-gem 'wdm', '>= 0.1.0'
+gem 'wdm', '>= 0.1.0' if Gem.win_platform?
 
 gem 'jquery-rails'
 gem 'jquery-ui-rails'

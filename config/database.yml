@@ -25,5 +25,8 @@ test:
   database: flatiron_mod3_test
 production:
   <<: *default
-  #database: db/production.sqlite3 #old
-  database: flatiron_mod3_production
+  database: HalalBytes
+  username: <%= ENV['DATABASE_USERNAME'] %>  # Assuming you're using environment variables for security
+  password: <%= ENV['DATABASE_PASSWORD'] %>  # Ditto
+  host: <%= ENV['DATABASE_HOST'] || 'localhost' %>  # Defaults to localhost if not specified
+  port: <%= ENV['DATABASE_PORT'] || 5432 %>  # Default PostgreSQL port is 5432
