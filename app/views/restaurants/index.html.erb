@@ -12,13 +12,12 @@
                </div>
                <div class="form-group" style="width: 80%;">
                   <label for="cuisine-select"  style="margin-left: 10px;">Cuisine:</label>
-                  <select id="cuisine-select" class="form-control mb-2" style="margin-left: 10px; background-color: #f2f2f2;">
-                     <option value="">All</option>
+                  <select id="cuisine-select" class="form-control" style="margin-left: 10px; background-color: #f2f2f2;">
                      <% @restaurants.each do |restaurant| %>
                      <option value="<%= restaurant.cuisine %>"><%= restaurant.cuisine %></option>
                      <%end%>
-                  </select>
-               </div>
+                  </select> 
+               </div>  
                <div class="form-group" style="width: 80%;">
                   <label for="price-range-select" style="margin-left: 10px;">Price Range:</label>
                   <select id="price-range-select" class="form-control mb-2" style="margin-left: 10px; background-color: #f2f2f2;">
@@ -44,50 +43,36 @@
 </body>
 
 <!--filter size-->
-
-<style>
-
-</style>
-
 <!--col no padding-->
 <!--Pops up filter-->
+<!--pulls cusine data-->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
 
-</script>
-<!--pulls cusine data-->
-<script>
 $(document).ready(function() {
   // Retrieve the cuisine data from your backend
   // Replace the URL with your actual endpoint to fetch the cuisine data
-  $.ajax({
-    url: '/api/cuisines', // Replace with your endpoint
-    method: 'GET',
-    success: function(data) {
-      // Populate the cuisine filter dropdown with the retrieved data
-      var cuisineSelect = $('#cuisine-select');
-
-      // Clear existing options
-      cuisineSelect.empty();
-
-      // Add the "All" option
-      cuisineSelect.append($('<option>', {
-        value: '',
-        text: 'All'
-      }));
-
-      // Add each cuisine option
-      data.forEach(function(cuisine) {
-        cuisineSelect.append($('<option>', {
-          value: cuisine,
-          text: cuisine
-        }));
-      });
-    },
-    error: function() {
-      console.log('Failed to retrieve cuisine data.');
+  function filterCardsByCuisine(selectedCuisine) {
+        var $restaurantsContainer = $('#restaurants');
+        var $cards = $restaurantsContainer.find('.card-res ');
+        var $cusines = $restaurantsContainer.find('.hover-box ');
+        
+        $cards.each(function() {
+           
+            
+            var cuisine = $(this).find('.hover-box ').text().trim();// Assuming .restaurant-cuisine is the element containing the cuisine info
+            if (cuisine === selectedCuisine) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
     }
-  });
-
-  // Rest of your code...
-
+  $('.form-control').on( "change", function() {
+        var selectedCuisine = $(this).val();
+        filterCardsByCuisine(selectedCuisine);
+   });
+   
 });
+</script>
