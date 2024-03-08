@@ -234,6 +234,7 @@ GEM
       tzinfo (>= 1.0.0)
     warden (1.2.9)
       rack (>= 2.0.9)
+    wdm (0.1.1)
     web-console (4.2.0)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -277,6 +278,7 @@ DEPENDENCIES
   stimulus-rails
   turbo-rails
   tzinfo-data
+  wdm (>= 0.1.0)
   web-console
   webdrivers
 
