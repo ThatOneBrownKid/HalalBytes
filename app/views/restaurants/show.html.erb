@@ -165,7 +165,7 @@
 </div>
 
 <!-- Image Edit Modal-->
-<% if current_user.admin? %>
+<% if signed_in? && current_user.admin? %>
 <div class="modal fade" id="editGalleryModal" tabindex="-1" aria-labelledby="editGalleryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
