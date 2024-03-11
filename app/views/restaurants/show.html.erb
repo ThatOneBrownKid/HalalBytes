@@ -136,7 +136,7 @@
                     <div class="carousel-inner">
                       <% @ordered_images.each_with_index do |image, index| %>
                         <div class="carousel-item <%= 'active' if index == 0 %>">
-                            <%= image_tag image.variant(resize_to_limit: [nil, 500]), class: "d-block w-100", alt: "Restaurant Image" %>
+                            <%= image_tag process_image_for_carousel(image, 730, 500), class: "d-block w-100", alt: "Restaurant Image" %>
                         </div>
                         <% end %>
                     </div>
