@@ -5,8 +5,7 @@
 #   gem "sqlite3"
 
 #Postgres 15  Installed
-default: &default
-  # adapter: sqlite3 #old
+default: &default # adapter: sqlite3 #old
   adapter: postgresql
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
@@ -25,8 +24,10 @@ test:
   database: flatiron_mod3_test
 production:
   <<: *default
-  database: HalalBytes
-  username: <%= ENV['DATABASE_USERNAME'] %>  # Assuming you're using environment variables for security
-  password: <%= ENV['DATABASE_PASSWORD'] %>  # Ditto
-  host: <%= ENV['DATABASE_HOST'] || 'localhost' %>  # Defaults to localhost if not specified
-  port: <%= ENV['DATABASE_PORT'] || 5432 %>  # Default PostgreSQL port is 5432
+  database: flatiron_mod3_production
+
+  #database: HalalBytes
+  #username: <%= ENV['DATABASE_USERNAME'] %>  # Assuming you're using environment variables for security
+  #password: <%= ENV['DATABASE_PASSWORD'] %>  # Ditto
+  #host: <%= ENV['DATABASE_HOST'] || 'localhost' %>  # Defaults to localhost if not specified
+  #port: <%= ENV['DATABASE_PORT'] || 5432 %>  # Default PostgreSQL port is 5432

@@ -2,7 +2,7 @@ class RestaurantsController < ApplicationController
   before_action :set_restaurant, only: [:show, :edit, :update, :destroy]
   skip_before_action :set_restaurant, only: [:request_new, :request_create]
   include RestaurantsHelper
-
+  require 'set'
   # GET /restaurants or /restaurants.json
   def index
     @restaurants = Restaurant.all

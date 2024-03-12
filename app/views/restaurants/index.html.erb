@@ -1,34 +1,45 @@
 <body style="background-color: #FFFFFF;">
    <div class="row g-0" style="margin-left: 0px;">
-      <div class="col-xs-2 col-xl-2 col-xxl-2">
-         <div class="card mb-3 rounded-0 border-0 border-right" style="width: 100%; height: 100%; border-radius: 0; background-color: #FFFFFF; margin-top: 5px;">
+      <div class="col-xs-12 col-xl-2 col-xxl-2">
+         <div class="card mb-3 rounded-0 border-0 border-right ps-3 pe-2" style="width: 100%; height: 100%; border-radius: 0; background-color: #FFFFFF; margin-top: 5px;">
             <!-- Filters section -->
             <!-- Place your filters content here -->
             <h3 class="text-center">Filters</h3>
             <form id="filter-form" class="d-flex flex-column align-items-center">
-               <div class="form-group" style="width: 80%;">
-                  <label for="search-input"  style="margin-left: 10px;">Search:</label>
-                  <input type="text" id="search-input" class="form-control" placeholder="Search restaurants" style="margin-left: 10px; background-color: #f2f2f2;">
-               </div>
-               <div class="form-group" style="width: 80%;">
-                  <label for="cuisine-select"  style="margin-left: 10px;">Cuisine:</label>
-                  <select id="cuisine-select" class="form-control" style="margin-left: 10px; background-color: #f2f2f2;">
-                     <% @restaurants.each do |restaurant| %>
-                     <option value="<%= restaurant.cuisine %>"><%= restaurant.cuisine %></option>
+               <% cuisines = Set.new %>
+                  <% @restaurants.each do |restaurant| %>
+                     <% cuisines.add(restaurant.cuisine) %>
+                  <% end %> 
+                  <div class="row">
+                     <% cuisines.each_slice(2) do |slice| %>
+                        
+                        <div class="col-md-6 g-0">
+                        <div class="form-group d-flex justify-content-center g-0">
+                           <% slice.each do |cuisine| %>   
+                                 
+                                    <input type="radio" class="btn-check" name="options" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
+                                    <label class="btn btn-outline-secondary border-0" for="<%= cuisine %>"><%= image_tag "burgur.png", class: "filter-img", alt: "Restaurant Image" %>
+                                       <figcaption class="figure-caption"><%= cuisine %></figcaption>
+                                    </label>
+                                 
+                           <%end%>
+                        </div>
+                        </div>
                      <%end%>
-                  </select> 
-               </div>  
-               <div class="form-group" style="width: 80%;">
+                  </div>
+               
+               <div class="form-group" style="width: 90%;">
                   <label for="price-range-select" style="margin-left: 10px;">Price Range:</label>
-                  <select id="price-range-select" class="form-control mb-2" style="margin-left: 10px; background-color: #f2f2f2;">
-                     <option value="">All</option>
-                     <option value="1">$</option>
-                     <option value="2">$$</option>
-                     <option value="3">$$$</option>
-                     <!-- Add more price range options as needed -->
-                  </select>
+                   <input type="checkbox" class="btn-check" name="price" id='$' value="1" autocomplete="off">
+                   <label class="btn border-1 rounded-pill " for="$">$ </label>
+
+                   <input type="checkbox" class="btn-check" name="price" id='$$' value="2" autocomplete="off">
+                   <label class="btn border-1 rounded-pill " for="$$">$$</label>
+
+                   <input type="checkbox" class="btn-check" name="price" id='$$$' value="3" autocomplete="off">
+                   <label class="btn border-1 rounded-pill " for="$$$">$$$</label>
                </div>
-               <button type="submit" class="btn btn-primary"  style="margin-left: 10px;">Apply Filters</button>
+               <button type="button" class="btn-clear rounded-pill border-0" style="width: 100%;" value="ALL" >Clear All Filters</button>
             </form>
          </div>
       </div>
@@ -53,26 +64,52 @@
 $(document).ready(function() {
   // Retrieve the cuisine data from your backend
   // Replace the URL with your actual endpoint to fetch the cuisine data
-  function filterCardsByCuisine(selectedCuisine) {
+  var prev = '';
+  function filterCardsByCuisine(selectedCuisine,hi) {
         var $restaurantsContainer = $('#restaurants');
         var $cards = $restaurantsContainer.find('.card-res ');
         var $cusines = $restaurantsContainer.find('.hover-box ');
-        
+
+        if (selectedCuisine == prev){
+            selectedCuisine = 'ALL';
+            $(hi).prop('checked', false);
+            prev = '';
+        }
+         prev = selectedCuisine;
         $cards.each(function() {
            
             
             var cuisine = $(this).find('.hover-box ').text().trim();// Assuming .restaurant-cuisine is the element containing the cuisine info
             if (cuisine === selectedCuisine) {
                 $(this).show();
-            } else {
+            } 
+            else if (selectedCuisine == 'ALL'){
+                $(this).show();
+            }           
+            else {
                 $(this).hide();
             }
-        });
-    }
-  $('.form-control').on( "change", function() {
+        }
+        
+        )};
+  $('.btn-check').on( "click", function() {
         var selectedCuisine = $(this).val();
+       
+        filterCardsByCuisine(selectedCuisine,this);
+   });
+    $('.btn-clear').on('click', function() {
+        var selectedCuisine = $(this).val();
+         alert(selectedCuisine);
         filterCardsByCuisine(selectedCuisine);
    });
    
 });
 </script>
+<style>
+@media (max-width: 3000px) {
+  .filter-img {
+    width: 70  px;
+    height: 50px;
+  }
+}
+</style>
