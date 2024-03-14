@@ -35,11 +35,15 @@
                 </div>
                
                <!--rating stars-->
+               <div class="ratings ">
+                <%= restaurant.price_range %>
+               </div>
                <% restaurant.overall_rating.to_i.times do%>
                <i class="bi bi-star-fill red"></i>
                <% end %> <% (5-restaurant.overall_rating.to_i).times do%>
                <i class="bi bi-star-fill gray"></i>
                <% end %>
+               
                <div class="text-secondary" style="font-size: 14px;">
                  
                   <!--price range-->

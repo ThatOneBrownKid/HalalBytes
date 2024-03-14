@@ -1,49 +1,54 @@
+
 <body style="background-color: #FFFFFF;">
    <div class="row g-0" style="margin-left: 0px;">
-      <div class="col-xs-12 col-xl-2 col-xxl-2">
-         <div class="card mb-3 rounded-0 border-0 border-right ps-3 pe-2" style="width: 100%; height: 100%; border-radius: 0; background-color: #FFFFFF; margin-top: 5px;">
+      <div class="col-md-12">
             <!-- Filters section -->
             <!-- Place your filters content here -->
-            <h3 class="text-center">Filters</h3>
-            <form id="filter-form" class="d-flex flex-column align-items-center">
                <% cuisines = Set.new %>
                   <% @restaurants.each do |restaurant| %>
                      <% cuisines.add(restaurant.cuisine) %>
                   <% end %> 
-                  <div class="row">
-                     <% cuisines.each_slice(2) do |slice| %>
-                        
-                        <div class="col-md-6 g-0">
-                        <div class="form-group d-flex justify-content-center g-0">
-                           <% slice.each do |cuisine| %>   
-                                 
-                                    <input type="radio" class="btn-check" name="options" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
-                                    <label class="btn btn-outline-secondary border-0" for="<%= cuisine %>"><%= image_tag "burgur.png", class: "filter-img", alt: "Restaurant Image" %>
-                                       <figcaption class="figure-caption"><%= cuisine %></figcaption>
-                                    </label>
-                                 
-                           <%end%>
+                        <div class="card border-0 overflow-x-auto ms-2 mt-2" style="width: 100%;">
+                           <div class="row flex-nowrap">
+                              <% cuisines.each do |cuisine| %>   
+                                 <div class="col-auto">
+                                       <input type="radio" class="btn-check" name="options" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
+                                       <label class="btn btn-outline-secondary border-0" for="<%= cuisine %>"><%= image_tag "burgur.png", class: "filter-img", alt: "Restaurant Image" %>
+                                          <figcaption class="figure-caption"><%= cuisine %></figcaption>
+                                       </label>
+                                 </div>   
+                              <%end%>
+                           </div>
                         </div>
+                        <%= render '/restaurants/partials/price'%>
+                        <div class="card border-0 overflow-x-auto ms-2 mt-2" style="width: 100%;">
+                           <div class="row flex-nowrap">
+                              <div class="col-auto">        
+                                 <button type="button" class="btn border-0 rounded-5"  style=' background-color:#E8E8E8; '  data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    Price
+                                 </button>
+                              </div>
+                              <div class="col-auto">       
+                                 <button type="button" class="btn border-0 rounded-5" style=' background-color:#E8E8E8; ' data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    Ratings
+                                 </button>
+                              </div>
+                              <div class="col-auto">       
+                                 <button type="button" class="btn border-0 rounded-5" style=' background-color:#E8E8E8; ' data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    Dietary
+                                 </button>
+                                 </div>
+                              <div class="col-auto">       
+                                 <button type="button" class="btn border-0 rounded-5" style=' background-color:#E8E8E8; ' data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    Sort
+                                 </button>
+                              </div>
+                              <!--! -->                        
+                           </div>
                         </div>
-                     <%end%>
-                  </div>
-               
-               <div class="form-group" style="width: 90%;">
-                  <label for="price-range-select" style="margin-left: 10px;">Price Range:</label>
-                   <input type="checkbox" class="btn-check" name="price" id='$' value="1" autocomplete="off">
-                   <label class="btn border-1 rounded-pill " for="$">$ </label>
-
-                   <input type="checkbox" class="btn-check" name="price" id='$$' value="2" autocomplete="off">
-                   <label class="btn border-1 rounded-pill " for="$$">$$</label>
-
-                   <input type="checkbox" class="btn-check" name="price" id='$$$' value="3" autocomplete="off">
-                   <label class="btn border-1 rounded-pill " for="$$$">$$$</label>
-               </div>
-               <button type="button" class="btn-clear rounded-pill border-0" style="width: 100%;" value="ALL" >Clear All Filters</button>
-            </form>
-         </div>
+                     <!-- <button type="button" class="btn-clear rounded-pill border-0 align-items-center" style="width: 70%;" value="ALL" >Clear All Filters</button> -->
       </div>
-      <div class="col-xs-12 col-xl-9 col-xxl-9">
+      <div class="col-md-12">
          <!-- Restaurants section -->
          <div id="restaurants" >
             <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
@@ -53,63 +58,19 @@
    </div>
 </body>
 
-<!--filter size-->
-<!--col no padding-->
-<!--Pops up filter-->
-<!--pulls cusine data-->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!--resturant filter-->
+<%=javascript_include_tag 'resturant_index'%>
 
-<script>
-
-$(document).ready(function() {
-  // Retrieve the cuisine data from your backend
-  // Replace the URL with your actual endpoint to fetch the cuisine data
-  var prev = '';
-  function filterCardsByCuisine(selectedCuisine,hi) {
-        var $restaurantsContainer = $('#restaurants');
-        var $cards = $restaurantsContainer.find('.card-res ');
-        var $cusines = $restaurantsContainer.find('.hover-box ');
-
-        if (selectedCuisine == prev){
-            selectedCuisine = 'ALL';
-            $(hi).prop('checked', false);
-            prev = '';
-        }
-         prev = selectedCuisine;
-        $cards.each(function() {
-           
-            
-            var cuisine = $(this).find('.hover-box ').text().trim();// Assuming .restaurant-cuisine is the element containing the cuisine info
-            if (cuisine === selectedCuisine) {
-                $(this).show();
-            } 
-            else if (selectedCuisine == 'ALL'){
-                $(this).show();
-            }           
-            else {
-                $(this).hide();
-            }
-        }
-        
-        )};
-  $('.btn-check').on( "click", function() {
-        var selectedCuisine = $(this).val();
-       
-        filterCardsByCuisine(selectedCuisine,this);
-   });
-    $('.btn-clear').on('click', function() {
-        var selectedCuisine = $(this).val();
-         alert(selectedCuisine);
-        filterCardsByCuisine(selectedCuisine);
-   });
-   
-});
-</script>
 <style>
 @media (max-width: 3000px) {
   .filter-img {
     width: 70  px;
     height: 50px;
+  }
+}
+@media (min-width: 1200px) {
+  .card {
+    align-items: center;
   }
 }
 </style>
