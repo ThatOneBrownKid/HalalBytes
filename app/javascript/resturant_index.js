@@ -5,7 +5,7 @@ $(document).ready(function() {
   var prev = '';
   var $hiddenCards = $();
   var $filters = ["",""];
-  function updateCards($cards,$filters,hi,first){
+  function updateCards($cards,$filters){
     $cards.each(function() {
         var showCard = true;
         var $attributes = [];
@@ -45,7 +45,7 @@ $(document).ready(function() {
         if($filters.length == 0){
             $filters.push("");
         }
-        updateCards($cards,$filters,this,hi);
+        updateCards($cards,$filters);
     };
 
         function filterCardsByPrice(selectedPrice,hi) {
