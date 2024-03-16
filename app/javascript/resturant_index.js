@@ -52,7 +52,7 @@ $(document).ready(function() {
             var $restaurantsContainer = $('#restaurants');
             var $cards = $restaurantsContainer.find('.card-res ');
             if ($filters[1] == selectedPrice){
-                $filters[1] = 0;
+                $filters[1] = "";
                 $(hi).prop('checked', false);
             }
             else if($filters.length >= 2){
