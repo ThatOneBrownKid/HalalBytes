@@ -3,66 +3,69 @@ src="https://code.jquery.com/jquery-3.6.0.min.js">
 $(document).ready(function() {
   // Retrieve the cuisine data from your backend for filters
   var prev = '';
-  
+  var $hiddenCards = $();
+  var $filters = ["",""];
+  function updateCards($cards,$filters,hi,first){
+    $cards.each(function() {
+        var showCard = true;
+        var $attributes = [];
+        $attributes.push($(this).find('.hover-box ').text().trim());
+        $attributes.push($(this).find('.ratings ').text().trim());
+        
+        for (var i = 0; i < $filters.length; i++) {
+            if ($attributes[i] !== $filters[i] && $filters[i] != "") {
+                showCard = false;
+                break; // Exit the loop early if a mismatch is found
+            }
+        }
+
+        if (showCard) {
+            $(this).show();
+        } else {
+            $(this).hide();
+        }
+    }
+    ); 
+  }
   function filterCardsByCuisine(selectedCuisine,hi) {
         var $restaurantsContainer = $('#restaurants');
         var $cards = $restaurantsContainer.find('.card-res ');
         var $cusines = $restaurantsContainer.find('.hover-box ');
-
-        if (selectedCuisine == prev){
-            selectedCuisine = 'ALL';
+        if ($filters[0] == selectedCuisine){
+            $filters[0] = "";
             $(hi).prop('checked', false);
-            prev = '';
         }
-         prev = selectedCuisine;
-        $cards.each(function() {
-           
-            
-            var cuisine = $(this).find('.hover-box ').text().trim();
-            if (cuisine === selectedCuisine) {
-                $(this).show();
-            } 
-            else if (selectedCuisine == 'ALL'){
-                $(this).show();
-            }           
-            else {
-                $(this).hide();
-            }
+        else if($filters.length >= 1){
+            $filters[0] = selectedCuisine;
+        }
+        else{
+            $filters.push(selectedCuisine);
         }
         
-        )};
+        if($filters.length == 0){
+            $filters.push("");
+        }
+        updateCards($cards,$filters,this,hi);
+    };
 
         function filterCardsByPrice(selectedPrice,hi) {
             var $restaurantsContainer = $('#restaurants');
             var $cards = $restaurantsContainer.find('.card-res ');
-            
-            if ($(this).is(':checked') || selectedPrice == prev){
-                var temp = selectedPrice;
-                $(this).prop('checked', false);
-                prev = '';
-                $cards.each(function() {
-                    var price = $(this).find('.ratings ').text().trim();
-                    if (price === temp) {
-                        $(this).hide();
-                    } 
-                });
+            if ($filters[1] == selectedPrice){
+                $filters[1] = 0;
+                $(hi).prop('checked', false);
+            }
+            else if($filters.length >= 2){
+                $filters[1] = selectedPrice;
             }
             else{
-            prev = selectedPrice;
-            $cards.each(function() {   
-                var price = $(this).find('.ratings ').text().trim();
-                if (price === selectedPrice) {
-                    $(this).show();
-                } 
-                else if (selectedPrice == 'ALL'){
-                    $(this).show();
-                }           
-                else {
-                    $(this).hide();
-                }
+                $filters.splice(1, 0, selectedPrice);
             }
-            
-            )}
+            if($filters.length == 0){
+                $filters.push("");
+            }
+            updateCards($cards,$filters);
+           
         };
   $('.btn-check').on( "click", function() {
         var selectedCuisine = $(this).val();
