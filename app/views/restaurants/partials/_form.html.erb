@@ -60,12 +60,9 @@
                 options_for_select([
                   'Middle Eastern', 
                   'South Asian', 
-                  'Southeast Asian', 
-                  'North African', 
-                  'Sub-Saharan African', 
-                  'European', 
-                  'Central Asian', 
-                  'East Asian', 
+                  'Asian', 
+                  'African',  
+                  'European',
                   'Western', 
                   'Fusion'
                 ]), 
@@ -99,6 +96,7 @@
       <% end %>
     </div>
 
+    <!-- Shafin: Dropzone  -->
     <div>
       <%= form.label :images, "Upload Images" %>
       <%= form.file_field :images, multiple: true, direct_upload: true, class: 'time-input image-upload-field form control' %>
