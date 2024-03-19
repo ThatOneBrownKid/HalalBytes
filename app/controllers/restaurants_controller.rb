@@ -70,9 +70,9 @@ class RestaurantsController < ApplicationController
   # PATCH/PUT /restaurants/1 or /restaurants/1.json
   def update
     process_operating_times
-
+  
     respond_to do |format|
-      if @restaurant.update(restaurant_params)
+      if @restaurant.update(conditional_restaurant_params)
         format.html { redirect_to restaurant_url(@restaurant), notice: "Restaurant was successfully updated." }
         format.json { render :show, status: :ok, location: @restaurant }
       else
@@ -169,14 +169,26 @@ class RestaurantsController < ApplicationController
     Time.parse(time_str).strftime('%H%M') rescue ''
   end
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_restaurant
-      @restaurant = Restaurant.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_restaurant
+    @restaurant = Restaurant.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def restaurant_params
-      params.require(:restaurant).permit(:name, :address, :phone, :website, :cuisine, :price_range, :overall_rating, {images: []}, 
-      :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday)
+  # Only allow a list of trusted parameters through.
+  def restaurant_params
+    params.require(:restaurant).permit(:name, :address, :phone, :website, :cuisine, :price_range, :overall_rating, {images: []}, 
+    :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday)
+  end
+
+  def conditional_restaurant_params
+    # Check if images are included in the form submission
+    if params[:restaurant][:images].blank?
+      # If no images are submitted, return parameters without the `images` key
+      restaurant_params.except(:images)
+    else
+      # If images are submitted, return all parameters including `images`
+      restaurant_params
     end
+  end
+
 end
