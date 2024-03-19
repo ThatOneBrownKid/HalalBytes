@@ -13,7 +13,7 @@
                               <% cuisines.each do |cuisine| %>   
                                  <div class="col-auto">
                                        <input type="radio" class="btn-check" name="options" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
-                                       <label class="btn btn-outline-secondary border-0" for="<%= cuisine %>"><%= image_tag "burgur.png", class: "filter-img", alt: "Restaurant Image" %>
+                                       <label class="btn btn-outline-secondary border-0" for="<%= cuisine %>"><%= image_tag "#{cuisine}.png", class: "filter-img", alt: "Restaurant Image" %>
                                           <figcaption class="figure-caption"><%= cuisine %></figcaption>
                                        </label>
                                  </div>   
