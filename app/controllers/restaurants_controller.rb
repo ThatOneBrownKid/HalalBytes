@@ -160,9 +160,12 @@ class RestaurantsController < ApplicationController
     %w[monday tuesday wednesday thursday friday saturday sunday].each do |day|
       open_time = format_time(params[:restaurant]["#{day}_open"])
       close_time = format_time(params[:restaurant]["#{day}_close"])
-      @restaurant.send("#{day}=", "#{open_time}#{close_time}") if open_time.present? && close_time.present?
+      # Only update if both times are present and correctly formatted
+      if open_time.present? && close_time.present? && open_time.length == 4 && close_time.length == 4
+        @restaurant.send("#{day}=", "#{open_time}#{close_time}")
+      end
     end
-  end  
+  end
   
   def format_time(time_str)
     # Ensure the time is exactly four characters long (e.g., '0900' for 9 AM)
@@ -190,5 +193,4 @@ class RestaurantsController < ApplicationController
       restaurant_params
     end
   end
-
 end
