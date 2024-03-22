@@ -96,11 +96,13 @@
       <% end %>
     </div>
 
-    <!-- Shafin: Dropzone  -->
-    <div>
-      <%= form.label :images, "Upload Images" %>
-      <%= form.file_field :images, multiple: true, direct_upload: true, class: 'time-input image-upload-field form control' %>
-    </div>
+    <% if restaurant.new_record? %>
+      <div>
+        <%= form.label :images, "Upload Images" %>
+        <%= form.file_field :images, multiple: true, direct_upload: true, class: 'time-input image-upload-field form-control' %>
+      </div>
+    <% end %>
+
 
     <div>
       <%= form.submit 'Submit', class: 'btn btn-primary mt-2', type: 'submit' %>
