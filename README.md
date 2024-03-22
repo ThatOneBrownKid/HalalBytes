@@ -22,3 +22,4 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+Here is our live deployed site (currently in progress): [Demo](http://vps-e0bdeadf.vps.ovh.us/)
