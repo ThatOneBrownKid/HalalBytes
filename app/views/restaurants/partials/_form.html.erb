@@ -86,11 +86,11 @@
         <div class="form-group row">
           <label class="col-sm-3 col-form-label"><%= day.capitalize %></label>
           <div class="col-sm-4">
-            <%= form.time_field "#{day}_open", class: 'form-control time-input', value: extract_time(@restaurant.send(day), :open) %>
+            <%= form.text_field "#{day}_open", class: 'timepicker form-control', value: extract_time(@restaurant.send(day), :open) %>
           </div>
           <label class="col-sm-1 col-form-label text-center">to</label>
             <div class="col-sm-4">
-              <%= form.time_field "#{day}_close", class: 'form-control time-input', value: extract_time(@restaurant.send(day), :close) %>
+              <%= form.text_field "#{day}_close", class: 'timepicker form-control', value: extract_time(@restaurant.send(day), :close) %>
             </div>
         </div>
       <% end %>
@@ -240,3 +240,11 @@
 </script>
 
 
+<script>
+  $(document).ready(function(){
+    $('.timepicker').timepicker({
+      timeFormat: 'h:mm p',
+      dropdown: false
+    });
+  });
+</script>
