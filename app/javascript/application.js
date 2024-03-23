@@ -2,6 +2,8 @@
 // Import @rails/ujs
 //= require turbo
 
+//= require_tree .
+
 import Rails from "@rails/ujs";
 
 // Start Rails UJS
