@@ -1,59 +1,71 @@
-
 <body style="background-color: #FFFFFF;">
-   <div class="row g-0" style="margin-left: 0px;">
-      <div class="col-md-12">
-            <!-- Filters section -->
-            <!-- Place your filters content here -->
-               <% cuisines = Set.new %>
-                  <% @restaurants.each do |restaurant| %>
-                     <% cuisines.add(restaurant.cuisine) %>
-                  <% end %> 
-                        <div class="card border-0 overflow-x-auto ms-2 mt-2" style="width: 100%;">
-                           <div class="row flex-nowrap">
-                              <% cuisines.each do |cuisine| %>   
-                                 <div class="col-auto">
-                                       <input type="radio" class="btn-check" name="options" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
-                                       <label class="btn btn-outline-secondary border-0" for="<%= cuisine %>"><%= image_tag "#{cuisine}.png", class: "filter-img", alt: "Restaurant Image" %>
-                                          <figcaption class="figure-caption"><%= cuisine %></figcaption>
-                                       </label>
-                                 </div>   
-                              <%end%>
-                           </div>
-                        </div>
-                        <%= render '/restaurants/partials/price'%>
-                        <%= render '/restaurants/partials/rating'%>
-                        <div class="card border-0 overflow-x-auto ms-2 mt-2" style="width: 100%;">
-                           <div class="row flex-nowrap">
-                              <div class="col-auto">        
-                                 <button type="button" class="btn border-0 rounded-5"  style=' background-color:#E8E8E8; '  data-bs-toggle="modal" data-bs-target="#priceModal">
-                                    Price
-                                 </button>
-                              </div>
-                              <div class="col-auto">       
-                                 <button type="button" class="btn border-0 rounded-5" style=' background-color:#E8E8E8; ' data-bs-toggle="modal" data-bs-target="#ratingModal">
-                                    Ratings
-                                 </button>
-                              </div>
-                              <div class="col-auto">       
-                                 <button type="button" class="btn border-0 rounded-5" style=' background-color:#E8E8E8; ' data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    Dietary
-                                 </button>
-                                 </div>
-                              <div class="col-auto">       
-                                 <button type="button" class="btn border-0 rounded-5" style=' background-color:#E8E8E8; ' data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    Sort
-                                 </button>
-                              </div>
-                              <!--! -->                        
-                           </div>
-                        </div>
-                     <!-- <button type="button" class="btn-clear rounded-pill border-0 align-items-center" style="width: 70%;" value="ALL" >Clear All Filters</button> -->
+   <div class="row g-0 justify-content-md-center" style="margin-left: 0px;">
+      <div class="col-auto d-none d-lg-block mt-4 justify-content-end">
+         <div class="d-flex  justify-content-end">
+            <input type="btn" class="btn-check " id='sildeLeft' value="Left" autocomplete="off">
+            <label class= "btn border-0" for='sildeLeft'><i class="bi bi-arrow-left-square-fill"></i></i></label>
+         </div>
       </div>
-      <div class="col-md-12">
-         <!-- Restaurants section -->
+      <div class="col-lg-8 col-auto">
+         <!-- Filters section -->
+         <!-- Place your filters content here -->
+         <% cuisines = Set.new %>
+         <% @restaurants.each do |restaurant| %>
+         <% cuisines.add(restaurant.cuisine) %>
+         <% end %>  
+         <div class="card border-0 overflow-x-scroll mt-2 justify-content-start" id="sildefilter"style="width: 100%;">
+            <div class="row flex-nowrap " >
+               <% cuisines.each do |cuisine| %>   
+               <div class="col-auto">
+                  <input type="radio" class="btn-check" name="options" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
+                  <label class="btn btn-outline-secondary border-0" for="<%= cuisine %>">
+                     <%= image_tag "#{cuisine}.png", class: "filter-img", alt: "Restaurant Image" %>
+                     <figcaption class="figure-caption"><%= cuisine %></figcaption>
+                  </label>
+               </div>
+               <%end%>
+            </div>
+         </div>
+         <%= render '/restaurants/partials/price'%>
+         <%= render '/restaurants/partials/rating'%>
+         <div class="card border-0 overflow-x-auto mt-2 align-items-center" style="width: 100%;">
+            <div class="row flex-nowrap">
+               <div class="col-auto">        
+                  <button type="button" class="btn border-0 rounded-5"  style=' background-color:#E8E8E8; '  data-bs-toggle="modal" data-bs-target="#priceModal">
+                  Price
+                  </button>
+               </div>
+               <div class="col-auto">       
+                  <button type="button" class="btn border-0 rounded-5" style=' background-color:#E8E8E8; ' data-bs-toggle="modal" data-bs-target="#ratingModal">
+                  Ratings
+                  </button>
+               </div>
+               <div class="col-auto">       
+                  <button type="button" class="btn border-0 rounded-5" style=' background-color:#E8E8E8; ' data-bs-toggle="modal" data-bs-target="#exampleModal">
+                  Dietary
+                  </button>
+               </div>
+               <div class="col-auto">       
+                  <button type="button" class="btn border-0 rounded-5" style=' background-color:#E8E8E8; ' data-bs-toggle="modal" data-bs-target="#exampleModal">
+                  Sort
+                  </button>
+               </div>
+               <!--! -->                        
+            </div>
+         </div>
+         <!-- <button type="button" class="btn-clear rounded-pill border-0 align-items-center" style="width: 70%;" value="ALL" >Clear All Filters</button> -->
+      </div>
+      <div class="col-auto d-none d-lg-block mt-4 justify-content-end">
+         <div class="d-flex  justify-content-start">
+            <input type="btn" class="btn-check " id='sildeRight' value="Right" autocomplete="off">
+            <label class= "btn" for='sildeRight'><i class="bi bi-arrow-right-square-fill"></i></i></label>
+         </div>
+      </div>
+   </div>
+   <div class="col-md-12">
+      <!-- Restaurants section -->
          <div id="restaurants" >
             <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
-
          </div>
       </div>
    </div>
@@ -69,9 +81,13 @@
     height: 50px;
   }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1600px) {
+  
   .card {
     align-items: center;
   }
+}
+ .card::-webkit-scrollbar {
+   display: none;
 }
 </style>

@@ -115,6 +115,7 @@ $(document).ready(function() {
     }; 
   $('.btn-check').on( "click", function() {
         var selectedCuisine = $(this).val();
+        
         if(selectedCuisine == 2.9 || selectedCuisine== 4.0 || selectedCuisine==5){
             
             filterCardsByRating(selectedCuisine,this);
@@ -123,6 +124,13 @@ $(document).ready(function() {
         else if(selectedCuisine == 1 || selectedCuisine==2 || selectedCuisine==3){
             
             filterCardsByPrice(selectedCuisine,this);
+        }
+        else if(selectedCuisine == "Right"){
+           
+            slideRight(selectedCuisine,this);
+        }
+        else if(selectedCuisine == "Left"){
+            slideLeft(selectedCuisine,this);
         }
         else{
             filterCardsByCuisine(selectedCuisine,this);
@@ -140,12 +148,33 @@ $(document).ready(function() {
 
 
 // filter modals
-   const myModal = document.getElementById('exampleModal')
-   const myInput = document.getElementById('myInput')
-    myModal.addEventListener('shown.bs.modal', () => {
-    myInput.focus()
-    })
+  
       
-   
+// arrows for scolling
+var scrollpos = 0;
+var prev=-1;
+function slideRight(selectedRating,hi) {
+    
+    var scrollStep = 83; // Adjust the value to change scroll step
+    var container = $('#sildefilter');
+    container.scrollLeft(scrollpos+scrollStep);
+    if(prev != container.scrollLeft()){
+        
+        scrollpos += scrollStep;
+    }
+    prev = container.scrollLeft();
+    
+    };
+
+function slideLeft(selectedRating,hi) {
+    var scrollStep = 83; // Adjust the value to change scroll step
+    var container = $('#sildefilter');
+    scrollpos -= scrollStep;
+    if(scrollpos < 0){
+        scrollpos=0;
+    }
+    container.scrollLeft(scrollpos);
+    };
+
 });
 
