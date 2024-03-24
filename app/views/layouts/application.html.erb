@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+    <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
     <%= javascript_importmap_tags %> 
 
     <!-- Google tag (gtag.js) -->
@@ -22,8 +23,8 @@
       gtag('config', 'G-CJM0VENVMF');
     </script>
 
-    <%= hotwire_livereload_tags %>
-    <%= javascript_include_tag 'turbo', 'data-turbo-track': 'reload' %> 
+
+
   </head>
 
   <body>
@@ -52,6 +53,7 @@
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
       <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
       <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+      <script src="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone-min.js"></script>
   </body>
 </html>
 
@@ -70,8 +72,6 @@
     }, 2000); // Display duration (in milliseconds)
   }
 });
-
-
 </script>
 
 
