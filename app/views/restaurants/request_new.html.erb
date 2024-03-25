@@ -87,10 +87,13 @@
       <% end %>
     </div>
 
-    <!-- Shafin: Dropzone  -->
-    <div>
-      <%= form.label :images, "Upload Images" %>
-      <%= form.file_field :images, multiple: true, direct_upload: true, class: 'time-input image-upload-field' %>
+    <div class = "mt-4">
+      <div class="dropzone dropzone-default dz-clickable" data-controller="dropzone" data-dropzone-max-file-size="255" data-dropzone-accepted-files="image/*" data-dropzone-max-files="10" data-upload-multiple="true">
+        <%= form.file_field :images, multiple: true, direct_upload: true, data: { dropzone_target: 'input' } %>
+        <div class="dropzone-msg dz-message needsclick">
+          <h5 class="dropzone-msg-title">Drag here to upload or click here to browse</h5>
+        </div>
+      </div>
     </div>
 
     <div>
@@ -190,6 +193,8 @@
   /* Add other styles as needed (padding, border, etc.) */
 }
 </style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
