@@ -84,4 +84,3 @@ group :test do
   gem "webdrivers"
 end
 
-gem "hotwire-livereload", "~> 1.2", :group => :development
