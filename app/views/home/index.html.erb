@@ -1,12 +1,12 @@
 <body>
     <div class="d-flex flex-column align-items-center justify-content-center mt-5">
-        <%= image_tag 'halalbytes-logo-w.png', style: 'width: 200px;'%>
+        <%= image_tag 'halalbytes-logo-w.png', class: 'logo-image', style: 'width: 200px;'%>
     </div>
 
     <div class="d-flex flex-column align-items-center justify-content-center mt-5 mb-5">
 
         <!--<h1 class="display-1 text-center mb-5">Ramadan Mubarak!</h1>-->
-        <%= image_tag 'h1.png', style: 'width: 600px; padding-bottom: 40px;'%>
+        <%= image_tag 'h1.png', class: 'responsive-h1', style: 'width: 600px; padding-bottom: 40px;'%>
         <h3>Explore the best halal food in Columbus</h3>
             <div class="search-container">
             <form action="/action_page.php" class="input-group mb-3">
@@ -91,6 +91,8 @@ h3 {
     font-weight: 500;
 }
 
+/* Smaller screen like tablet or small laptop*/
+
 @media (max-width: 768px) {
     body {
         background-position: center 75%; /* Shift the background position */
@@ -98,11 +100,47 @@ h3 {
     }
 }
 
-/* Example media query for screens less than 480px wide */
+/* Smaller screen like mobile phones*/
 @media (max-width: 480px) {
     body {
         background-position: center 75%; /* Further shift the background position */
         background-size: 200% auto; /* Increase or decrease the size as needed */
+    }
+    .responsive-h1 {
+        width: 100%; /* Makes the image width responsive to the screen size */
+        max-width: 350px; /* Adjust this value as needed */
+        padding-bottom: 20px; /* Optional: Adjust padding for smaller screens */
+    }
+    .search-container {
+        padding-left: 20px; /* Adds padding to the left side */
+        padding-right: 20px; /* Adds padding to the right side */
+    }
+    h1 {
+        padding-left: 20px; /* Adds padding to the left side */
+        padding-right: 20px; /* Adds padding to the right side */
+    }
+}
+/* for mobile devices with smaller heights*/
+@media (max-height: 800px) {
+    body {
+        background-position: center 75%; /* Further shift the background position */
+        background-size: 200% auto; /* Increase or decrease the size as needed */
+    }
+    .responsive-h1 {
+        width: 100%; /* Makes the image width responsive to the screen size */
+        max-width: 350px; /* Adjust this value as needed */
+        padding-bottom: 20px; /* Optional: Adjust padding for smaller screens */
+    }
+    .search-container {
+        padding-left: 20px; /* Adds padding to the left side */
+        padding-right: 20px; /* Adds padding to the right side */
+    }
+    h1 {
+        padding-left: 20px; /* Adds padding to the left side */
+        padding-right: 20px; /* Adds padding to the right side */
+    }
+    .logo-image {
+        display: none;
     }
 }
 
