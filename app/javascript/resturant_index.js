@@ -115,7 +115,6 @@ $(document).ready(function() {
     }; 
   $('.btn-check').on( "click", function() {
         var selectedCuisine = $(this).val();
-        
         if(selectedCuisine == 2.9 || selectedCuisine== 4.0 || selectedCuisine==5){
             
             filterCardsByRating(selectedCuisine,this);
@@ -155,7 +154,7 @@ var scrollpos = 0;
 var prev=-1;
 function slideRight(selectedRating,hi) {
     
-    var scrollStep = 83; // Adjust the value to change scroll step
+    var scrollStep = 200; // Adjust the value to change scroll step
     var container = $('#sildefilter');
     container.scrollLeft(scrollpos+scrollStep);
     if(prev != container.scrollLeft()){
@@ -167,7 +166,7 @@ function slideRight(selectedRating,hi) {
     };
 
 function slideLeft(selectedRating,hi) {
-    var scrollStep = 83; // Adjust the value to change scroll step
+    var scrollStep = 200; // Adjust the value to change scroll step
     var container = $('#sildefilter');
     scrollpos -= scrollStep;
     if(scrollpos < 0){
