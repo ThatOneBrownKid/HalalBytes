@@ -86,21 +86,23 @@
         <div class="form-group row">
           <label class="col-sm-3 col-form-label"><%= day.capitalize %></label>
           <div class="col-sm-4">
-            <%= form.time_field "#{day}_open", class: 'form-control time-input', value: extract_time(@restaurant.send(day), :open) %>
+            <%= form.text_field "#{day}_open", class: 'timepicker form-control', value: extract_time(@restaurant.send(day), :open) %>
           </div>
           <label class="col-sm-1 col-form-label text-center">to</label>
             <div class="col-sm-4">
-              <%= form.time_field "#{day}_close", class: 'form-control time-input', value: extract_time(@restaurant.send(day), :close) %>
+              <%= form.text_field "#{day}_close", class: 'timepicker form-control', value: extract_time(@restaurant.send(day), :close) %>
             </div>
         </div>
       <% end %>
     </div>
 
-    <!-- Shafin: Dropzone  -->
-    <div>
-      <%= form.label :images, "Upload Images" %>
-      <%= form.file_field :images, multiple: true, direct_upload: true, class: 'time-input image-upload-field form control' %>
-    </div>
+    <% if restaurant.new_record? %>
+      <div>
+        <%= form.label :images, "Upload Images" %>
+        <%= form.file_field :images, multiple: true, direct_upload: true, class: 'time-input image-upload-field form-control' %>
+      </div>
+    <% end %>
+
 
     <div>
       <%= form.submit 'Submit', class: 'btn btn-primary mt-2', type: 'submit' %>
@@ -203,7 +205,6 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     formatPhoneNumber();
-    limitFileUploads();
   });
 
   function formatPhoneNumber() {
@@ -224,17 +225,20 @@
       this.value = formattedInput;
     });
   }
-
-  function limitFileUploads() {
-    const uploadField = document.querySelector('.image-upload-field');
-
-    uploadField.addEventListener('change', function() {
-      if (this.files.length > 10) {
-        alert('You can only upload a maximum of 10 files.');
-        this.value = '';  // Clear the file input
-      }
-    });
-  }
 </script>
 
 
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+  if (window.jQuery) {
+    $(function() {
+      $('.timepicker').timepicker({
+        timeFormat: 'h:mm p',
+        dropdown: false
+      });
+    });
+  }
+  formatPhoneNumber();
+});
+
+</script>
