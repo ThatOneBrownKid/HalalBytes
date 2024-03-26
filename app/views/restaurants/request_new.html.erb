@@ -77,11 +77,11 @@
         <div class="form-group row">
           <label class="col-sm-3 col-form-label"><%= day.capitalize %></label>
           <div class="col-sm-4">
-            <%= form.text_field "#{day}_open", class: 'timepicker form-control', value: extract_time(@restaurant.send(day), :open) %>
+            <%= form.text_field "#{day}_open", class: 'timepicker form-control mb-2', value: extract_time(@restaurant.send(day), :open) %>
           </div>
           <label class="col-sm-1 col-form-label text-center">to</label>
             <div class="col-sm-4">
-              <%= form.text_field "#{day}_close", class: 'timepicker form-control', value: extract_time(@restaurant.send(day), :close) %>
+              <%= form.text_field "#{day}_close", class: 'timepicker form-control mb-2', value: extract_time(@restaurant.send(day), :close) %>
             </div>
         </div>
       <% end %>
@@ -194,14 +194,8 @@
 }
 </style>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    formatPhoneNumber();
-    limitFileUploads();
-  });
-
   function formatPhoneNumber() {
     const phoneField = document.getElementById('phone_field');
 
@@ -220,20 +214,9 @@
       this.value = formattedInput;
     });
   }
-
-  function limitFileUploads() {
-    const uploadField = document.querySelector('.image-upload-field');
-
-    uploadField.addEventListener('change', function() {
-      if (this.files.length > 10) {
-        alert('You can only upload a maximum of 10 files.');
-        this.value = '';  // Clear the file input
-      }
-    });
-  }
 </script>
 
-<script>
+<script type="module">
   $(document).ready(function(){
     $('.timepicker').timepicker({
       timeFormat: 'h:mm p',
@@ -241,5 +224,3 @@
     });
   });
 </script>
-
-

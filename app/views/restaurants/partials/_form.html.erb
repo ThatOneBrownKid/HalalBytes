@@ -205,7 +205,6 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     formatPhoneNumber();
-    limitFileUploads();
   });
 
   function formatPhoneNumber() {
@@ -226,25 +225,20 @@
       this.value = formattedInput;
     });
   }
-
-  function limitFileUploads() {
-    const uploadField = document.querySelector('.image-upload-field');
-
-    uploadField.addEventListener('change', function() {
-      if (this.files.length > 10) {
-        alert('You can only upload a maximum of 10 files.');
-        this.value = '';  // Clear the file input
-      }
-    });
-  }
 </script>
 
 
 <script>
-  $(document).ready(function(){
-    $('.timepicker').timepicker({
-      timeFormat: 'h:mm p',
-      dropdown: false
+  document.addEventListener("DOMContentLoaded", function() {
+  if (window.jQuery) {
+    $(function() {
+      $('.timepicker').timepicker({
+        timeFormat: 'h:mm p',
+        dropdown: false
+      });
     });
-  });
+  }
+  formatPhoneNumber();
+});
+
 </script>

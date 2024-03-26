@@ -13,7 +13,6 @@ export default class extends Controller {
   static targets = ["input"];
 
   connect() {
-    console.log("Connected to the dropzone controller");
     this.dropZone = createDropZone(this);
     this.hideFileInput();
     this.bindEvents();
@@ -156,6 +155,5 @@ function createDropZone(controller) {
     uploadMultiple: controller.uploadMultiple,
     autoQueue: false,
   });
-  console.log(dropzone);
   return dropzone;
 }
