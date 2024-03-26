@@ -400,6 +400,8 @@
 }
 </style>
 
+
+
 <script>
     // Function to toggle the icon, div visibility, and apply animation
     function toggleHours() {
@@ -457,7 +459,7 @@
   currentDayElement.textContent = currentDayWithColon;
 </script>
 
-<script>
+<script type="module">
   $(document).ready(function() {
   // Enable the carousel functionality
   $("#imageCarousel").carousel();
@@ -523,7 +525,7 @@ function previewImages() {
 }
 </script>
 
-<script>
+<script type="module">
 // Open the gallery modal
 document.getElementById('openGalleryBtn').addEventListener('click', function() {
     const modal = new bootstrap.Modal(document.getElementById('galleryModal'));
@@ -628,7 +630,7 @@ $(document).ready(function() {
 
 </script>
 
-<script>
+<script type="module">
 $(document).ready(function() {
     // When the "Upload Images" span is clicked
     $('#uploadImages').on('click', function() {
