@@ -5,7 +5,8 @@
 
     <div class="d-flex flex-column align-items-center justify-content-center mt-5 mb-5">
 
-        <h1 class="display-1 text-center mb-5">Ramadan Mubarak!</h1>
+        <!--<h1 class="display-1 text-center mb-5">Ramadan Mubarak!</h1>-->
+        <%= image_tag 'h1.png', style: 'width: 600px; padding-bottom: 40px;'%>
         <h3>Explore the best halal food in Columbus</h3>
             <div class="search-container">
             <form action="/action_page.php" class="input-group mb-3">
@@ -59,17 +60,25 @@
 </body>
 
 <style>
+
+@font-face {
+    font-family: 'Ramadhan Mubarak';
+    src: url('/app/assets/fonts/RamadhanMubarak.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     background-image: url(/assets/background.png);
     /*background: linear-gradient(#DC3545 0%, #000 100%);*/
     background-size: cover; /* Cover the entire page */
-    overflow: hidden;
+    
 }
 h1 {
     color: #FFFFFF; /* This will make your h1 and h3 text white */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    font-weight: 700;
-    /*font-family: 'Brush Script MT', cursive;*/
+    font-weight: 500;
+    font-family: 'Ramadhan Mubarak', cursive;
 }
 
 h3 {
@@ -129,7 +138,7 @@ h3 {
     max-width: 600px;
     width: 100%;
     margin: auto;
-    padding: 20px;
+    padding-top: 40px;
 }
 
 .search-container .form-control, .search-container .btn-outline-secondary {
