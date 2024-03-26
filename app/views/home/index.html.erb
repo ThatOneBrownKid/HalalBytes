@@ -4,7 +4,7 @@
     </div>
 
     <div class="d-flex flex-column align-items-center justify-content-center mt-5 mb-5">
-    <div class="info-container">
+
         <h1 class="display-1 text-center mb-5">Ramadan Mubarak!</h1>
         <h3>Explore the best halal food in Columbus</h3>
             <div class="search-container">
@@ -26,7 +26,7 @@
             </form>
             </div>
         </div>
-        </div>
+
         <!--
         <div class="container">
             <div class="row justify-content-center">
@@ -65,9 +65,21 @@ body {
     background-size: cover; /* Cover the entire page */
     overflow: hidden;
 }
-h1, h3 {
+h1 {
     color: #FFFFFF; /* This will make your h1 and h3 text white */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: 700;
+    /*font-family: 'Brush Script MT', cursive;*/
+}
+
+h3 {
+    color: #FFFFFF; /* This will make your h1 and h3 text white */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: center; /* Centers text horizontally */
+    margin-top: 0; /* You can adjust this value as needed */
+    margin-bottom: 0; /* You can adjust this value as needed */
+    font-size: 35px;
+    font-weight: 500;
 }
 
 @media (max-width: 768px) {
@@ -167,7 +179,7 @@ h1, h3 {
 
 .search-container .form-control:focus, .search-container .btn-outline-secondary:focus {
     outline: none; /* Removes the blue outline */
-    box-shadow: 0 0 0 2px rgba(220, 52, 69, 0.5); /* Optional: Adds a custom focus style */
+    box-shadow: none; /* Optional: Adds a custom focus style */
 }
 
 /* Specific styles for the restaurant search input */
@@ -177,6 +189,7 @@ h1, h3 {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
+
 
 
 </style>
