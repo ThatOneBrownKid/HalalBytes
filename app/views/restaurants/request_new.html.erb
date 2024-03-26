@@ -91,10 +91,13 @@
     </div>
 
     <!-- Shafin: Dropzone  -->
-    <div>
-      <%= form.label :images, "Upload Images" %>
-      <%= form.file_field :images, multiple: true, direct_upload: true, class: 'time-input image-upload-field' %>
+    <div id="my-awesome-dropzone" class="dropzone">
+      <div class="dz-message needsclick">
+      <i class="bi bi-download"></i> <br>
+        Choose an image file or drag it here.
+      </div>
     </div>
+
 
     <div>
       <%= form.submit 'Submit', class: 'btn btn-primary mt-2', type: 'submit' %>
@@ -182,6 +185,45 @@
     width: 40px;
   }
 
+  .dropzone {
+    border-radius: 20px; /* Adjust this value to get the desired roundness */
+    background-color: #e3e3e3;
+    border: 2px dashed #7d7d7d;
+    margin-top: 15px;
+    margin-bottom: 10px;
+  }
+
+
+  .dz-remove {
+    # height: 35px;
+    # width: 35px;
+    border: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    z-index: 100;
+    color: #FFFFFF;
+    text-decoration: none;
+    font-size: 55px; 
+  }
+
+  .dz-remove:hover { 
+    text-decoration: none; 
+  }
+
+  .dz-image img {
+    border-radius: 20px; /* Adjust this value to get the desired roundness for the image corners */
+    object-fit: cover; /* Optional: ensures the images cover the area nicely */
+  }
+
+  .dz-preview {
+    border-radius: 20px; /* Make sure this matches the border-radius of the images */
+    overflow: hidden; /* This prevents anything from extending outside the containers bounds */
+  }
+
+
+
   .form-control-select {
   -webkit-appearance: none;  /* Removes default chrome and safari style */
   -moz-appearance: none;    /* Removes default style Firefox */
@@ -229,6 +271,31 @@
       }
     });
   }
+
+  Dropzone.options.myAwesomeDropzone = {
+    url: '/restaurants/request_create',
+    autoProcessQueue: true,
+    uploadMultiple: true,
+    parallelUploads: 10,
+    maxFiles: 10,
+    maxFilesize: 2,
+    acceptedFiles: 'image/*',
+    addRemoveLinks: true,
+    dictRemoveFile: '', // Placeholder, well replace it
+    previewTemplate: `
+    <div class="dz-preview dz-file-preview">
+      <div class="dz-image"><img data-dz-thumbnail /></div>
+      <div class="dz-details">
+        <div class="dz-size"><span data-dz-size></span></div>
+        <div class="dz-filename"><span data-dz-name></span></div>
+      </div>
+      <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
+      <div class="dz-error-message"><span data-dz-errormessage></span></div>
+      <a class="dz-remove" href="javascript:undefined;" data-dz-remove>
+      <i class="bi bi-trash-fill" style="color: #F12424;"></i>
+      </a>
+    </div>`,
+  };
 </script>
 
 
