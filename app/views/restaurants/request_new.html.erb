@@ -91,7 +91,8 @@
       <div class="dropzone dropzone-default dz-clickable" data-controller="dropzone" data-dropzone-max-file-size="255" data-dropzone-accepted-files="image/*" data-dropzone-max-files="10" data-upload-multiple="true">
         <%= form.file_field :images, multiple: true, direct_upload: true, data: { dropzone_target: 'input' } %>
         <div class="dropzone-msg dz-message needsclick">
-          <h5 class="dropzone-msg-title">Drag here to upload or click here to browse</h5>
+        <i class="bi bi-card-image"></i>
+          <h5 class="dropzone-msg-title">Drag here to upload images or click here to browse</h5>
         </div>
       </div>
     </div>
