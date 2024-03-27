@@ -126,10 +126,17 @@ $(document).ready(function() {
         }
         else if(selectedCuisine == "Right"){
            
-            slideRight(selectedCuisine,this);
+            slideRight();
         }
         else if(selectedCuisine == "Left"){
-            slideLeft(selectedCuisine,this);
+            slideLeft();
+        }
+        else if(selectedCuisine == "reset"){
+            var $filters = ["","",""];
+            var $restaurantsContainer = $('#restaurants');
+            var $cards = $restaurantsContainer.find('.card-res ');
+            $('.btn-check').prop('checked', false);
+            updateCards($cards,$filters);
         }
         else{
             filterCardsByCuisine(selectedCuisine,this);
@@ -139,20 +146,12 @@ $(document).ready(function() {
    $('.btn-clear').on('click', function() {
         var selectedCuisine = $(this).val();
         filterCardsByCuisine(selectedCuisine);
-   });
+   });      
 
-// Price filter
-
-
-
-
-// filter modals
-  
-      
 // arrows for scolling
 var scrollpos = 0;
 var prev=-1;
-function slideRight(selectedRating,hi) {
+function slideRight() {
     
     var scrollStep = 200; // Adjust the value to change scroll step
     var container = $('#sildefilter');
@@ -165,7 +164,7 @@ function slideRight(selectedRating,hi) {
     
     };
 
-function slideLeft(selectedRating,hi) {
+function slideLeft() {
     var scrollStep = 200; // Adjust the value to change scroll step
     var container = $('#sildefilter');
     scrollpos -= scrollStep;
