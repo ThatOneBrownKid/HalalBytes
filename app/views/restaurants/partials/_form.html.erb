@@ -223,19 +223,11 @@
   });
 </script>
 
-
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-  if (window.jQuery) {
-    $(function() {
-      $('.timepicker').timepicker({
-        timeFormat: 'h:mm p',
-        dropdown: false
-      });
+<script type="module">
+  $(document).ready(function(){
+    $('.timepicker').timepicker({
+      timeFormat: 'h:mm p',
+      dropdown: false
     });
-  }
-  formatPhoneNumber();
-});
-
+  });
 </script>
