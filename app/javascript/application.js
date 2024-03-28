@@ -6,6 +6,8 @@ import "jquery";
 import "jquery-ui";
 import "timepicker";
 import "sortable";
+import "popper";
+import "bootstrap";
 import Rails from "@rails/ujs";
 Rails.start();
 

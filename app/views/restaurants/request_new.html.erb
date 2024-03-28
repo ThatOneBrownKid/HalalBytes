@@ -196,7 +196,7 @@
 
 
 <script>
-  function formatPhoneNumber() {
+  document.addEventListener('DOMContentLoaded', function () {
     const phoneField = document.getElementById('phone_field');
 
     phoneField.addEventListener('input', function(e) {
@@ -213,8 +213,9 @@
 
       this.value = formattedInput;
     });
-  }
+  });
 </script>
+
 
 <script type="module">
   $(document).ready(function(){
