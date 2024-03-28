@@ -6,7 +6,7 @@ import {
   findElement,
   removeElement,
   insertAfter,
-} from "../helpers/dropzone";
+} from "dropzone-helper";
 
 // Connects to data-controller="dropzone"
 export default class extends Controller {

@@ -15,3 +15,4 @@ pin "timepicker", to: "vendor/jquery.timepicker.min.js", preload: true
 pin "sortable", to: "https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js", preload: true
 pin "popper", to: "https://unpkg.com/@popperjs/core@2", preload: true
 pin "bootstrap", to: "vendor/bootstrap.min.js", preload: true
+pin "dropzone-helper", to: "helpers/dropzone.js", preload: true
