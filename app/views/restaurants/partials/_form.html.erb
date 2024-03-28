@@ -203,11 +203,7 @@
 </style>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    formatPhoneNumber();
-  });
-
-  function formatPhoneNumber() {
+  document.addEventListener('DOMContentLoaded', function () {
     const phoneField = document.getElementById('phone_field');
 
     phoneField.addEventListener('input', function(e) {
@@ -224,21 +220,14 @@
 
       this.value = formattedInput;
     });
-  }
+  });
 </script>
 
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-  if (window.jQuery) {
-    $(function() {
-      $('.timepicker').timepicker({
-        timeFormat: 'h:mm p',
-        dropdown: false
-      });
+<script type="module">
+  $(document).ready(function(){
+    $('.timepicker').timepicker({
+      timeFormat: 'h:mm p',
+      dropdown: false
     });
-  }
-  formatPhoneNumber();
-});
-
+  });
 </script>

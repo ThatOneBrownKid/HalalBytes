@@ -71,7 +71,7 @@
           <p class="d-inline" style="font-weight: bold;"> Address: </p> 
           <%=@restaurant.address%>
         </div>
-        <div class="d-block text-black" id="Resturant Address">
+        <div class="d-block text-black" id="Resturant Hours">
           <p class="d-inline" style="font-weight: bold;"> Hours: </p> 
           <span class="current-label" id="current-day" style="font-style: italic;"></span>
           <span> <%= @restaurant.hours(Time.now.strftime("%A").downcase) %></span>
@@ -111,7 +111,8 @@
           <div class="d-block text-black" id="Resturant Phone">
             <p class="d-inline" style="font-weight: bold;"> Phone: </p> 
             <%= @restaurant.phone %>
-          </div><div class="d-block text-black" id="Resturant Website">
+          </div>
+          <div class="d-block text-black" id="Resturant Website">
             <p class="d-inline" style="font-weight: bold;"> Website: </p> 
             <a href="<%= @restaurant.website %>" target="_blank"><%= @restaurant.website %></a>
           </div>
@@ -453,7 +454,7 @@
   const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const currentDayIndex = new Date().getDay();
   const currentDayName = daysOfWeek[currentDayIndex];
-  const currentDayWithColon = currentDayName + ":";
+  const currentDayWithColon = currentDayName + ": ";
 
   const currentDayElement = document.getElementById("current-day");
   currentDayElement.textContent = currentDayWithColon;
