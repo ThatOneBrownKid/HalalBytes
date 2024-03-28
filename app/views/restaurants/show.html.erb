@@ -404,50 +404,50 @@
 
 
 <script>
-    // Function to toggle the icon, div visibility, and apply animation
-    function toggleHours() {
-      const icon = document.getElementById("dropdown-icon");
-      const hoursDiv = document.getElementById("RestaurantHours");
+  // Function to toggle the icon, div visibility, and apply animation
+  function toggleHours() {
+    const icon = document.getElementById("dropdown-icon");
+    const hoursDiv = document.getElementById("RestaurantHours");
 
-      if (icon.classList.contains("bi-caret-down-fill")) {
-        // Toggle to left icon
-        icon.classList.remove("bi-caret-down-fill");
-        icon.classList.add("bi-caret-left-fill");
+    if (icon.classList.contains("bi-caret-down-fill")) {
+      // Toggle to left icon
+      icon.classList.remove("bi-caret-down-fill");
+      icon.classList.add("bi-caret-left-fill");
 
-        // Toggle the visibility of the div
-        hoursDiv.classList.remove("d-none");
+      // Toggle the visibility of the div
+      hoursDiv.classList.remove("d-none");
 
-        // Trigger animation for each row
-        const dayLabels = hoursDiv.querySelectorAll(".day-label");
-        const hoursSpans = hoursDiv.querySelectorAll(".hours");
+      // Trigger animation for each row
+      const dayLabels = hoursDiv.querySelectorAll(".day-label");
+      const hoursSpans = hoursDiv.querySelectorAll(".hours");
 
-        dayLabels.forEach((label, index) => {
-          setTimeout(() => {
-            label.style.opacity = "1";
-            hoursSpans[index].style.opacity = "1";
-          }, 10 * index); // Adjust the delay as needed
-        });
-      } else {
-        // Toggle to down icon, hide div, and reset opacity
-        icon.classList.remove("bi-caret-left-fill");
-        icon.classList.add("bi-caret-down-fill");
+      dayLabels.forEach((label, index) => {
+        setTimeout(() => {
+          label.style.opacity = "1";
+          hoursSpans[index].style.opacity = "1";
+        }, 10 * index); // Adjust the delay as needed
+      });
+    } else {
+      // Toggle to down icon, hide div, and reset opacity
+      icon.classList.remove("bi-caret-left-fill");
+      icon.classList.add("bi-caret-down-fill");
 
-        // Toggle the visibility of the div
-        hoursDiv.classList.add("d-none");
+      // Toggle the visibility of the div
+      hoursDiv.classList.add("d-none");
 
-        // Reset opacity to 0 for all rows
-        const dayLabels = hoursDiv.querySelectorAll(".day-label");
-        const hoursSpans = hoursDiv.querySelectorAll(".hours");
+      // Reset opacity to 0 for all rows
+      const dayLabels = hoursDiv.querySelectorAll(".day-label");
+      const hoursSpans = hoursDiv.querySelectorAll(".hours");
 
-        dayLabels.forEach((label) => {
-          label.style.opacity = "0";
-        });
+      dayLabels.forEach((label) => {
+        label.style.opacity = "0";
+      });
 
-        hoursSpans.forEach((hours) => {
-          hours.style.opacity = "0";
-        });
-      }
+      hoursSpans.forEach((hours) => {
+        hours.style.opacity = "0";
+      });
     }
+  }
 </script>
 
 <script>
@@ -495,7 +495,7 @@
 </script>
 
 <script>
-function previewImages() {
+  function previewImages() {
     const input = document.getElementById('image-upload');
     const previewDiv = document.getElementById('imagePreviews');
     previewDiv.innerHTML = ''; // Clear previous previews
@@ -523,63 +523,63 @@ function previewImages() {
         const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
         modal.show();
     }
-}
+  }
 </script>
 
 <script type="module">
-// Open the gallery modal
-document.getElementById('openGalleryBtn').addEventListener('click', function() {
+  // Open the gallery modal
+  document.getElementById('openGalleryBtn').addEventListener('click', function() {
     const modal = new bootstrap.Modal(document.getElementById('galleryModal'));
     modal.show();
-});
+  });
 
 
-$(document).ready(function() {
+  $(document).ready(function() {
     $('#imageCarousel').on('slide.bs.carousel', function(event) {
         // Deselect all thumbnails
-        $('#galleryImages .img-thumbnail').removeClass('border-primary');
+      $('#galleryImages .img-thumbnail').removeClass('border-primary');
 
         // Highlight the corresponding thumbnail
-        $($('#galleryImages .img-thumbnail')[event.to]).addClass('border-primary');
+      $($('#galleryImages .img-thumbnail')[event.to]).addClass('border-primary');
     });
 
     $('#galleryImages .img-thumbnail').click(function() {
-        const index = $('#galleryImages .img-thumbnail').index(this);
-        $('#imageCarousel').carousel(index);
+      const index = $('#galleryImages .img-thumbnail').index(this);
+      $('#imageCarousel').carousel(index);
     });
-});
+  });
 
-$(document).ready(function() {
+  $(document).ready(function() {
     try {
-        const restaurantId = $('body').data('restaurant-id');
-        let originalOrder = [];
+      const restaurantId = $('body').data('restaurant-id');
+      let originalOrder = [];
 
-        if (!restaurantId) {
-            console.error("Error: restaurantId not found.");
-            return;
+      if (!restaurantId) {
+        console.error("Error: restaurantId not found.");
+        return;
+      }
+
+      if ($("#editableGalleryImages").length === 0) {
+        console.error("Error: #editableGalleryImages element not found.");
+        return;
+      }
+
+      // Get CSRF token from meta tag
+      var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+      $("#editableGalleryImages").sortable({
+        items: '.draggable-image',
+        placeholder: "ui-sortable-placeholder",
+        forcePlaceholderSize: true,
+        start: function(event, ui) {
+          originalOrder = $("#editableGalleryImages .editable-image").map(function() {
+            return $(this).data("imageId");
+          }).get();
+        },
+        update: function(event, ui) {
+          // The update function will now just store the current order
         }
-
-        if ($("#editableGalleryImages").length === 0) {
-            console.error("Error: #editableGalleryImages element not found.");
-            return;
-        }
-
-        // Get CSRF token from meta tag
-        var csrfToken = $('meta[name="csrf-token"]').attr('content');
-
-        $("#editableGalleryImages").sortable({
-            items: '.draggable-image',
-            placeholder: "ui-sortable-placeholder",
-            forcePlaceholderSize: true,
-            start: function(event, ui) {
-                originalOrder = $("#editableGalleryImages .editable-image").map(function() {
-                    return $(this).data("imageId");
-                }).get();
-            },
-            update: function(event, ui) {
-                // The update function will now just store the current order
-            }
-        });
+      });
 
         // Confirm button click handler
         $("#confirmEditBtn").click(function() {
@@ -632,13 +632,11 @@ $(document).ready(function() {
 </script>
 
 <script type="module">
-$(document).ready(function() {
+  $(document).ready(function() {
     // When the "Upload Images" span is clicked
     $('#uploadImages').on('click', function() {
-        // Programmatically click the hidden file input
-        $('#image-upload').click();
+      // Programmatically click the hidden file input
+      $('#image-upload').click();
     });
-
-    // Your existing previewImages function should handle the rest
-});
+  });
 </script>
