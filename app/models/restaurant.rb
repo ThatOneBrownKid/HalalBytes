@@ -39,17 +39,22 @@ class Restaurant < ApplicationRecord
     open_hour, open_min = hours_str[0..1].to_i, hours_str[2..3].to_i
     close_hour, close_min = hours_str[4..5].to_i, hours_str[6..7].to_i
   
-    # Convert to 12-hour format
-    formatted_open = "#{open_hour > 12 ? open_hour - 12 : open_hour}:#{open_min.to_s.rjust(2, '0')} #{open_hour >= 12 ? 'PM' : 'AM'}"
-    formatted_close = "#{close_hour > 12 ? close_hour - 12 : close_hour}:#{close_min.to_s.rjust(2, '0')} #{close_hour >= 12 ? 'PM' : 'AM'}"
+    # Function to format the hour
+    format_hour = ->(hour, min) {
+      hour_in_12hr = hour % 12
+      hour_in_12hr = 12 if hour_in_12hr == 0 # Adjust for midnight and noon to show as 12
+      formatted_time = "#{hour_in_12hr}:#{min.to_s.rjust(2, '0')} #{hour >= 12 ? 'PM' : 'AM'}"
+      
+      # If minutes are 00, simplify the format by removing :00
+      formatted_time.gsub(':00', '')
+    }
   
-    # If minutes are 00, simplify the format
-    formatted_open = formatted_open.gsub(':00', '')
-    formatted_close = formatted_close.gsub(':00', '')
+    formatted_open = format_hour.call(open_hour, open_min)
+    formatted_close = format_hour.call(close_hour, close_min)
   
     "#{formatted_open} - #{formatted_close}"
   end
-
+  
   def hours(day)
     day = day.downcase
     hours_on_given_day = self.send(day)
