@@ -56,7 +56,7 @@
 </html>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("'turbo:load'", function() {
   var notifications = document.querySelectorAll(".alert:not(#password-alert,#login-alert)");
 
   if (notifications.length > 0) {
@@ -74,7 +74,7 @@
 
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("'turbo:load'", function() {
   var notifications = document.querySelectorAll(".alert.error");
 
   if (notifications.length > 0) {
@@ -89,5 +89,25 @@
   }
 });
 </script>
+
+
+<script>
+  document.addEventListener("'turbo:load'", function() {
+    // Select only notices by a class assumed to be "notice"
+    var noticeNotifications = document.querySelectorAll(".alert.notice");
+
+    if (noticeNotifications.length > 0) {
+      setTimeout(function() {
+        noticeNotifications.forEach(function(notification) {
+          notification.classList.add("fade");
+          setTimeout(function() {
+            notification.remove();
+          }, 500); // Fade-out duration (in milliseconds)
+        });
+      }, 2000); // Display duration (in milliseconds) specifically for notices
+    }
+  });
+</script>
+
 
 
