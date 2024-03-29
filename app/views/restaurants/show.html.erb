@@ -138,7 +138,7 @@
                     <div class="carousel-inner">
                       <% @ordered_images.each_with_index do |image, index| %>
                         <div class="carousel-item <%= 'active' if index == 0 %>">
-                            <%= image_tag process_image_for_carousel(image, 730, 500), class: "d-block w-100", alt: "Restaurant Image" %>
+                            <%= image_tag image.variant(resize_and_pad: [730, 500, gravity: 'Center', background: '#000']), class: "d-block w-100", alt: "Restaurant Image" %>
                         </div>
                         <% end %>
                     </div>
@@ -155,7 +155,7 @@
                     <div class="row" id="galleryImages">
                         <% @ordered_images.each do |image| %>
                             <div class="col-4">
-                                <%= image_tag image.variant(resize_to_limit: [100, 100]), class: "img-thumbnail", alt: "Restaurant Image", data: { image_id: image.id } %>
+                                <%= image_tag image.variant(resize_and_pad: [100, 100, gravity: 'north', background: '#000']), class: "img-thumbnail", alt: "Restaurant Image", data: { image_id: image.id } %>
                             </div>
                         <% end %>
                     </div>
