@@ -275,10 +275,11 @@
   }
 
   .image {
-    display: block;
-    max-width: 100%;
-    height: auto;
-  }
+   display: block;
+   width: 250px !important;; /* Adjust width as needed */
+   height: auto !important;; /* Maintain aspect ratio */
+   max-width: 100%; /* Ensure responsiveness */
+   }
 
   .edit-button {
     position: absolute;
@@ -552,42 +553,5 @@ addEventListener("DOMContentLoaded", (event) => {
 <script>
   document.getElementById("profile-picture-field").addEventListener("change", function() {
     document.getElementById("submit-profile-picture").click();
-  });
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const imageContainer = document.querySelector(".image-container");
-    const profilePictureLabel = document.getElementById("profile-picture-label");
-
-    // Function to determine the label color based on the background brightness
-    function setLabelColor() {
-      const computedStyle = getComputedStyle(imageContainer);
-      const backgroundColor = computedStyle.backgroundColor;
-      const brightness = getBrightness(backgroundColor);
-
-      // Adjust the threshold value according to your needs
-      const threshold = 128;
-
-      // Set the label color based on the brightness threshold
-      if (brightness > threshold) {
-        profilePictureLabel.style.color = "black";
-      } else {
-        profilePictureLabel.style.color = "white";
-      }
-    }
-
-    // Function to calculate the brightness of a color
-    function getBrightness(color) {
-      const rgb = color.match(/\d+/g);
-      const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
-      return brightness;
-    }
-
-    // Call the setLabelColor function initially
-    setLabelColor();
-
-    // Call the setLabelColor function whenever the window is resized
-    window.addEventListener("resize", setLabelColor);
   });
 </script>

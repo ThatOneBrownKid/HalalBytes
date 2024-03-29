@@ -73,7 +73,8 @@
         </div>
         <div class="d-block text-black" id="Resturant Hours">
           <p class="d-inline" style="font-weight: bold;"> Hours: </p> 
-          <span class="current-label" id="current-day" style="font-style: italic;"></span>
+          <span class="current-label" id="current-day" style="font-style: italic;">
+          <%= Date::DAYNAMES[Time.now.wday] %>: </span>
           <span> <%= @restaurant.hours(Time.now.strftime("%A").downcase) %></span>
           <span class="dropdown" onclick="toggleHours()"> 
             <i id="dropdown-icon" class="bi bi-caret-down-fill"></i> 
@@ -448,16 +449,6 @@
       });
     }
   }
-</script>
-
-<script>
-  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const currentDayIndex = new Date().getDay();
-  const currentDayName = daysOfWeek[currentDayIndex];
-  const currentDayWithColon = currentDayName + ": ";
-
-  const currentDayElement = document.getElementById("current-day");
-  currentDayElement.textContent = currentDayWithColon;
 </script>
 
 <script type="module">

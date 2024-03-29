@@ -196,25 +196,29 @@
 
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('turbo:load', function () {
     const phoneField = document.getElementById('phone_field');
 
-    phoneField.addEventListener('input', function(e) {
-      let input = this.value.replace(/\D/g, ''); // Remove all non-digits
-      input = input.substring(0, 10); // Trim the input to 10 digits
+    // It's a good practice to check if the element exists before adding event listeners
+    if (phoneField) {
+      phoneField.addEventListener('input', function(e) {
+        let input = this.value.replace(/\D/g, ''); // Remove all non-digits
+        input = input.substring(0, 10); // Trim the input to 10 digits
 
-      let formattedInput = "";
-      for (let i = 0; i < input.length; i++) {
-        if (i === 0) formattedInput += "(";
-        if (i === 3) formattedInput += ") ";
-        if (i === 6) formattedInput += "-";
-        formattedInput += input[i];
-      }
+        let formattedInput = "";
+        for (let i = 0; i < input.length; i++) {
+          if (i === 0) formattedInput += "(";
+          if (i === 3) formattedInput += ") ";
+          if (i === 6) formattedInput += "-";
+          formattedInput += input[i];
+        }
 
-      this.value = formattedInput;
-    });
+        this.value = formattedInput;
+      });
+    }
   });
 </script>
+
 
 
 <script type="module">
