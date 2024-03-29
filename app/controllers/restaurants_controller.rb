@@ -70,9 +70,11 @@ class RestaurantsController < ApplicationController
   # PATCH/PUT /restaurants/1 or /restaurants/1.json
   def update
     process_operating_times
+    @restaurant.images.attach(params[:restaurant][:images]) if params[:restaurant][:images].present?
+  
     respond_to do |format|
-      if @restaurant.update(conditional_restaurant_params)
-        format.html { redirect_to restaurant_url(@restaurant)}
+      if @restaurant.save
+        format.html { redirect_to restaurant_url(@restaurant), notice: "Restaurant was successfully updated with new images." }
         format.json { render :show, status: :ok, location: @restaurant }
       else
         flash.now[:alert] = @restaurant.errors.full_messages.join(', ')

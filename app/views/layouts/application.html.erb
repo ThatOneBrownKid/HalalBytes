@@ -56,44 +56,41 @@
 </html>
 
 <script>
-  document.addEventListener("'turbo:load'", function() {
-  var notifications = document.querySelectorAll(".alert:not(#password-alert,#login-alert)");
+  document.addEventListener("turbo:load", function() {
+    var notifications = document.querySelectorAll(".alert:not(#password-alert,#login-alert)");
 
-  if (notifications.length > 0) {
-    setTimeout(function() {
-      notifications.forEach(function(notification) {
-        notification.classList.add("fade");
-        setTimeout(function() {
-          notification.remove();
-        }, 500); // Fade-out duration (in milliseconds)
-      });
-    }, 2000); // Display duration (in milliseconds)
-  }
-});
+    if (notifications.length > 0) {
+      setTimeout(function() {
+        notifications.forEach(function(notification) {
+          notification.classList.add("fade");
+          setTimeout(function() {
+            notification.remove();
+          }, 500); // Fade-out duration (in milliseconds)
+        });
+      }, 1500); // Display duration (in milliseconds)
+    }
+  });
 </script>
 
-
 <script>
-  document.addEventListener("'turbo:load'", function() {
-  var notifications = document.querySelectorAll(".alert.error");
+  document.addEventListener("turbo:load", function() {
+    var notifications = document.querySelectorAll(".alert.error");
 
-  if (notifications.length > 0) {
-    setTimeout(function() {
-      notifications.forEach(function(notification) {
-        notification.classList.add("fade");
-        setTimeout(function() {
-          notification.remove();
-        }, 500); // Fade-out duration (in milliseconds)
-      });
-    }, 2000); // Display duration (in milliseconds)
-  }
-});
+    if (notifications.length > 0) {
+      setTimeout(function() {
+        notifications.forEach(function(notification) {
+          notification.classList.add("fade");
+          setTimeout(function() {
+            notification.remove();
+          }, 500); // Fade-out duration (in milliseconds)
+        });
+      }, 2000); // Display duration (in milliseconds)
+    }
+  });
 </script>
 
-
 <script>
-  document.addEventListener("'turbo:load'", function() {
-    // Select only notices by a class assumed to be "notice"
+  document.addEventListener("turbo:load", function() {
     var noticeNotifications = document.querySelectorAll(".alert.notice");
 
     if (noticeNotifications.length > 0) {
@@ -108,6 +105,7 @@
     }
   });
 </script>
+
 
 
 
