@@ -174,5 +174,18 @@ function slideLeft() {
     container.scrollLeft(scrollpos);
     };
 
+    var options = {
+        html: true,
+        title: "Price",
+        //html element
+        //content: $("#popover-content")
+        content: $('[data-name="popover-content"]')
+        //Doing below won't work. Shows title only
+        //content: $("#popover-content").html()
+
+    }
+    var exampleEl = document.getElementById('price-filter')
+    var popover = new bootstrap.Popover(exampleEl, options)
+    
 });
 

@@ -14,7 +14,7 @@
                      <div class="d-flex  justify-content-end">
                         <input type="btn" class="btn-check " id='sildeLeft' value="Left" autocomplete="off">
                         <label class= "btn border-0" for='sildeLeft'>
-                           <h2><i class="bi bi-arrow-left-square-fill" style="color:gray;"></i></h2>
+                           <h2><i class="bi bi-arrow-left-circle-fill icon-black" style="color:#E8E8E8;"></i> </i></h2>
                         </label>
                      </div>
                   </div>
@@ -29,8 +29,8 @@
                         <div class="row flex-nowrap" >
                            <% cuisines.each do |cuisine| %>   
                            <div class="col-auto">
-                              <input type="radio" class="btn-check" name="options" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
-                              <label class="btn btn-outline-secondary border-0" for="<%= cuisine %>">
+                              <input type="radio" class="btn-check " name="options" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
+                              <label class="btn btn-outline-secondary  border-0" for="<%= cuisine %>" style="--btn-outline-opacity: .5;">
                                  <%= image_tag "#{cuisine}.png", class: "filter-img", alt: "Restaurant Image" %>
                                  <figcaption class="figure-caption"><%= cuisine %></figcaption>
                               </label>
@@ -43,7 +43,7 @@
                      <div class="card border-0 overflow-x-auto mt-2 align-items-center" style="width: 100%;">
                         <div class="row flex-nowrap">
                            <div class="col-auto">        
-                              <button type="button" class="btn border-0 rounded-5"  style=' background-color:#E8E8E8; '  data-bs-toggle="modal" data-bs-target="#priceModal">
+                              <button type="button" class="btn border-0 rounded-5"  style=' background-color:#E8E8E8; ' id="price-filter" data-bs-toggle="popover" data-bs-placement="bottom" title="Price">
                               Price
                               </button>
                            </div>
@@ -70,7 +70,7 @@
                      <div class="d-flex  justify-content-start">
                         <input type="btn" class="btn-check " id='sildeRight' value="Right" autocomplete="off">
                         <label class= "btn" for='sildeRight'>
-                           <h2><i class="bi bi-arrow-right-square-fill" style="color:gray;"></i></h2>
+                           <h2><i class="bi bi-arrow-right-circle-fill icon-black" style=" color:#E8E8E8;"></i></h2>
                         </label>
                      </div>
                   </div>
