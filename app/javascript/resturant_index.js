@@ -6,6 +6,7 @@ $(document).ready(function() {
   var $hiddenCards = $();
   var $filters = ["","",""];
     function updateCards($cards,$filters){
+        console.log($filters);
         $cards.each(function() {
             var showCard = true;
             var $attributes = [];
@@ -132,7 +133,7 @@ $(document).ready(function() {
             slideLeft();
         }
         else if(selectedCuisine == "reset"){
-            var $filters = ["","",""];
+                $filters = ["","",""];
             var $restaurantsContainer = $('#restaurants');
             var $cards = $restaurantsContainer.find('.card-res ');
             $('.btn-check').prop('checked', false);
@@ -174,18 +175,31 @@ function slideLeft() {
     container.scrollLeft(scrollpos);
     };
 
-    var options = {
+    var optionsPrice = {
         html: true,
         title: "Price",
         //html element
         //content: $("#popover-content")
-        content: $('[data-name="popover-content"]')
+        content: $('[data-name="popover-content-price"]')
         //Doing below won't work. Shows title only
         //content: $("#popover-content").html()
 
     }
     var exampleEl = document.getElementById('price-filter')
-    var popover = new bootstrap.Popover(exampleEl, options)
-    
+    var popover = new bootstrap.Popover(exampleEl, optionsPrice)
+
+    var optionsRating = {
+        html: true,
+        title: "Rating",
+        //html element
+        //content: $("#popover-content")
+        content: $('[data-name="popover-content-rating"]')
+        //Doing below won't work. Shows title only
+        //content: $("#popover-content").html()
+
+    }
+    var exampleEl = document.getElementById('rating-filter')
+    var popover = new bootstrap.Popover(exampleEl, optionsRating)
+        
 });
 
