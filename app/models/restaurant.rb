@@ -65,6 +65,10 @@ class Restaurant < ApplicationRecord
     images.joins(:blob).order("active_storage_attachments.position ASC")
   end
 
+  def address
+    [street, city, state, zip_code].compact.join(', ')
+  end
+
   private 
 
   def ensure_website_format

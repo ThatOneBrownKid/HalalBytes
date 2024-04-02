@@ -71,6 +71,10 @@
           <p class="d-inline" style="font-weight: bold;"> Address: </p> 
           <%=@restaurant.address%>
         </div>
+        <div class="d-block text-black" id="Resturant Cuisine">
+          <p class="d-inline" style="font-weight: bold;"> Cuisine: </p> 
+          <%=@restaurant.cuisine%>
+        </div>
         <div class="d-block text-black" id="Resturant Hours">
           <p class="d-inline" style="font-weight: bold;"> Hours: </p> 
           <span class="current-label" id="current-day" style="font-style: italic;">
@@ -117,10 +121,6 @@
             <p class="d-inline" style="font-weight: bold;"> Website: </p> 
             <a href="<%= @restaurant.website %>" target="_blank"><%= @restaurant.website %></a>
           </div>
-          <div class="d-block text-black" id="Resturant Cuisine">
-            <p class="d-inline" style="font-weight: bold;"> Cuisine: </p> 
-          <%=@restaurant.cuisine%>
-        </div>
       </div>
     </div>
   </div>
