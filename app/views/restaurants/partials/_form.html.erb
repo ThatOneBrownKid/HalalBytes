@@ -39,8 +39,25 @@
     </div>
 
     <div>
-      <%= form.label :address, style: "display: block" %>
-      <%= form.text_field :address, class: "form-control" %>
+      <%= form.label :street, style: "display: block" %>
+      <%= form.text_field :street, class: "form-control" %>
+    </div>
+
+    <div>
+      <%= form.label :city, style: "display: block" %>
+      <%= form.text_field :city, class: "form-control" %>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= form.label :state, style: "display: block" %>
+        <%= form.text_field :state, class: "form-control" %>
+      </div>
+
+      <div class="col">
+        <%= form.label :zip_code, style: "display: block" %>
+        <%= form.text_field :zip_code, class: "form-control" %>
+      </div>
     </div>
 
     <div>
@@ -86,26 +103,30 @@
         <div class="form-group row">
           <label class="col-sm-3 col-form-label"><%= day.capitalize %></label>
           <div class="col-sm-4">
-            <%= form.text_field "#{day}_open", class: 'timepicker form-control', value: extract_time(@restaurant.send(day), :open) %>
+            <%= form.text_field "#{day}_open", class: 'timepicker form-control mb-2', value: extract_time(@restaurant.send(day), :open) %>
           </div>
           <label class="col-sm-1 col-form-label text-center">to</label>
             <div class="col-sm-4">
-              <%= form.text_field "#{day}_close", class: 'timepicker form-control', value: extract_time(@restaurant.send(day), :close) %>
+              <%= form.text_field "#{day}_close", class: 'timepicker form-control mb-2', value: extract_time(@restaurant.send(day), :close) %>
             </div>
         </div>
       <% end %>
     </div>
 
     <% if restaurant.new_record? %>
-      <div>
-        <%= form.label :images, "Upload Images" %>
-        <%= form.file_field :images, multiple: true, direct_upload: true, class: 'time-input image-upload-field form-control' %>
+      <div class = "mt-4">
+      <div class="dropzone dropzone-default dz-clickable" data-controller="dropzone" data-dropzone-max-file-size="255" data-dropzone-accepted-files="image/*" data-dropzone-max-files="10" data-upload-multiple="true">
+        <%= form.file_field :images, multiple: true, direct_upload: true, data: { dropzone_target: 'input' } %>
+        <div class="dropzone-msg dz-message needsclick">
+          <h5 class="dropzone-msg-title">Drag here to upload or click here to browse</h5>
+        </div>
       </div>
+    </div>
     <% end %>
 
 
     <div>
-      <%= form.submit 'Submit', class: 'btn btn-primary mt-2', type: 'submit' %>
+      <%= form.submit 'Submit', class: 'btn btn-primary mt-3', type: 'submit' %>
     </div>
 
   <% end %>
@@ -203,23 +224,26 @@
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('turbo:load', function () {
     const phoneField = document.getElementById('phone_field');
 
-    phoneField.addEventListener('input', function(e) {
-      let input = this.value.replace(/\D/g, ''); // Remove all non-digits
-      input = input.substring(0, 10); // Trim the input to 10 digits
+    // It's a good practice to check if the element exists before adding event listeners
+    if (phoneField) {
+      phoneField.addEventListener('input', function(e) {
+        let input = this.value.replace(/\D/g, ''); // Remove all non-digits
+        input = input.substring(0, 10); // Trim the input to 10 digits
 
-      let formattedInput = "";
-      for (let i = 0; i < input.length; i++) {
-        if (i === 0) formattedInput += "(";
-        if (i === 3) formattedInput += ") ";
-        if (i === 6) formattedInput += "-";
-        formattedInput += input[i];
-      }
+        let formattedInput = "";
+        for (let i = 0; i < input.length; i++) {
+          if (i === 0) formattedInput += "(";
+          if (i === 3) formattedInput += ") ";
+          if (i === 6) formattedInput += "-";
+          formattedInput += input[i];
+        }
 
-      this.value = formattedInput;
-    });
+        this.value = formattedInput;
+      });
+    }
   });
 </script>
 

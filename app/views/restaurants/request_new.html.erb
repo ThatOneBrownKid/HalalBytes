@@ -31,8 +31,25 @@
     </div>
 
     <div>
-      <%= form.label :address, style: "display: block" %>
-      <%= form.text_field :address, class: "form-control" %>
+      <%= form.label :street, style: "display: block" %>
+      <%= form.text_field :street, class: "form-control" %>
+    </div>
+
+    <div>
+      <%= form.label :city, style: "display: block" %>
+      <%= form.text_field :city, class: "form-control" %>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= form.label :state, style: "display: block" %>
+        <%= form.text_field :state, class: "form-control" %>
+      </div>
+
+      <div class="col">
+        <%= form.label :zip_code, style: "display: block" %>
+        <%= form.text_field :zip_code, class: "form-control" %>
+      </div>
     </div>
 
     <div>
@@ -97,7 +114,7 @@
     </div>
 
     <div>
-      <%= form.submit 'Submit', class: 'btn btn-primary mt-2', type: 'submit' %>
+      <%= form.submit 'Submit', class: 'btn btn-primary mt-3', type: 'submit' %>
     </div>
 
   <% end %>
