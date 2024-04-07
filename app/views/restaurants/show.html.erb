@@ -71,10 +71,12 @@
           <p class="d-inline" style="font-weight: bold;"> Address: </p> 
           <%=@restaurant.address%>
         </div>
+
         <div class="d-block text-black" id="Resturant Cuisine">
           <p class="d-inline" style="font-weight: bold;"> Cuisine: </p> 
           <%=@restaurant.cuisine%>
         </div>
+
         <div class="d-block text-black" id="Resturant Hours">
           <p class="d-inline" style="font-weight: bold;"> Hours: </p> 
           <span class="current-label" id="current-day" style="font-style: italic;">
@@ -113,14 +115,29 @@
               <span class="hours"><%= @restaurant.hours("Saturday") %></span>
             </div>
           </div>
+
           <div class="d-block text-black" id="Resturant Phone">
             <p class="d-inline" style="font-weight: bold;"> Phone: </p> 
             <%= @restaurant.phone %>
           </div>
+
           <div class="d-block text-black" id="Resturant Website">
             <p class="d-inline" style="font-weight: bold;"> Website: </p> 
             <a href="<%= @restaurant.website %>" target="_blank"><%= @restaurant.website %></a>
           </div>
+
+          <div class="d-block text-black" id="Resturant Halal Status">
+            <p class="d-inline" style="font-weight: bold;"> Halal Status: </p> 
+            <a><%= @restaurant.halal_status %></a>
+          </div>
+
+          <% unless @restaurant.halal_status == 'Fully Halal' %>
+            <div class="d-block text-black" id="Restaurant Notes">
+              <p class="d-inline" style="font-weight: bold;">Notes:</p> 
+              <a><%= @restaurant.notes %></a>
+            </div>
+          <% end %>
+
       </div>
     </div>
   </div>
@@ -624,7 +641,28 @@
         console.error("Error initializing sortable:", error);
     }
 });
+</script>
 
+<script>
+  document.addEventListener("turbo:load", function() {
+    const halalStatus = document.getElementById("Resturant_Halal_Status");
+    const notesField = document.getElementById("Resturant_Notes");
+
+    // Function to toggle visibility of the notes field
+    function toggleNotesField() {
+      if (halalStatus.value === "Partially Halal") {
+        notesField.style.display = "block";
+      } else {
+        notesField.style.display = "none";
+      }
+    }
+
+    // Call toggleNotesField initially to set the initial state
+    toggleNotesField();
+
+    // Add event listener to the halal_status select field to toggle the notes field
+    halalStatus.addEventListener("change", toggleNotesField);
+  });
 </script>
 
 <script type="module">
