@@ -62,7 +62,7 @@ $(document).ready(function() {
         var $cards = $restaurantsContainer.find('.card-res ');
         if ($filters[1] == selectedPrice){
             $filters[1] = "";
-            $(hi).prop('checked', false);
+            
         }
         else if($filters.length >= 2){
             $filters[1] = selectedPrice;
@@ -113,16 +113,48 @@ $(document).ready(function() {
         }
         updateCards($cards,$filters);
        
-    }; 
+    };
+
+    function selectionfilter(button,prev){
+        if(prev != null){
+            if(prev == button){
+               
+                button.toggleClass('selected');
+                prev = null;
+            }
+            else{
+                prev.toggleClass('selected');
+                prev = button;
+                // Toggle the 'selected' class on the button element
+                button.toggleClass('selected');
+            }
+            
+        }
+        else{
+            prev = button;
+            // Toggle the 'selected' class on the button element
+            button.toggleClass('selected');
+        }
+        return prev;
+    }
+    var prevPrice = null;
+    var prevRating = null;
+    temp = null;
   $('.btn-check').on( "click", function() {
         var selectedCuisine = $(this).val();
         if(selectedCuisine == 2.9 || selectedCuisine== 4.0 || selectedCuisine==5){
-            
+            const buttonId = $(this).attr('id'); // Get the ID of the clicked radio input
+            const button = $(`label[for='${buttonId}']`); // Find the corresponding label by ID
+            prevRating = selectionfilter(button,prevRating);
             filterCardsByRating(selectedCuisine,this);
             
         }
         else if(selectedCuisine == 1 || selectedCuisine==2 || selectedCuisine==3){
-            
+            const buttonId = $(this).attr('id'); // Get the ID of the clicked radio input
+            const button = $(`label[for='${buttonId}']`); // Find the corresponding label by ID
+           
+            prevPrice = selectionfilter(button,prevPrice)
+           
             filterCardsByPrice(selectedCuisine,this);
         }
         else if(selectedCuisine == "Right"){
@@ -133,7 +165,11 @@ $(document).ready(function() {
             slideLeft();
         }
         else if(selectedCuisine == "reset"){
-                $filters = ["","",""];
+            prevPrice.toggleClass('selected');
+            prevPrice = null;
+            prevRating.toggleClass('selected');
+            prevRating = null;
+            $filters = ["","",""];
             var $restaurantsContainer = $('#restaurants');
             var $cards = $restaurantsContainer.find('.card-res ');
             $('.btn-check').prop('checked', false);
@@ -185,9 +221,38 @@ function slideLeft() {
         //content: $("#popover-content").html()
 
     }
-    var exampleEl = document.getElementById('price-filter')
-    var popover = new bootstrap.Popover(exampleEl, optionsPrice)
-
+    function insidepopover(popover,instance,event,name){
+        if (
+            !popover.contains(event.target) && // Clicked outside of price popover trigger
+            !(isElementInsidePricePopoverContent(event.target,name))
+        ) {
+            instance.hide();       
+        }
+    }
+    function eventfilter(Popover,Instance,name){
+        body.addEventListener('click', function (event) {
+            insidepopover(Popover,Instance,event,name);
+        });
+    }
+    function isElementInsidePricePopoverContent(element,name) {
+        if(element.id != ""){
+            if(element.id == name || element.name == (name)){
+                return true;
+            }
+            else
+                return false;
+        } 
+        return false;
+    }
+    var pricePopover = document.getElementById('price-filter')
+    var pricePopoverInstance  = new bootstrap.Popover(pricePopover, optionsPrice)
+    pricename = "price";
+    var body = document.getElementById('resturantpage')
+    
+    pricePopover.addEventListener('click', function (event) {
+        eventfilter(pricePopover,pricePopoverInstance,pricename); 
+    });
+   
     var optionsRating = {
         html: true,
         title: "Rating",
@@ -198,8 +263,11 @@ function slideLeft() {
         //content: $("#popover-content").html()
 
     }
-    var exampleEl = document.getElementById('rating-filter')
-    var popover = new bootstrap.Popover(exampleEl, optionsRating)
-        
+    var ratingPopover = document.getElementById('rating-filter')
+    var ratingPopoverInstance = new bootstrap.Popover(ratingPopover, optionsRating)
+    ratingname = 'rating';
+    ratingPopover.addEventListener('click', function (event) {
+        eventfilter(ratingPopover,ratingPopoverInstance,ratingname); 
+    }); 
 });
 

@@ -2,7 +2,7 @@
    <div class="sticky-top" style="z-index:50;">
       <div class="accordion-item ">
          <h2 class="accordion-header ">
-            <button class="accordion-button  collapsed text-center fw-bolder" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+            <button id="accordion-button" class="accordion-button  collapsed text-center fw-bolder" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
             Filters
             </button>
          </h2>
@@ -43,21 +43,21 @@
                   <div class="card border-0 overflow-x-auto mt-2 align-items-center" style="width: 100%;">
                      <div class="row flex-nowrap">
                         <div class="col-auto">        
-                            <a tabindex="0" role="button" class="btn border-0 rounded-5 d-none d-sm-none d-lg-block d-xl-block d-xxl-block" style=' background-color:#E8E8E8; ' id="price-filter" data-trigger="focus" data-bs-toggle="popover" data-bs-placement="bottom">Price</a>
+                            <a tabindex="0" role="button" class="btn btn-btngray border-0 rounded-5 d-none d-sm-none d-lg-block d-xl-block d-xxl-block" style=' background-color:#E8E8E8; ' id="price-filter"  data-bs-toggle="popover" data-bs-placement="bottom">Price</a>
                            <button class="btn border-0 rounded-5 d-lg-none d-xl-none d-xxl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom-price" aria-controls="offcanvasBottom" style=' background-color:#E8E8E8;'>Price</button>
                         </div>
                         <div class="col-auto">       
-                           <a tabindex="0" role="button"  class="btn border-0 rounded-5 d-none d-sm-none d-lg-block d-xl-block d-xxl-block" style=' background-color:#E8E8E8; ' id="rating-filter" data-trigger="hover" data-bs-toggle="popover" data-bs-placement="bottom">Rating</a>
+                           <a tabindex="0" role="button"  class="btn btn-btngray border-0 rounded-5 d-none d-sm-none d-lg-block d-xl-block d-xxl-block" style=' background-color:#E8E8E8; ' id="rating-filter"    data-bs-toggle="popover"  data-bs-placement="bottom">Rating</a>
                            <button class="btn border-0 rounded-5 d-lg-none d-xl-none d-xxl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" style=' background-color:#E8E8E8;'>Rating</button>
                         </div>
                         <div class="col-auto">       
-                           <button type="button" class="btn border-0 rounded-5" style=' background-color:#E8E8E8; ' data-bs-toggle="modal" data-bs-target="#exampleModal">
+                           <button type="button" class="btn btn-btngray border-0 rounded-5" data-bs-toggle="modal" data-bs-target="#exampleModal">
                            Sort
                            </button>
                         </div>
                         <div class="col-auto">       
-                           <input type="button" class="btn-check" name="rating" id="reset" value="reset" autocomplete="off">
-                           <label class="btn btn-outline-dark border-0 rounded-5" style='width: 100%; background-color:#E8E8E8; ' for="reset">Reset</label>
+                           <input type="button" class="btn-check " name="rating" id="reset" value="reset" autocomplete="off">
+                           <label class="btn btn-btngray border-0 rounded-5" style='width: 100%; background-color:#E8E8E8; ' for="reset">Reset</label>
                         </div>
                         <!--! -->                        
                      </div>

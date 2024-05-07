@@ -1,4 +1,4 @@
-<body style="background-color: #FFFFFF;">
+<body id="resturantpage" style="background-color: #FFFFFF;">
    <%= render '/restaurants/partials/filters'%>
    <div class="col-md-12">
          <!-- Restaurants section -->
@@ -46,9 +46,7 @@
 .accordion-button{
   display:block;
 }
-.btn-outline-secondary.custom-gray {
-      border-color: #E8E8E8; /* Your custom shade of gray */
-    }
+
 .offcanvas, .offcanvas-lg, .offcanvas-md, .offcanvas-sm, .offcanvas-xl, .offcanvas-xxl {
     --bs-offcanvas-zindex: 1045;
     --bs-offcanvas-width: 400px;
@@ -62,5 +60,24 @@
     --bs-offcanvas-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
     --bs-offcanvas-transition: transform 0.3s ease-in-out;
     --bs-offcanvas-title-line-height: 1.5;
+}
+.btn-btngray, .btn-btngray:hover {
+    background-color: #E8E8E8 !important;
+}
+.btn-btngray:active {
+    background-color: #DADADA !important;
+    color: #FFFFFF;
+}
+.btn-btngrayfilter:focus{
+    background-color: #C2C2C2 !important; 
+}
+.btn-secondary{
+  --bs-btn-bg:#E8E8E8; 
+  color:black;
+}
+.selected {
+  background-color: black;
+  color: white;
+  /* add any other styling you want for a selected button */
 }
 </style>
