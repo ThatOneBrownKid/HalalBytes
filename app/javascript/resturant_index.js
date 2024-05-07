@@ -116,7 +116,7 @@ $(document).ready(function() {
 
     function selectionfilter(button,prev){
         if(prev != null){
-            if(prev == button){
+            if(prev[0] == button[0]){
                
                 button.toggleClass('selected');
                 prev = null;
@@ -164,10 +164,14 @@ $(document).ready(function() {
             slideLeft();
         }
         else if(selectedCuisine == "reset"){
-            prevPrice.toggleClass('selected');
-            prevPrice = null;
-            prevRating.toggleClass('selected');
-            prevRating = null;
+            if (prevPrice != null){
+                prevPrice.toggleClass('selected');
+                prevPrice = null;
+            }
+            if(prevRating != null){
+                prevRating.toggleClass('selected');
+                prevRating = null;
+            }
             $filters = ["","",""];
             var $restaurantsContainer = $('#restaurants');
             var $cards = $restaurantsContainer.find('.card-res ');
