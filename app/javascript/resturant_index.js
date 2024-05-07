@@ -6,7 +6,6 @@ $(document).ready(function() {
   var $hiddenCards = $();
   var $filters = ["","",""];
     function updateCards($cards,$filters){
-        console.log($filters);
         $cards.each(function() {
             var showCard = true;
             var $attributes = [];
