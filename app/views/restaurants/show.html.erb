@@ -71,9 +71,16 @@
           <p class="d-inline" style="font-weight: bold;"> Address: </p> 
           <%=@restaurant.address%>
         </div>
-        <div class="d-block text-black" id="Resturant Address">
+
+        <div class="d-block text-black" id="Resturant Cuisine">
+          <p class="d-inline" style="font-weight: bold;"> Cuisine: </p> 
+          <%=@restaurant.cuisine%>
+        </div>
+
+        <div class="d-block text-black" id="Resturant Hours">
           <p class="d-inline" style="font-weight: bold;"> Hours: </p> 
-          <span class="current-label" id="current-day" style="font-style: italic;"></span>
+          <span class="current-label" id="current-day" style="font-style: italic;">
+          <%= Date::DAYNAMES[Time.now.wday] %>: </span>
           <span> <%= @restaurant.hours(Time.now.strftime("%A").downcase) %></span>
           <span class="dropdown" onclick="toggleHours()"> 
             <i id="dropdown-icon" class="bi bi-caret-down-fill"></i> 
@@ -108,13 +115,29 @@
               <span class="hours"><%= @restaurant.hours("Saturday") %></span>
             </div>
           </div>
+
           <div class="d-block text-black" id="Resturant Phone">
             <p class="d-inline" style="font-weight: bold;"> Phone: </p> 
             <%= @restaurant.phone %>
-          </div><div class="d-block text-black" id="Resturant Website">
+          </div>
+
+          <div class="d-block text-black" id="Resturant Website">
             <p class="d-inline" style="font-weight: bold;"> Website: </p> 
             <a href="<%= @restaurant.website %>" target="_blank"><%= @restaurant.website %></a>
           </div>
+
+          <div class="d-block text-black" id="Resturant Halal Status">
+            <p class="d-inline" style="font-weight: bold;"> Halal Status: </p> 
+            <a><%= @restaurant.halal_status %></a>
+          </div>
+
+          <% unless @restaurant.halal_status == 'Fully Halal' %>
+            <div class="d-block text-black" id="Restaurant Notes">
+              <p class="d-inline" style="font-weight: bold;">Notes:</p> 
+              <a><%= @restaurant.notes %></a>
+            </div>
+          <% end %>
+
       </div>
     </div>
   </div>
@@ -136,7 +159,7 @@
                     <div class="carousel-inner">
                       <% @ordered_images.each_with_index do |image, index| %>
                         <div class="carousel-item <%= 'active' if index == 0 %>">
-                            <%= image_tag image.variant(resize_to_limit: [nil, 500]), class: "d-block w-100", alt: "Restaurant Image" %>
+                            <%= image_tag image.variant(resize_and_pad: [730, 500, gravity: 'Center', background: '#000']), class: "d-block w-100", alt: "Restaurant Image" %>
                         </div>
                         <% end %>
                     </div>
@@ -153,7 +176,7 @@
                     <div class="row" id="galleryImages">
                         <% @ordered_images.each do |image| %>
                             <div class="col-4">
-                                <%= image_tag image.variant(resize_to_limit: [100, 100]), class: "img-thumbnail", alt: "Restaurant Image", data: { image_id: image.id } %>
+                                <%= image_tag image.variant(resize_and_pad: [100, 100, gravity: 'north', background: '#000']), class: "img-thumbnail", alt: "Restaurant Image", data: { image_id: image.id } %>
                             </div>
                         <% end %>
                     </div>
@@ -165,7 +188,7 @@
 </div>
 
 <!-- Image Edit Modal-->
-<% if current_user.admin? %>
+<% if signed_in? && current_user.admin? %>
 <div class="modal fade" id="editGalleryModal" tabindex="-1" aria-labelledby="editGalleryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -335,6 +358,7 @@
 
 .image-carousel{
   max-height: 500px;
+  background: black;
 }
 
 #imageCarousel .carousel-item img {
@@ -400,64 +424,56 @@
 }
 </style>
 
+
+
 <script>
-    // Function to toggle the icon, div visibility, and apply animation
-    function toggleHours() {
-      const icon = document.getElementById("dropdown-icon");
-      const hoursDiv = document.getElementById("RestaurantHours");
+  // Function to toggle the icon, div visibility, and apply animation
+  function toggleHours() {
+    const icon = document.getElementById("dropdown-icon");
+    const hoursDiv = document.getElementById("RestaurantHours");
 
-      if (icon.classList.contains("bi-caret-down-fill")) {
-        // Toggle to left icon
-        icon.classList.remove("bi-caret-down-fill");
-        icon.classList.add("bi-caret-left-fill");
+    if (icon.classList.contains("bi-caret-down-fill")) {
+      // Toggle to left icon
+      icon.classList.remove("bi-caret-down-fill");
+      icon.classList.add("bi-caret-left-fill");
 
-        // Toggle the visibility of the div
-        hoursDiv.classList.remove("d-none");
+      // Toggle the visibility of the div
+      hoursDiv.classList.remove("d-none");
 
-        // Trigger animation for each row
-        const dayLabels = hoursDiv.querySelectorAll(".day-label");
-        const hoursSpans = hoursDiv.querySelectorAll(".hours");
+      // Trigger animation for each row
+      const dayLabels = hoursDiv.querySelectorAll(".day-label");
+      const hoursSpans = hoursDiv.querySelectorAll(".hours");
 
-        dayLabels.forEach((label, index) => {
-          setTimeout(() => {
-            label.style.opacity = "1";
-            hoursSpans[index].style.opacity = "1";
-          }, 10 * index); // Adjust the delay as needed
-        });
-      } else {
-        // Toggle to down icon, hide div, and reset opacity
-        icon.classList.remove("bi-caret-left-fill");
-        icon.classList.add("bi-caret-down-fill");
+      dayLabels.forEach((label, index) => {
+        setTimeout(() => {
+          label.style.opacity = "1";
+          hoursSpans[index].style.opacity = "1";
+        }, 10 * index); // Adjust the delay as needed
+      });
+    } else {
+      // Toggle to down icon, hide div, and reset opacity
+      icon.classList.remove("bi-caret-left-fill");
+      icon.classList.add("bi-caret-down-fill");
 
-        // Toggle the visibility of the div
-        hoursDiv.classList.add("d-none");
+      // Toggle the visibility of the div
+      hoursDiv.classList.add("d-none");
 
-        // Reset opacity to 0 for all rows
-        const dayLabels = hoursDiv.querySelectorAll(".day-label");
-        const hoursSpans = hoursDiv.querySelectorAll(".hours");
+      // Reset opacity to 0 for all rows
+      const dayLabels = hoursDiv.querySelectorAll(".day-label");
+      const hoursSpans = hoursDiv.querySelectorAll(".hours");
 
-        dayLabels.forEach((label) => {
-          label.style.opacity = "0";
-        });
+      dayLabels.forEach((label) => {
+        label.style.opacity = "0";
+      });
 
-        hoursSpans.forEach((hours) => {
-          hours.style.opacity = "0";
-        });
-      }
+      hoursSpans.forEach((hours) => {
+        hours.style.opacity = "0";
+      });
     }
+  }
 </script>
 
-<script>
-  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const currentDayIndex = new Date().getDay();
-  const currentDayName = daysOfWeek[currentDayIndex];
-  const currentDayWithColon = currentDayName + ":";
-
-  const currentDayElement = document.getElementById("current-day");
-  currentDayElement.textContent = currentDayWithColon;
-</script>
-
-<script>
+<script type="module">
   $(document).ready(function() {
   // Enable the carousel functionality
   $("#imageCarousel").carousel();
@@ -492,7 +508,7 @@
 </script>
 
 <script>
-function previewImages() {
+  function previewImages() {
     const input = document.getElementById('image-upload');
     const previewDiv = document.getElementById('imagePreviews');
     previewDiv.innerHTML = ''; // Clear previous previews
@@ -520,63 +536,63 @@ function previewImages() {
         const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
         modal.show();
     }
-}
+  }
 </script>
 
-<script>
-// Open the gallery modal
-document.getElementById('openGalleryBtn').addEventListener('click', function() {
+<script type="module">
+  // Open the gallery modal
+  document.getElementById('openGalleryBtn').addEventListener('click', function() {
     const modal = new bootstrap.Modal(document.getElementById('galleryModal'));
     modal.show();
-});
+  });
 
 
-$(document).ready(function() {
+  $(document).ready(function() {
     $('#imageCarousel').on('slide.bs.carousel', function(event) {
         // Deselect all thumbnails
-        $('#galleryImages .img-thumbnail').removeClass('border-primary');
+      $('#galleryImages .img-thumbnail').removeClass('border-primary');
 
         // Highlight the corresponding thumbnail
-        $($('#galleryImages .img-thumbnail')[event.to]).addClass('border-primary');
+      $($('#galleryImages .img-thumbnail')[event.to]).addClass('border-primary');
     });
 
     $('#galleryImages .img-thumbnail').click(function() {
-        const index = $('#galleryImages .img-thumbnail').index(this);
-        $('#imageCarousel').carousel(index);
+      const index = $('#galleryImages .img-thumbnail').index(this);
+      $('#imageCarousel').carousel(index);
     });
-});
+  });
 
-$(document).ready(function() {
+  $(document).ready(function() {
     try {
-        const restaurantId = $('body').data('restaurant-id');
-        let originalOrder = [];
+      const restaurantId = $('body').data('restaurant-id');
+      let originalOrder = [];
 
-        if (!restaurantId) {
-            console.error("Error: restaurantId not found.");
-            return;
+      if (!restaurantId) {
+        console.error("Error: restaurantId not found.");
+        return;
+      }
+
+      if ($("#editableGalleryImages").length === 0) {
+        console.error("Error: #editableGalleryImages element not found.");
+        return;
+      }
+
+      // Get CSRF token from meta tag
+      var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+      $("#editableGalleryImages").sortable({
+        items: '.draggable-image',
+        placeholder: "ui-sortable-placeholder",
+        forcePlaceholderSize: true,
+        start: function(event, ui) {
+          originalOrder = $("#editableGalleryImages .editable-image").map(function() {
+            return $(this).data("imageId");
+          }).get();
+        },
+        update: function(event, ui) {
+          // The update function will now just store the current order
         }
-
-        if ($("#editableGalleryImages").length === 0) {
-            console.error("Error: #editableGalleryImages element not found.");
-            return;
-        }
-
-        // Get CSRF token from meta tag
-        var csrfToken = $('meta[name="csrf-token"]').attr('content');
-
-        $("#editableGalleryImages").sortable({
-            items: '.draggable-image',
-            placeholder: "ui-sortable-placeholder",
-            forcePlaceholderSize: true,
-            start: function(event, ui) {
-                originalOrder = $("#editableGalleryImages .editable-image").map(function() {
-                    return $(this).data("imageId");
-                }).get();
-            },
-            update: function(event, ui) {
-                // The update function will now just store the current order
-            }
-        });
+      });
 
         // Confirm button click handler
         $("#confirmEditBtn").click(function() {
@@ -625,17 +641,36 @@ $(document).ready(function() {
         console.error("Error initializing sortable:", error);
     }
 });
-
 </script>
 
 <script>
-$(document).ready(function() {
+  document.addEventListener("turbo:load", function() {
+    const halalStatus = document.getElementById("Resturant_Halal_Status");
+    const notesField = document.getElementById("Resturant_Notes");
+
+    // Function to toggle visibility of the notes field
+    function toggleNotesField() {
+      if (halalStatus.value === "Partially Halal") {
+        notesField.style.display = "block";
+      } else {
+        notesField.style.display = "none";
+      }
+    }
+
+    // Call toggleNotesField initially to set the initial state
+    toggleNotesField();
+
+    // Add event listener to the halal_status select field to toggle the notes field
+    halalStatus.addEventListener("change", toggleNotesField);
+  });
+</script>
+
+<script type="module">
+  $(document).ready(function() {
     // When the "Upload Images" span is clicked
     $('#uploadImages').on('click', function() {
-        // Programmatically click the hidden file input
-        $('#image-upload').click();
+      // Programmatically click the hidden file input
+      $('#image-upload').click();
     });
-
-    // Your existing previewImages function should handle the rest
-});
+  });
 </script>

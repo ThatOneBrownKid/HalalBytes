@@ -50,14 +50,29 @@
                <div class="text-secondary" style="font-size: 14px;">
                  
                   <!--price range-->
-                  <% restaurant.price_range.to_i.times do%>
-                  <i class="bi bi-currency-dollar"></i>
-                  <% end %>
-                  <i class="bi bi-dot"></i>
-                   <div class="hover-box " style="display: inline-block; padding: 5px 10px; border-radius: 5px; font-weight: bold; color: black; font-size: 14px;">
-                     <%= restaurant.cuisine %>
+                  
+                  <div class="row fw-bold pt-2 ps-2">
+                    <div class="Restaurant Price align-middle d-inline col-auto px-0 pt-1"> 
+                      <% restaurant.price_range.to_i.times do %>
+                        $
+                      <% end %>
+                    </div>
+
+                    <i class="bi bi-dot fs-5 col-auto px-0"></i>
+
+                    <div class="Restaurant Cuisine d-inline col-auto px-0 pt-1">
+                      <div class="hover-box">
+                        <%= restaurant.cuisine %>
+                      </div>
+                    </div>
+
+                    <i class="bi bi-dot fs-5 col-auto px-0"></i>
+
+                    <div class="Restaurant City d-inline col-auto px-0 pt-1">
+                      <%= restaurant.city %>
+                    </div>
                   </div>
-                  <%= restaurant.address %>
+
                </div>
                <p></p>
                <div class="text-secondary" style="font-size: 14px;">
@@ -185,13 +200,11 @@
     color: #D3D3D3;
   }
 
+
 </style>
 
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
-
-
-<script>
+<script type="module">
   $(document).ready(function() {
     // Enable the carousel functionality
     $("#imageCarousel").carousel();

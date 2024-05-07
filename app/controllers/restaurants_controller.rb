@@ -70,10 +70,11 @@ class RestaurantsController < ApplicationController
   # PATCH/PUT /restaurants/1 or /restaurants/1.json
   def update
     process_operating_times
-
+    @restaurant.images.attach(params[:restaurant][:images]) if params[:restaurant][:images].present?
+  
     respond_to do |format|
-      if @restaurant.update(restaurant_params)
-        format.html { redirect_to restaurant_url(@restaurant), notice: "Restaurant was successfully updated." }
+      if @restaurant.save
+        format.html { redirect_to restaurant_url(@restaurant), notice: "Restaurant was successfully updated with new images." }
         format.json { render :show, status: :ok, location: @restaurant }
       else
         flash.now[:alert] = @restaurant.errors.full_messages.join(', ')
@@ -160,23 +161,37 @@ class RestaurantsController < ApplicationController
     %w[monday tuesday wednesday thursday friday saturday sunday].each do |day|
       open_time = format_time(params[:restaurant]["#{day}_open"])
       close_time = format_time(params[:restaurant]["#{day}_close"])
-      @restaurant.send("#{day}=", "#{open_time}#{close_time}") if open_time.present? && close_time.present?
+      # Only update if both times are present and correctly formatted
+      if open_time.present? && close_time.present? && open_time.length == 4 && close_time.length == 4
+        @restaurant.send("#{day}=", "#{open_time}#{close_time}")
+      end
     end
-  end  
+  end
   
   def format_time(time_str)
     # Ensure the time is exactly four characters long (e.g., '0900' for 9 AM)
     Time.parse(time_str).strftime('%H%M') rescue ''
   end
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_restaurant
-      @restaurant = Restaurant.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_restaurant
+    @restaurant = Restaurant.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def restaurant_params
-      params.require(:restaurant).permit(:name, :address, :phone, :website, :cuisine, :price_range, :overall_rating, {images: []}, 
-      :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday)
+  # Only allow a list of trusted parameters through.
+  def restaurant_params
+    params.require(:restaurant).permit(:name, :phone, :website, :cuisine, :price_range, :overall_rating, {images: []}, 
+    :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday, :street, :city, :state, :zip_code, :halal_status, :notes)
+  end
+
+  def conditional_restaurant_params
+    # Check if images are included in the form submission
+    if params[:restaurant][:images].blank?
+      # If no images are submitted, return parameters without the `images` key
+      restaurant_params.except(:images)
+    else
+      # If images are submitted, return all parameters including `images`
+      restaurant_params
     end
+  end
 end
