@@ -1,6 +1,4 @@
-src="https://code.jquery.com/jquery-3.6.0.min.js">
-
-$(document).ready(function() {
+document.addEventListener('turbo:load', function() {
   // Retrieve the cuisine data from your backend for filters
   var prev = '';
   var $hiddenCards = $();
