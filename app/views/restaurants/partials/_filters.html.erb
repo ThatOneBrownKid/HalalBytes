@@ -1,0 +1,79 @@
+<div class="accordion accordion-flush" id="accordionFlushExample">
+   <div class="sticky-top" style="z-index:50;">
+      <div class="accordion-item ">
+         <h2 class="accordion-header ">
+            <button id="accordion-button" class="accordion-button  collapsed text-center fw-bolder" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+            Filters
+            </button>
+         </h2>
+      </div>
+      <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+         <div class="accordion-body border-bottom shadow-sm" style=" background-color:white; border-color: black;">
+            <div class="row g-0 justify-content-md-center" style="margin-left: 0px;">
+               <div class="col-auto d-none d-lg-block mt-3 justify-content-end">
+                  <div class="d-flex  justify-content-end">
+                     <input type="btn" class="btn-check " id='sildeLeft' value="Left" autocomplete="off">
+                     <label class= "btn border-0" for='sildeLeft'>
+                        <h2><i class="bi bi-arrow-left-circle-fill icon-black" style="color:#E8E8E8;"></i> </i></h2>
+                     </label>
+                  </div>
+               </div>
+               <div class="col-lg-8 col-auto">
+                  <!-- Filters section -->
+                  <!-- Place your filters content here -->
+                  <% cuisines = Set.new %>
+                  <% @restaurants.each do |restaurant| %>
+                  <% cuisines.add(restaurant.cuisine) %>
+                  <% end %>  
+                  <div class="card border-0 overflow-x-scroll mt-2 justify-content-start" id="sildefilter" style="width: 100%;">
+                     <div class="row flex-nowrap" >
+                        <% cuisines.each do |cuisine| %>   
+                        <div class="col-auto">
+                           <input type="radio" class="btn-check " name="options" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
+                           <label class="btn btn-outline-secondary  border-0" for="<%= cuisine %>" style="--btn-outline-opacity: .5;">
+                              <%= image_tag "#{cuisine}.png", class: "filter-img", alt: "Restaurant Image" %>
+                              <figcaption class="figure-caption"><%= cuisine %></figcaption>
+                           </label>
+                        </div>
+                        <%end%>
+                     </div>
+                  </div>
+                  <%= render '/restaurants/partials/price'%>
+                  <%= render '/restaurants/partials/rating'%>
+                  <div class="card border-0 overflow-x-auto mt-2 align-items-center" style="width: 100%;">
+                     <div class="row flex-nowrap">
+                        <div class="col-auto">        
+                            <a tabindex="0" role="button" class="btn btn-btngray border-0 rounded-5 d-none d-sm-none d-lg-block d-xl-block d-xxl-block" style=' background-color:#E8E8E8; ' id="price-filter"  data-bs-toggle="popover" data-bs-placement="bottom">Price</a>
+                           <button class="btn border-0 rounded-5 d-lg-none d-xl-none d-xxl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom-price" aria-controls="offcanvasBottom" style=' background-color:#E8E8E8;'>Price</button>
+                        </div>
+                        <div class="col-auto">       
+                           <a tabindex="0" role="button"  class="btn btn-btngray border-0 rounded-5 d-none d-sm-none d-lg-block d-xl-block d-xxl-block" style=' background-color:#E8E8E8; ' id="rating-filter"    data-bs-toggle="popover"  data-bs-placement="bottom">Rating</a>
+                           <button class="btn border-0 rounded-5 d-lg-none d-xl-none d-xxl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom" style=' background-color:#E8E8E8;'>Rating</button>
+                        </div>
+                        <div class="col-auto">       
+                           <button type="button" class="btn btn-btngray border-0 rounded-5" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                           Sort
+                           </button>
+                        </div>
+                        <div class="col-auto">       
+                           <input type="button" class="btn-check " name="rating" id="reset" value="reset" autocomplete="off">
+                           <label class="btn btn-btngray border-0 rounded-5" style='width: 100%; background-color:#E8E8E8; ' for="reset">Reset</label>
+                        </div>
+                        <!--! -->                        
+                     </div>
+                  </div>
+                  <!-- <button type="button" class="btn-clear rounded-pill border-0 align-items-center" style="width: 70%;" value="ALL" >Clear All Filters</button> -->
+               </div>
+               <div class="col-auto d-none d-lg-block mt-3 justify-content-end">
+                  <div class="d-flex  justify-content-start">
+                     <input type="btn" class="btn-check " id='sildeRight' value="Right" autocomplete="off">
+                     <label class= "btn" for='sildeRight'>
+                        <h2><i class="bi bi-arrow-right-circle-fill icon-black" style=" color:#E8E8E8;"></i></h2>
+                     </label>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+</div>
