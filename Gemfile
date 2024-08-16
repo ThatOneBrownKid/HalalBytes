@@ -40,6 +40,8 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'acts_as_list'
 
+gem 'geocoder'
+
 # Use Redis adapter to run Action Cable in production
 gem "redis", "~> 4.0"
 

@@ -1,5 +1,7 @@
 class Restaurant < ApplicationRecord
   has_many_attached :images
+  geocoded_by :address
+  after_validation :geocode
   before_save :ensure_website_format
   validate :image_count_within_limit, on: :create
   validates :phone, format: { with: /\(\d{3}\) \d{3}-\d{4}/, message: "must be in the format (xxx) xxx-xxxx" }
@@ -82,5 +84,18 @@ class Restaurant < ApplicationRecord
       errors.add(:images, "Too many files uploaded. Maximum is 10.")
     end
   end
-  
+
+  def geocode_with_logging
+    result = Geocoder.search(self.address)
+    if result.first.present?
+      Rails.logger.info "Geocoding successful: #{result.first.to_json}"
+      self.latitude = result.first.latitude
+      self.longitude = result.first.longitude
+    else
+      Rails.logger.error "Geocoding failed for address: #{self.address}"
+    end
+  rescue JSON::ParserError => e
+    Rails.logger.error "Invalid JSON response: #{e.message}"
+  end
+
 end
