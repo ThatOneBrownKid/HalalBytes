@@ -8,6 +8,7 @@ import "timepicker";
 import "sortable";
 import "popper";
 import "bootstrap";
+import "leaflet"
 import Rails from "@rails/ujs";
 Rails.start();
 

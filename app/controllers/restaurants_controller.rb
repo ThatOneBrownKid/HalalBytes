@@ -35,8 +35,20 @@ class RestaurantsController < ApplicationController
     @restaurant.keep = false
     @restaurant.created_by = nil
 
+    # Geocode the address
+    @restaurant.geocode # Ensure this method exists and is called to set latitude and longitude
+
+    # Check if latitude or longitude is nil
+    if @restaurant.latitude.nil? || @restaurant.longitude.nil?
+      @restaurant.errors.add(:address, "Address couldn't be recognized.")
+    end
+
     respond_to do |format|
-      if @restaurant.save
+      if @restaurant.errors.any?
+        flash.now[:alert] = @restaurant.errors.full_messages.join(', ')
+        format.html { render :request_new, status: :unprocessable_entity }
+        format.json { render json: @restaurant.errors, status: :unprocessable_entity }
+      elsif @restaurant.save
         format.html { redirect_to restaurant_url(@restaurant), notice: "Your request has been submitted." }
         format.json { render :show, status: :created, location: @restaurant }
       else
@@ -47,6 +59,7 @@ class RestaurantsController < ApplicationController
     end
   end
 
+
   # POST /restaurants or /restaurants.json
   def create
     @restaurant = Restaurant.new(restaurant_params)
@@ -55,13 +68,25 @@ class RestaurantsController < ApplicationController
       @restaurant.created_by = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
     end
 
+    # Geocode the address
+    @restaurant.geocode # Ensure this method exists and is called to set latitude and longitude
+
+    # Check if latitude or longitude is nil
+    if @restaurant.latitude.nil? || @restaurant.longitude.nil?
+      @restaurant.errors.add(:address, "Address couldn't be recognized.")
+    end
+
     respond_to do |format|
-      if @restaurant.save
-        format.html { redirect_to restaurant_url(@restaurant), notice: "Restaurant was successfully created." }
+      if @restaurant.errors.any?
+        flash.now[:alert] = @restaurant.errors.full_messages.join(', ')
+        format.html { render :request_new, status: :unprocessable_entity }
+        format.json { render json: @restaurant.errors, status: :unprocessable_entity }
+      elsif @restaurant.save
+        format.html { redirect_to restaurant_url(@restaurant), notice: "Your request has been submitted." }
         format.json { render :show, status: :created, location: @restaurant }
       else
         flash.now[:alert] = @restaurant.errors.full_messages.join(', ')
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :request_new, status: :unprocessable_entity }
         format.json { render json: @restaurant.errors, status: :unprocessable_entity }
       end
     end
@@ -181,7 +206,7 @@ class RestaurantsController < ApplicationController
   # Only allow a list of trusted parameters through.
   def restaurant_params
     params.require(:restaurant).permit(:name, :phone, :website, :cuisine, :price_range, :overall_rating, {images: []}, 
-    :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday, :street, :city, :state, :zip_code, :halal_status, :notes)
+    :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday, :street, :city, :state, :zip_code, :halal_status, :notes, :longitude, :latitude)
   end
 
   def conditional_restaurant_params
