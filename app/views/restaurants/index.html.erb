@@ -1,45 +1,89 @@
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-     crossorigin=""/>
-
- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-     crossorigin=""></script>
 <head>
-  <script src="https://unpkg.com/leaflet@latest/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
 </head>
+
 <body id="resturantpage" style="background-color: #FFFFFF;">
-   <%= render '/restaurants/partials/filters'%>
-   <div class="row g-0" >
-   <div class="col-md-8 border-end">
-         <!-- Restaurants section -->
-         <div id="restaurants" >
-            <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
-         </div>
-   </div>
-   <div class="z-2 col-md-4 sticky-top" id="map" style="top: 50px" >
-     
-   </div>
+  <%= render '/restaurants/partials/filters'%>
   
-   </div>
-</body>
+  <div class="row g-0">
+    <div class="col-md-8 border-end">
+      <!-- Restaurants section -->
+      <div id="restaurants">
+        <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
+      </div>
+    </div>
 
-
-<!--resturant filter-->
-<%=javascript_include_tag 'resturant_index'%>
-<script>
-var map = L.map('map').locate({setView: true, maxZoom: 13});
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
-
-L.tileLayer.provider('Stadia.OSMBright').addTo(map);
-
+    <!-- Map Section -->
+    <div class="z-2 col-md-4 sticky-top" id="map" style="top: 50px;"></div>
+  </div>
+  
+  <!-- JavaScript to initialize Leaflet map and add layers -->
+  <%=javascript_include_tag 'resturant_index'%>
+  <script>
+  // Pass the restaurants data from Rails to JavaScript
+  var restaurants = <%= raw @restaurants.to_json(only: [:name, :address, :latitude, :longitude]) %>;
 </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+  // Initialize the map with a default view
+  var map = L.map('map').setView([51.505, -0.09], 13);  // Default location and zoom level
+
+  // Add base tile layer from OpenStreetMap
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+
+  // Add an optional layer from Stadia Maps
+  // L.tileLayer.provider('Stadia.OSMBright').addTo(map);
+
+  // Try to locate the user using geolocation
+  map.locate({setView: true, maxZoom: 13, watch: true, enableHighAccuracy: true});
+
+  // When the location is found, set a marker and circle around the location
+  map.on('locationfound', function(e) {
+    // var radius = e.accuracy / 2;
+    // L.marker(e.latlng).addTo(map)
+      //.bindPopup("You are within " + radius + " meters from this point").openPopup();
+    // L.circle(e.latlng, { radius: radius }).addTo(map);
+  });
+
+  // If location is not found or access is denied
+  map.on('locationerror', function(e) {
+    alert("Location access denied. Please enable location services or check your browser's permissions.");
+  });
+
+  // Loop through the restaurants and add markers for each one
+  restaurants.forEach(function(restaurant) {
+    if (restaurant.latitude && restaurant.longitude) {
+      var marker = L.marker([restaurant.latitude, restaurant.longitude]).addTo(map);
+      marker.bindPopup(`
+        <div style="width: 200px;">
+          <strong>${restaurant.name}</strong><br>
+          <img src="${restaurant.image_url}" alt="${restaurant.name}" style="width: 100%; height: auto;">
+          <br>${restaurant.address}<br>
+          Cuisine: ${restaurant.cuisine}<br>
+        </div>
+      `);
+    }
+  });
+
+  // Fit the map to show all restaurant markers
+  var bounds = L.latLngBounds(restaurants.map(function(restaurant) {
+    return [restaurant.latitude, restaurant.longitude];
+  }));
+  map.fitBounds(bounds);
+});
+
+  </script>
 <style>
-#map { height: 95 vh; }
+#map { 
+  height: 95vh;  /* Set the height to 100% of the viewport height */
+}
 .static-map {
       position: -webkit-sticky; /* Safari */
       position: sticky;
