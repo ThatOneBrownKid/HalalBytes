@@ -14,6 +14,9 @@ Rails.application.routes.draw do
       delete 'images/:image_id', action: :delete_image, as: :delete_image
       post 'accept' => 'restaurants#accept_restaurant'
     end
+    collection do
+      get 'markers'  # This is the route for your markers method
+    end
   end
   root 'home#index'
   resources :users, only: [:edit, :update, :show] do
@@ -25,7 +28,6 @@ Rails.application.routes.draw do
   patch '/users/basic_info', to: 'users/registrations#update', as: :update_basic_info
   patch 'restaurants/:id/update_images_order', to: 'restaurants#update_images_order', as: 'update_images_order'
 
-  
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
