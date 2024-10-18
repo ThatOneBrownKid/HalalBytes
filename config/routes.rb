@@ -24,7 +24,8 @@ Rails.application.routes.draw do
 
   patch '/users/basic_info', to: 'users/registrations#update', as: :update_basic_info
   patch 'restaurants/:id/update_images_order', to: 'restaurants#update_images_order', as: 'update_images_order'
-
+  post '/requests/upload_images', to: 'requests#upload_images', as: :request_upload_images
+  
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
