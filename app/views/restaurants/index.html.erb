@@ -82,13 +82,12 @@ function updateMapMarkers() {
     var northEast = bounds.getNorthEast();
     var southWest = bounds.getSouthWest();
 
-    fetch(`/restaurants/markers?northEastLat=${northEast.lat}&northEastLng=${northEast.lng}&southWestLat=${southWest.lat}&southWestLng=${southWest.lng}`) 
+    fetch(`/restaurants?northEastLat=${northEast.lat}&northEastLng=${northEast.lng}&southWestLat=${southWest.lat}&southWestLng=${southWest.lng}`) 
        .then(response => {
         // Check if the response is OK (status code 200)
         if (!response.ok) {
             throw new Error('Network response was not ok: ' + response.statusText);
         }
-        
         })
         .then(restaurants => {
             var restaurants = <%= raw @restaurants.to_json(only: [:id, :name, :street, :latitude, :longitude]) %>;

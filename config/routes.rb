@@ -14,9 +14,6 @@ Rails.application.routes.draw do
       delete 'images/:image_id', action: :delete_image, as: :delete_image
       post 'accept' => 'restaurants#accept_restaurant'
     end
-    collection do
-      get 'markers'  # This is the route for your markers method
-    end
   end
   root 'home#index'
   resources :users, only: [:edit, :update, :show] do
