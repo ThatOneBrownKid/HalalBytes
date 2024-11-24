@@ -56,37 +56,13 @@ var restaurants;
 
         // Define the minimum zoom level at which you want to fetch data
        var minZoomLevel = 10;  // Adjust as needed (higher means more zoomed in)
-      
+       var lowZoom = true
         // Check if the zoom level is too low (too zoomed out)
         if (zoomLevel < minZoomLevel) {
+            lowZoom = false
             console.log("Zoom level is too low. Not fetching data.");
             northEast.lat,northEast.lng,southWest.lat,southWest.lng = 0,200,0,200
-            filters.northEastlat = northEast.lat
-            filters.northEastlng = northEast.lng
-            filters.southWestlat = southWest.lat
-            filters.southWestlng = southWest.lng
-            $.ajax({
-              url: '/restaurants/filter',
-              method: 'GET',
-              data: filters,
-              success: function(data, textStatus, jqXHR) {
-                $('#restaurants').html(data);
-              //const $restaurantsContainer = $('#restaurants');
-              //const $cards = $restaurantsContainer.find('.card-res');
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-          if (jqXHR.status === 404) {
-              // Handle 404 Not Found error
-              console.error("No restaurants found in this area.");
-          } else {
-              // Handle other errors
-              console.error("Error fetching filtered data:", errorThrown);
-              alert("There was an issue loading the restaurants. Please try again.");
-          }
         }
-      })
-        }
-        else{
           filters.northEastlat = northEast.lat
           filters.northEastlng = northEast.lng
           filters.southWestlat = southWest.lat
@@ -99,7 +75,10 @@ var restaurants;
         success: function(data, textStatus, jqXHR) {
           if (jqXHR.status === 200) {
             $('#restaurants').html(data);
-            updateMapMarkers();
+            if(lowZoom){
+              updateMapMarkers();
+            }
+            
           }
         },
         error: function(jqXHR, textStatus, errorThrown) {
@@ -107,7 +86,6 @@ var restaurants;
           alert("There was an issue loading the restaurants. Please try again.");
         }
       });
-      }
    }
 
    // Function to update map markers
