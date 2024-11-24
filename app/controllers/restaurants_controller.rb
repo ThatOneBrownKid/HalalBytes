@@ -1,24 +1,33 @@
 class RestaurantsController < ApplicationController
   before_action :set_restaurant, only: [:show, :edit, :update, :destroy]
-  skip_before_action :set_restaurant, only: [:request_new, :request_create, :markers]
+  skip_before_action :set_restaurant, only: [:request_new, :request_create]
   include RestaurantsHelper
   require 'set'
   # GET /restaurants or /restaurants.json
   def index
-    if params[:northEastLat] && params[:southWestLat]
-      north_east = [params[:northEastLat].to_f, params[:northEastLng].to_f]
-      south_west = [params[:southWestLat].to_f, params[:southWestLng].to_f]
-
-      @restaurants = Restaurant.where(latitude: south_west[0]..north_east[0], longitude: south_west[1]..north_east[1])
-
-      respond_to do |format|
-        format.html { render partial: 'restaurants/partials/restaurant', collection: @restaurants, as: :restaurant }
-      end
-    else
       @restaurants = Restaurant.all
-    end
   end
 
+  # GET /restaurants/filter
+  def filter
+    @restaurants = Restaurant.filtered_results(params)
+    @restaurants = @restaurants.where(latitude: params[:southWestlat]..params[:northEastlat], longitude: params[:southWestlng]..params[:northEastlng])
+    
+    if @restaurants.empty?
+      respond_to do |format|
+        format.html { render 'restaurants/partials/no_stores', layout: false }  # Render 'no_stores' if no restaurants found
+        format.json { render json: [], status: :ok }
+      end
+      return
+    end
+
+    @data = @restaurants.select(:id, :name, :street, :latitude, :longitude)
+
+    respond_to do |format|
+      format.html { render partial: 'restaurants/partials/restaurant', collection: @restaurants, as: :restaurant }
+      format.json { render json: @data }
+    end
+  end
 
   # GET /restaurants/1 or /restaurants/1.json
   def show

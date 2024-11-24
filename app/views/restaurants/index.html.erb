@@ -1,9 +1,5 @@
   <head>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
+    
   </head>
 
   <body id="resturantpage" style="background-color: #FFFFFF;">
@@ -22,125 +18,19 @@
     </div>
     
     <!-- JavaScript to initialize Leaflet map and add layers -->
-    <%=javascript_include_tag 'resturant_index'%>
-    <script>
-    // Pass the restaurants data from Rails to JavaScript
-    var restaurants = <%= raw @restaurants.to_json(only: [:id,:name, :street, :latitude, :longitude]) %>;
-  </script>
-    <script>
- document.addEventListener("DOMContentLoaded", function() {
-    // Initialize the map with a default view
-    var map = L.map('map').setView([51.505, -0.09], 13);
-
-    // Add base tile layer from OpenStreetMap
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
-
-    // Try to locate the user and set the view based on their location
-    map.locate({ setView: true, maxZoom: 16 });
-
-    // Store the current selected card ID
-    let currentSelectedCardId = null;
-
-    // Function to fetch and load restaurants within the visible map bounds
-    function loadRestaurants() {
-        var bounds = map.getBounds();
-        var northEast = bounds.getNorthEast();
-        var southWest = bounds.getSouthWest();
-
-        // Make an AJAX request to fetch restaurants within the map bounds
-        fetch(`/restaurants?northEastLat=${northEast.lat}&northEastLng=${northEast.lng}&southWestLat=${southWest.lat}&southWestLng=${southWest.lng}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'text/html'  // We expect HTML as the response
-            }
-        })
-        .then(response => response.text())  // Parse response as text (HTML)
-        .then(html => {
-            // Update the restaurant list with the new HTML from the partial
-            document.getElementById('restaurants').innerHTML = html;
-            
-            // Add restaurant markers on the map
-            updateMapMarkers();
-        })
-        .catch(error => console.error('Error fetching restaurants:', error));
-    }
-
-    // Function to update map markers
-function updateMapMarkers() {
-    // Remove existing markers
-    map.eachLayer(function (layer) {
-        if (layer instanceof L.Marker) {
-            map.removeLayer(layer);
-        }
-    });
-
-    // Fetch the restaurant data again to place markers
-    var bounds = map.getBounds();
-    var northEast = bounds.getNorthEast();
-    var southWest = bounds.getSouthWest();
-
-    fetch(`/restaurants?northEastLat=${northEast.lat}&northEastLng=${northEast.lng}&southWestLat=${southWest.lat}&southWestLng=${southWest.lng}`) 
-       .then(response => {
-        // Check if the response is OK (status code 200)
-        if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.statusText);
-        }
-        })
-        .then(restaurants => {
-            var restaurants = <%= raw @restaurants.to_json(only: [:id, :name, :street, :latitude, :longitude]) %>;
-            // Loop through the restaurants and add markers
-            restaurants.forEach(function(restaurant) {
-                console.log(restaurant.latitude)
-                if (restaurant.latitude && restaurant.longitude) {
-                    // Add marker to the map
-                    var marker = L.marker([restaurant.latitude, restaurant.longitude]).addTo(map);
-                    
-                    // Marker click event to highlight the corresponding card
-                    marker.on('click', function() {
-                        // Deselect the previous card
-                        if (currentSelectedCardId) {
-                            document.getElementById(currentSelectedCardId).classList.remove('selected');
-                            currentSelectedCardId = '';
-                        }
-
-                        // Select the new card
-                        currentSelectedCardId = 'restaurant_' + restaurant.id;
-                        var restaurantCard = document.getElementById(currentSelectedCardId);
-                        if (restaurantCard) {
-                            restaurantCard.classList.add('selected');
-                            restaurantCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    });
-                }
-            });
-        })
-        .catch(error => console.error('Error fetching restaurant markers:', error));
-}
-
-    document.addEventListener('click', function(event) {
-        // Check if the clicked target is not within a restaurant card or a marker
-        if (!event.target.closest('.restaurant-card') && !event.target.closest('.leaflet-marker-icon')) {
-            if (currentSelectedCardId) {
-                document.getElementById(currentSelectedCardId).classList.remove('selected'); // Remove the selected class from the currently selected card
-                currentSelectedCardId = null; // Reset the selected card ID
-            }
-        }
-        })
-    // Load restaurants when the map is moved or zoomed
-    map.on('moveend', loadRestaurants);
-
-    // Initial load of restaurants when the page first loads
-    loadRestaurants();
-});
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
+    
+    </body>
+    <%= javascript_include_tag 'resturant_index', defer: true, type: "module" %>
 
 
-    </script>
   <style>
 .selected {
-  border: 10px solid #ffffff; /* Blue border */
+  border: 10px solid #E8E8E8; /* Blue border */
   background-color: transparent; /* No fill */
   transition: border 0.3s ease, box-shadow 0.3s ease; /* Include box-shadow in transition */
   color: black; /* Text color */
@@ -213,23 +103,7 @@ function updateMapMarkers() {
       --bs-offcanvas-title-line-height: 1.5;
   }
 
-  .btn-btngray, .btn-btngray:hover {
-      background-color: #E8E8E8 !important;
-  }
 
-  .btn-btngray:active {
-      background-color: #DADADA !important;
-      color: #FFFFFF;
-  }
-
-  .btn-btngrayfilter:focus{
-      background-color: #C2C2C2 !important; 
-  }
-
-  .btn-secondary{
-    --bs-btn-bg:#E8E8E8; 
-    color:black;
-  }
 
   </style>
 

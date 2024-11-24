@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
   get 'restaurants/request_new', to: 'restaurants#request_new', as: :request_new_restaurants
+  get '/restaurants', to: 'restaurants#index', as: :restaurants_index
   post 'restaurants/request_create', to: 'restaurants#request_create', as: :request_create_restaurants
   get 'requested_restaurants', to: 'restaurants#requested'
   get 'all_requested', to: 'restaurants#all_requested'
+  get 'restaurants/filter', to: 'restaurants#filter'
   get 'users/index'
   get '/terms_and_services', to: 'home#terms_and_services'
   devise_for :users, controllers: {
