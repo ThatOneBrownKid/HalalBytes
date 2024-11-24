@@ -14,7 +14,7 @@ const blackIcon = L.icon({
   shadowSize: [41, 41]   // Size of the shadow
   });
 if (updateMarkers === true){
-  updateMapMarkers();
+  loadRestaurants();
   return
 }
 var restaurants;
