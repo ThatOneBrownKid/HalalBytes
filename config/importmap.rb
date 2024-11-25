@@ -16,4 +16,6 @@ pin "sortable", to: "https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min
 pin "popper", to: "https://unpkg.com/@popperjs/core@2", preload: true
 pin "bootstrap", to: "vendor/bootstrap.min.js", preload: true
 pin "dropzone-helper", to: "helpers/dropzone.js", preload: true
-pin "leaflet", to: "https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js", preload: true
+pin "leaflet", to: "https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js", preload: true
+pin "leaflet-providers", to: "https://unpkg.com/leaflet-providers@latest/leaflet-providers.js", preload: true
+

@@ -1,96 +1,109 @@
-<body id="resturantpage" style="background-color: #FFFFFF;">
-   <%= render '/restaurants/partials/filters'%>
-   <div class="col-md-12">
-         <!-- Restaurants section -->
-         <div id="restaurants" >
-            <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
-         </div>
-   </div>
-</body>
+  <head>
+    
+  </head>
+
+  <body id="resturantpage" style="background-color: #FFFFFF;">
+    <%= render '/restaurants/partials/filters'%>
+    
+    <div class="row g-0">
+      <div class="col-md-8 border-end">
+        <!-- Restaurants section -->
+        <div id="restaurants">
+          <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
+        </div>
+      </div>
+
+      <!-- Map Section -->
+      <div class="z-2 col-md-4 sticky-top" id="map" style="top: 50px;"></div>
+    </div>
+    
+    <!-- JavaScript to initialize Leaflet map and add layers -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
+    
+    </body>
+    <%= javascript_include_tag 'resturant_index', defer: true, type: "module" %>
 
 
-<!--resturant filter-->
-<%=javascript_include_tag 'resturant_index'%>
-
-<style>
-@media (max-width: 3000px) {
-  .filter-img {
-    width: 70  px;
-    height: 50px;
-  }
-}
-@media (min-width: 1600px) {
-  
-  .card {
-    align-items: center;
-  }
-}
-
-.card::-webkit-scrollbar {
-   display: none;
-}
-
-.accordion-button:focus {
-    box-shadow: none;
-    background-color: white;
-    border-color: rgba(0,0,0,.125);
-}
-
-.accordion-button:not(.collapsed){
-      box-shadow: none;
-    background-color: white;
-    border-color: rgba(0,0,0,.125);
-}
-
-.modal-backdrop.fade {
-    opacity: 0;
-}
-
-.modal-backdrop {
-    --bs-backdrop-zindex: 0;
-}
-
-.accordion-button{
-  display:block;
-}
-
-.offcanvas, .offcanvas-lg, .offcanvas-md, .offcanvas-sm, .offcanvas-xl, .offcanvas-xxl {
-    --bs-offcanvas-zindex: 1045;
-    --bs-offcanvas-width: 400px;
-    --bs-offcanvas-height: 20vh;
-    --bs-offcanvas-padding-x: 1rem;
-    --bs-offcanvas-padding-y: 1rem;
-    --bs-offcanvas-color: var(--bs-body-color);
-    --bs-offcanvas-bg: var(--bs-body-bg);
-    --bs-offcanvas-border-width: var(--bs-border-width);
-    --bs-offcanvas-border-color: var(--bs-border-color-translucent);
-    --bs-offcanvas-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    --bs-offcanvas-transition: transform 0.3s ease-in-out;
-    --bs-offcanvas-title-line-height: 1.5;
-}
-
-.btn-btngray, .btn-btngray:hover {
-    background-color: #E8E8E8 !important;
-}
-
-.btn-btngray:active {
-    background-color: #DADADA !important;
-    color: #FFFFFF;
-}
-
-.btn-btngrayfilter:focus{
-    background-color: #C2C2C2 !important; 
-}
-
-.btn-secondary{
-  --bs-btn-bg:#E8E8E8; 
-  color:black;
-}
-
+  <style>
 .selected {
-  background-color: black;
-  color: white;
-  /* add any other styling you want for a selected button */
+  border: 10px solid #E8E8E8; /* Blue border */
+  background-color: transparent; /* No fill */
+  transition: border 0.3s ease, box-shadow 0.3s ease; /* Include box-shadow in transition */
+  color: black; /* Text color */
+  box-shadow: 0 -4px 10px rgba(0, 123, 255, 0.5),  /* Shadow at the top */
+              0 4px 10px rgba(0, 123, 255, 0.5);  /* Shadow at the bottom */
 }
-</style>
+
+
+  #map { 
+    height: 95vh;  /* Set the height to 100% of the viewport height */
+  }
+  .static-map {
+        position: -webkit-sticky; /* Safari */
+        position: sticky;
+        top: 0;
+      }
+  @media (max-width: 3000px) {
+    .filter-img {
+      width: 70  px;
+      height: 50px;
+    }
+  }
+  @media (min-width: 1600px) {
+    
+    .card {
+      align-items: center;
+    }
+  }
+
+  .card::-webkit-scrollbar {
+    display: none;
+  }
+
+  .accordion-button:focus {
+      box-shadow: none;
+      background-color: white;
+      border-color: rgba(0,0,0,.125);
+  }
+
+  .accordion-button:not(.collapsed){
+        box-shadow: none;
+      background-color: white;
+      border-color: rgba(0,0,0,.125);
+  }
+
+  .modal-backdrop.fade {
+      opacity: 0;
+  }
+
+  .modal-backdrop {
+      --bs-backdrop-zindex: 0;
+  }
+
+  .accordion-button{
+    display:block;
+  }
+
+  .offcanvas, .offcanvas-lg, .offcanvas-md, .offcanvas-sm, .offcanvas-xl, .offcanvas-xxl {
+      --bs-offcanvas-zindex: 1045;
+      --bs-offcanvas-width: 400px;
+      --bs-offcanvas-height: 20vh;
+      --bs-offcanvas-padding-x: 1rem;
+      --bs-offcanvas-padding-y: 1rem;
+      --bs-offcanvas-color: var(--bs-body-color);
+      --bs-offcanvas-bg: var(--bs-body-bg);
+      --bs-offcanvas-border-width: var(--bs-border-width);
+      --bs-offcanvas-border-color: var(--bs-border-color-translucent);
+      --bs-offcanvas-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      --bs-offcanvas-transition: transform 0.3s ease-in-out;
+      --bs-offcanvas-title-line-height: 1.5;
+  }
+
+
+
+  </style>
 
