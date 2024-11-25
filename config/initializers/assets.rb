@@ -6,6 +6,8 @@ Rails.application.config.assets.precompile += %w( jquery.min.js jquery-ui.min.js
 
 Rails.application.config.assets.paths << Rails.root.join('app', 'assets', 'fonts')
 Rails.application.config.assets.precompile += %w( .ttf )
+Rails.application.config.assets.precompile += %w(background.png)
+
 
 
 
