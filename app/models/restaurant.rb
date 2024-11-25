@@ -98,27 +98,4 @@ class Restaurant < ApplicationRecord
     Rails.logger.error "Invalid JSON response: #{e.message}"
   end
 
-  def self.filtered_results(params)
-    restaurants = Restaurant.all
-
-    # Apply cuisine filter if present
-    if params[:cuisine].present?
-      restaurants = restaurants.where(cuisine: params[:cuisine])
-    end
-
-    # Apply price filter if present
-    if params[:price].present?
-      restaurants = restaurants.where(price_range: params[:price])
-    end
-
-    # Apply rating filter if present
-    if params[:rating].present?
-      restaurants = restaurants.where("overall_rating >= ?", params[:rating].to_f)
-    end
-    
-
-
-    restaurants
-  end
-
 end
