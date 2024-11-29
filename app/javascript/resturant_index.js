@@ -32,9 +32,9 @@ var restaurants;
    map = L.map('map').setView([51.505, -0.09], 13);
 
    // Add base tile layer from OpenStreetMap
-   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-       maxZoom: 19,
-       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+   L.tileLayer('/map_tiles/{z}/{x}/{y}', {
+       maxZoom: 20,
+       attribution: 'Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> | <a href="https://openmaptiles.org/" target="_blank">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors'
    }).addTo(map);
    // Try to locate the user and set the view based on their location
    map.locate({ setView: true, maxZoom: 16 });
