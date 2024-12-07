@@ -32,7 +32,7 @@ var restaurants;
    map = L.map('map').setView([51.505, -0.09], 13);
 
    // Add base tile layer from OpenStreetMap
-   L.tileLayer('/map_tiles/{z}/{x}/{y}', {
+   L.tileLayer('https://maps.geoapify.com/v1/tile/klokantech-basic/{z}/{x}/{y}.png?apiKey=1e84e598daf14a4db2e5b5e921be7dce', {
        maxZoom: 20,
        attribution: 'Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> | <a href="https://openmaptiles.org/" target="_blank">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors'
    }).addTo(map);
@@ -44,11 +44,6 @@ var restaurants;
 
    // Function to fetch and load restaurants within the visible map bounds
    function loadRestaurants() {
-    map.eachLayer(function (layer) {
-      if (layer instanceof L.Marker) {
-          map.removeLayer(layer);
-      }
-  });
        var bounds = map.getBounds();
        var northEast = bounds.getNorthEast();
        var southWest = bounds.getSouthWest();

@@ -1,21 +1,42 @@
   <head>
-    
-  </head>
-
-  <body id="resturantpage" style="background-color: #FFFFFF;">
-    <%= render '/restaurants/partials/filters'%>
-    
-    <div class="row g-0">
-      <div class="col-md-8 border-end right-shadow">
-        <!-- Restaurants section -->
-        <div id="restaurants">
-          <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
-        </div>
+</head>
+<body id="resturantpage" style="background-color: #FFFFFF;">
+   <%= render '/restaurants/partials/filters'%>
+   <div class="row g-0">
+      <div class="col-md-8 border-end right-shadow" id="restaurants-container">
+         <!-- Restaurants section -->
+         <div id="restaurants">
+            <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
+         </div>
       </div>
+   <button class="btn btn-primary d-md-none toggle-restaurants"id="toggle-restaurants"style="position: fixed; bottom: 20px; z-index: 1050;">
+   View Restaurants
+   </button>
+   <!-- Map Section -->
+   <div class="z-2 col-md-4 sticky-top" id="map" style="top: 50px;"></div>
+   </div>
 
-      <!-- Map Section -->
-      <div class="z-2 col-md-4 sticky-top" id="map" style="top: 50px;"></div>
-    </div>
+<script>
+  const toggleButton = document.getElementById('toggle-restaurants');
+  const mapSection = document.getElementById('map');
+  const restaurantsContainer = document.getElementById('restaurants-container');
+
+  toggleButton.addEventListener('click', () => {
+    // Check current visibility of the map
+    if (mapSection.style.display === 'none') {
+      // Show the map, hide restaurants
+      mapSection.style.display = 'block';
+      restaurantsContainer.style.display = 'none';
+      toggleButton.textContent = 'View Restaurants';
+    } else {
+      // Show the restaurants, hide the map
+      mapSection.style.display = 'none';
+      restaurantsContainer.style.display = 'block';
+      toggleButton.textContent = 'View Map';
+    }
+  });
+</script>
+
     
     <!-- JavaScript to initialize Leaflet map and add layers -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -29,6 +50,46 @@
 
 
   <style>
+/* Default (desktop view) */
+#restaurants-container {
+  position: relative;
+  height: auto;
+  display: block; /* Show normally */
+  transition: transform 0.3s ease-in-out;
+}
+
+#restaurants-container.drawer-hidden {
+  transform: translateY(100%); /* Hidden below the screen */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background-color: #fff;
+  overflow-y: auto;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1050;
+}
+
+/* Small screens: make it full width at the bottom */
+@media (max-width: 768px) {
+  #restaurants-container {
+    display: none; /* Hide by default */
+  }
+
+  #restaurants-container.drawer-hidden {
+    display: block; /* Drawer visibility toggled */
+  }
+}
+
+/* Ensure the map takes full screen width on small devices */
+@media (max-width: 768px) {
+  #map {
+    width: 100%;
+  }
+}
+
+
 .selected {
   border: 10px solid #E8E8E8; /* Blue border */
   background-color: transparent; /* No fill */
