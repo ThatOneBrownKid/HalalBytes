@@ -30,7 +30,7 @@ var restaurants;
    map = L.map('map').setView([51.505, -0.09], 13);
 
    // Add base tile layer from OpenStreetMap
-   L.tileLayer('https://maps.geoapify.com/v1/tile/klokantech-basic/{z}/{x}/{y}.png?apiKey=1e84e598daf14a4db2e5b5e921be7dce', {
+   L.tileLayer('https://maps.geoapify.com/v1/tile/klokantech-basic/{z}/{x}/{y}.png?apiKey=(ADD API KEY)', {
        maxZoom: 20,
        attribution: 'Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> | <a href="https://openmaptiles.org/" target="_blank">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors'
    }).addTo(map);
