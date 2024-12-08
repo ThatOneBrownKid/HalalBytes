@@ -5,7 +5,6 @@ Rails.application.routes.draw do
   get 'all_requested', to: 'restaurants#all_requested'
   get 'users/index'
   get '/terms_and_services', to: 'home#terms_and_services'
-  get '/map_tiles/:z/:x/:y', to: 'map_tiles#show'
   devise_for :users, controllers: {
     registrations: 'users/registrations',
     sessions: 'users/sessions'
