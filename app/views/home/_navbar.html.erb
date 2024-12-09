@@ -12,13 +12,14 @@
           </li>
         <% end %>
         <li class="nav-item">
-          <a class="nav-link active" href=" /restaurants">Restaurants</a>
+          <a class="nav-link active" href="<%= restaurants_index_path %> "data-turbo="false">Restaurants</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" href="<%= request_new_restaurants_path %>">Request</a>
         </li>
 
       </ul>
+      
 
       <ul class="navbar-nav mb-2 mb-lg-0">
         <% if user_signed_in? %>

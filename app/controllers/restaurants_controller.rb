@@ -5,7 +5,29 @@ class RestaurantsController < ApplicationController
   require 'set'
   # GET /restaurants or /restaurants.json
   def index
-    @restaurants = Restaurant.all
+      @geoapify_api_key = ENV['GEOAPIFY_API_KEY']
+      @restaurants = Restaurant.all
+  end
+
+  # GET /restaurants/filter
+  def filter
+    @restaurants = Restaurant.filtered_results(params)
+    @restaurants = @restaurants.where(latitude: params[:southWestlat]..params[:northEastlat], longitude: params[:southWestlng]..params[:northEastlng])
+    
+    if @restaurants.empty?
+      respond_to do |format|
+        format.html { render 'restaurants/partials/no_stores', layout: false }  # Render 'no_stores' if no restaurants found
+        format.json { render json: [], status: :ok }
+      end
+      return
+    end
+
+    @data = @restaurants.select(:id, :name, :street, :latitude, :longitude)
+
+    respond_to do |format|
+      format.html { render partial: 'restaurants/partials/restaurant', collection: @restaurants, as: :restaurant }
+      format.json { render json: @data }
+    end
   end
 
   # GET /restaurants/1 or /restaurants/1.json
@@ -205,7 +227,7 @@ class RestaurantsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def restaurant_params
-    params.require(:restaurant).permit(:name, :phone, :website, :cuisine, :price_range, :overall_rating, {images: []}, 
+    params.require(:restaurant).permit(:id,:name, :phone, :website, :cuisine, :price_range, :overall_rating, {images: []}, 
     :monday, :tuesday, :wednesday, :thursday, :friday, :saturday, :sunday, :street, :city, :state, :zip_code, :halal_status, :notes, :longitude, :latitude)
   end
 
