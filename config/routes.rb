@@ -1,13 +1,10 @@
 Rails.application.routes.draw do
   get 'restaurants/request_new', to: 'restaurants#request_new', as: :request_new_restaurants
-  get '/restaurants', to: 'restaurants#index', as: :restaurants_index
   post 'restaurants/request_create', to: 'restaurants#request_create', as: :request_create_restaurants
   get 'requested_restaurants', to: 'restaurants#requested'
   get 'all_requested', to: 'restaurants#all_requested'
-  get 'restaurants/filter', to: 'restaurants#filter'
   get 'users/index'
   get '/terms_and_services', to: 'home#terms_and_services'
-  get '/map_tiles/:z/:x/:y', to: 'map_tiles#show'
   devise_for :users, controllers: {
     registrations: 'users/registrations',
     sessions: 'users/sessions'
@@ -27,7 +24,7 @@ Rails.application.routes.draw do
 
   patch '/users/basic_info', to: 'users/registrations#update', as: :update_basic_info
   patch 'restaurants/:id/update_images_order', to: 'restaurants#update_images_order', as: 'update_images_order'
-  post '/requests/upload_images', to: 'requests#upload_images', as: :request_upload_images
+
   
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
