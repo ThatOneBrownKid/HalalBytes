@@ -35,5 +35,3 @@
 /config/master.key
 2
 
-#Ignore API Keys
-.api_key.rb
