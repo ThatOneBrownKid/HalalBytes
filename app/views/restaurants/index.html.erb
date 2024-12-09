@@ -17,6 +17,7 @@
    </div>
 
 <script>
+  window.geoapifyApiKey = "<%= ENV['GEOAPIFY_API_KEY'] %>";
   const toggleButton = document.getElementById('toggle-restaurants');
   const mapSection = document.getElementById('map');
   const restaurantsContainer = document.getElementById('restaurants-container');

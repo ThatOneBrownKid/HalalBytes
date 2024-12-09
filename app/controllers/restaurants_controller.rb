@@ -5,6 +5,7 @@ class RestaurantsController < ApplicationController
   require 'set'
   # GET /restaurants or /restaurants.json
   def index
+      @geoapify_api_key = ENV['GEOAPIFY_API_KEY']
       @restaurants = Restaurant.all
   end
 
