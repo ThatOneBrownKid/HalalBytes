@@ -1,14 +1,38 @@
 <body>
     <div class="d-flex flex-column align-items-center justify-content-center mt-5">
-        <%= image_tag 'halalbytes-logo.png', style: 'width: 200px;'%>
+        <%= image_tag 'halalbytes-logo-w.png', class: 'logo-image', style: 'width: 200px;'%>
     </div>
 
     <div class="d-flex flex-column align-items-center justify-content-center mt-5 mb-5">
-        <h1 class="display-1 text-center mb-5">Welcome</h1>
+
+        <!--<h1 class="display-1 text-center mb-5">Ramadan Mubarak!</h1>-->
+        <%= image_tag 'h1.png', class: 'responsive-h1', style: 'width: 600px; padding-bottom: 40px;'%>
+        <h3>Explore the best halal food in Columbus</h3>
+            <div class="search-container">
+            <form action="/action_page.php" class="input-group mb-3">
+                <!-- Restaurant Search Input -->
+                <input type="text" class="form-control" placeholder="I'm hungry for..." name="restaurant" aria-label="Restaurant search">
+                <!-- Location Search Input -->
+                <!-- Location Search Input -->
+                <div class="position-relative w-100">
+                    <i class="bi bi-geo-alt location-icon"></i>
+                    <input type="text" class="form-control location-input" placeholder="Location" name="location" aria-label="Location search">
+                </div>
+                <!-- Search Button -->
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </form>
+            </div>
+        </div>
+
+        <!--
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <p class="lead text-center">Welcome to our website, dedicated to helping the Muslim community in Columbus, OH find halal spots to eat and share reviews. Discover a comprehensive database of halal restaurants, cafes, and eateries, complete with detailed information, ratings, and user reviews. Join our community and make informed dining choices while supporting halal preferences.</p>
+                    <p class="lead text-center">Welcome to our website, a dedicated platform for the Muslim community in Columbus, OH, aimed at simplifying the search for halal dining spots. Our mission is to provide a comprehensive database of halal restaurants, cafes, and eateries, each meticulously verified for halal certification to ensure your dining experiences align with halal standards. With detailed information, ratings, and user reviews at your fingertips, our search tool empowers you to discover a variety of halal culinary gems across the city, catering to diverse dietary needs and preferences. By joining our community, you contribute valuable insights that guide fellow diners in making informed choices, sharing your experiences on ambiance, flavors, and service. Together, we're not just finding food; we're fostering a community that supports and uplifts halal preferences, offering peace of mind and unforgettable dining experiences to everyone involved.</p>
                 </div>
             </div>
         </div>
@@ -31,6 +55,189 @@
             <%= image_tag 'mosque.png', style: 'width: 40px;' %>
             <p>Rest assured that all the restaurants in our database have undergone thorough verification to ensure they are halal-certified. Each establishment has been confirmed by either the owner or the company, giving you the confidence to explore and enjoy a diverse range of halal dining options with peace of mind.</p>
         </div>
-    </div>
+    </div> -->
 
 </body>
+
+<style>
+
+@font-face {
+    font-family: 'Ramadhan Mubarak';
+    src: url('/app/assets/fonts/RamadhanMubarak.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    background-image: url('<%= asset_path('background.png') %>');
+    /*background: linear-gradient(#DC3545 0%, #000 100%);*/
+    background-size: cover; /* Cover the entire page */
+    
+}
+h1 {
+    color: #FFFFFF; /* This will make your h1 and h3 text white */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-weight: 500;
+    font-family: 'Ramadhan Mubarak', cursive;
+}
+
+h3 {
+    color: #FFFFFF; /* This will make your h1 and h3 text white */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: center; /* Centers text horizontally */
+    margin-top: 0; /* You can adjust this value as needed */
+    margin-bottom: 0; /* You can adjust this value as needed */
+    font-size: 35px;
+    font-weight: 500;
+}
+
+/* Smaller screen like tablet or small laptop*/
+
+@media (max-width: 768px) {
+    body {
+        background-position: center 75%; /* Shift the background position */
+        background-size: 150% auto; /* Increase or decrease the size as needed */
+    }
+}
+
+/* Smaller screen like mobile phones*/
+@media (max-width: 480px) {
+    body {
+        background-position: center 75%; /* Further shift the background position */
+        background-size: 200% auto; /* Increase or decrease the size as needed */
+    }
+    .responsive-h1 {
+        width: 100%; /* Makes the image width responsive to the screen size */
+        max-width: 350px; /* Adjust this value as needed */
+        padding-bottom: 20px; /* Optional: Adjust padding for smaller screens */
+    }
+    .search-container {
+        padding-left: 20px; /* Adds padding to the left side */
+        padding-right: 20px; /* Adds padding to the right side */
+    }
+    h1 {
+        padding-left: 20px; /* Adds padding to the left side */
+        padding-right: 20px; /* Adds padding to the right side */
+    }
+}
+/* for mobile devices with smaller heights*/
+@media (max-height: 800px) {
+    body {
+        background-position: center 75%; /* Further shift the background position */
+        background-size: 200% auto; /* Increase or decrease the size as needed */
+    }
+    .responsive-h1 {
+        width: 100%; /* Makes the image width responsive to the screen size */
+        max-width: 350px; /* Adjust this value as needed */
+        padding-bottom: 20px; /* Optional: Adjust padding for smaller screens */
+    }
+    .search-container {
+        padding-left: 20px; /* Adds padding to the left side */
+        padding-right: 20px; /* Adds padding to the right side */
+    }
+    h1 {
+        padding-left: 20px; /* Adds padding to the left side */
+        padding-right: 20px; /* Adds padding to the right side */
+    }
+    .logo-image {
+        display: none;
+    }
+}
+
+.info-container {
+    background-image: url(/assets/food.png); /* Path to your different background image */
+    background-size: cover; /* Cover the entire container */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    border-radius: 15px; /* Rounded corners, adjust as needed */
+    padding: 20px; /* Add some padding inside the container */
+    margin: 20px; /* Optional: Adds space around the container */
+    box-shadow: 0 2px 5px rgba(0,0,0); /* Optional: Adds a subtle shadow for depth */
+    color: #FFFFFF; /* Text color inside the container */
+    width: 800px;
+    height: 500px;
+}
+
+.info-container h1 {
+    font-weight: 700;
+    font-family: 'Brush Script MT', cursive;
+}
+
+.info-container h3 {
+    text-align: center; /* Centers text horizontally */
+    margin-top: 0; /* You can adjust this value as needed */
+    margin-bottom: 0; /* You can adjust this value as needed */
+    font-size: 35px;
+    font-weight: 500;
+}
+
+.search-container {
+    position: relative;
+    max-width: 600px;
+    width: 100%;
+    margin: auto;
+    padding-top: 40px;
+}
+
+.search-container .form-control, .search-container .btn-outline-secondary {
+    height: 60px; /* Increase the height of the input fields and button */
+    padding: 0 12px; /* Adjust padding as needed for text alignment */
+}
+
+.btn-outline-secondary {
+    border-top-right-radius: 10px; /* Adjust to match your design */
+    border-bottom-right-radius: 10px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    width: 60px;
+}
+
+
+.search-container .input-group .btn-outline-secondary {
+    background: #DC3445;
+    color: white;
+    /*border-radius: 0; */
+}
+
+.search-container .input-group .btn-outline-secondary:hover {
+    background: #fa4755;
+    color: white;
+}
+
+.position-relative {
+    position: relative;
+    flex: 1; /* Ensure the input group fills the space */
+}
+
+.location-icon {
+    position: absolute;
+    left: 12px; /* Slightly adjust if necessary */
+    top: 50%;
+    transform: translateY(-50%);
+    color: grey;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.location-input, .search-container .form-control {
+    padding-left: 35px; /* Adjust to ensure text does not overlap the icon */
+    border-radius: 0; /* Ensures no border-radius for the location input */
+}
+
+.search-container .form-control:focus, .search-container .btn-outline-secondary:focus {
+    outline: none; /* Removes the blue outline */
+    box-shadow: none; /* Optional: Adds a custom focus style */
+}
+
+/* Specific styles for the restaurant search input */
+.search-container .form-control:first-child {
+    border-top-left-radius: 10px; /* Adjust this value as needed */
+    border-bottom-left-radius: 10px; /* Adjust this value as needed */
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+
+
+</style>
+
