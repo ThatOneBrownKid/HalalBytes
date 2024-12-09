@@ -7,24 +7,31 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to VPS
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v0.1.8
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_PRIVATE_KEY }}
-          port: 22
-          script: |
-            cd ~/app_dev/HalalBytes/
-            git pull origin main
-            bundle install
-            bundle exec rake db:migrate RAILS_ENV=production
-            bundle exec rake assets:precompile RAILS_ENV=production
-            sudo service nginx restart
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+
+    - name: Deploy to VPS
+      run: |
+        ssh deploy@your-vps-ip << 'EOF'
+          set -e
+          # Load rbenv
+          export RBENV_ROOT="$HOME/.rbenv"
+          export PATH="$RBENV_ROOT/bin:$PATH"
+          eval "$(rbenv init -)"
+          
+          # Navigate to the app and deploy
+          cd ~/app_dev/HalalBytes/
+          git pull origin main
+          bundle install --deployment --without development test
+          bundle exec rake db:migrate RAILS_ENV=production
+          bundle exec rake assets:precompile RAILS_ENV=production
+          sudo service nginx restart
+        EOF
