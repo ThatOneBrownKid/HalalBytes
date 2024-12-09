@@ -1,3 +1,5 @@
+
+
 var map; 
 document.addEventListener('turbo:load',initMap);
 
