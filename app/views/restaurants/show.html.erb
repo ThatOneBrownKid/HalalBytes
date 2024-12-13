@@ -15,7 +15,7 @@
       <i class="bi bi-three-dots-vertical" data-bs-toggle="dropdown" aria-expanded="false"></i>
         <ul class="dropdown-menu">
           <li>
-            <span class="dropdown-item" id="uploadImages" data-bs-toggle="modal" data-bs-target="#uploadImages">
+            <span class="dropdown-item" id="uploadImages" data-bs-toggle="modal" data-bs-target="#uploadImagesModal">
               Upload Images
             </span>
           </li>
@@ -245,32 +245,42 @@
   </div>
 </div>
 
-<!-- Upload Modal-->
-<%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
-  <label for="image-upload">
-    <%= form.file_field :images, multiple: true, class: 'form-control', id: 'image-upload', style: 'display: none;', onchange: 'previewImages()' %>
-  </label>
-  <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="uploadModalLabel">Upload Images</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div id="imagePreviews"></div>
-        </div>
-        <div class="modal-body">
-          <p>Would you like to upload <span id="fileCount"></span> file(s)?</p>
-        </div>
-        <div class="modal-footer">
-          <%= form.submit 'Upload', class: 'btn btn-primary', id: 'uploadFilesBtn', disabled: true %>
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        </div>
+<div class="modal fade" id="uploadImagesModal" tabindex="-1" aria-labelledby="uploadImagesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="uploadImagesModalLabel">Upload Images</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with(model: @restaurant, local: true, html: { multipart: true }) do |form| %>
+          <div class="mt-4">
+            <div class="dropzone dropzone-default dz-clickable" 
+                 data-controller="dropzone" 
+                 data-dropzone-max-file-size="255" 
+                 data-dropzone-accepted-files="image/*" 
+                 data-dropzone-max-files="10" 
+                 data-upload-multiple="true">
+              <%= form.file_field :images, multiple: true, direct_upload: true, 
+                                  data: { dropzone_target: 'input' }, id: "image-upload" %>
+              <div class="dropzone-msg dz-message needsclick">
+                <i class="bi bi-cloud-upload fa-3x"></i>
+                <p class="dropzone-msg-title">Browse/Drag File to Upload</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <%= form.submit 'Confirm', class: 'btn btn-primary', id: 'confirmUploadBtn', disabled: true %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
-<% end %>
+</div>
+
+
+
 
 </body>
 
@@ -424,6 +434,15 @@
     height: 100px !important; /* Adjust according to your images height */
     width: 100px !important;
 }
+
+.dropzone {
+    border-radius: 20px; /* Adjust this value to get the desired roundness */
+    background-color: rgba(0, 110, 255, 0.041);
+    border: 2px dashed royalblue;
+    border-radius: 10px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+  }
 </style>
 
 
@@ -667,12 +686,34 @@
   });
 </script>
 
-<script type="module">
-  $(document).ready(function() {
-    // When the "Upload Images" span is clicked
-    $('#uploadImages').on('click', function() {
-      // Programmatically click the hidden file input
-      $('#image-upload').click();
+<script>
+  document.addEventListener("turbo:load", function () {
+  const fileInput = document.getElementById("image-upload");
+  const confirmButton = document.getElementById("confirmUploadBtn");
+  const uploadModal = document.getElementById("uploadImagesModal");
+
+  // Enable Confirm button when an image is uploaded
+  fileInput.addEventListener("change", function () {
+    if (fileInput.files.length > 0) {
+      confirmButton.disabled = false; // Enable the button
+    } else {
+      confirmButton.disabled = true; // Disable if no files
+    }
+  });
+
+  // Reset the button and file input when the modal is hidden
+  uploadModal.addEventListener("hidden.bs.modal", function () {
+    confirmButton.disabled = true; // Reset the button to disabled
+    fileInput.value = ""; // Clear the file input
+  });
+
+    document.getElementById('uploadImagesModal').addEventListener('hidden.bs.modal', () => {
+      const backdrop = document.querySelector('.modal-backdrop');
+      if (backdrop) backdrop.remove(); // Clean up remaining backdrop
+      document.body.classList.remove('modal-open'); // Reset body class
+      document.body.style.paddingRight = ''; // Reset padding
     });
+
   });
 </script>
+

@@ -136,8 +136,8 @@
       <div class="dropzone dropzone-default dz-clickable" data-controller="dropzone" data-dropzone-max-file-size="255" data-dropzone-accepted-files="image/*" data-dropzone-max-files="10" data-upload-multiple="true">
         <%= form.file_field :images, multiple: true, direct_upload: true, data: { dropzone_target: 'input' } %>
         <div class="dropzone-msg dz-message needsclick">
-        <i class="bi bi-card-image"></i>
-          <h5 class="dropzone-msg-title">Drag here to upload images or click here to browse</h5>
+        <i class="bi bi-cloud-upload fa-3x"></i>
+          <p class="dropzone-msg-title">Browse/Drag File to Upload</p>
         </div>
       </div>
     </div>
@@ -231,8 +231,9 @@
 
   .dropzone {
     border-radius: 20px; /* Adjust this value to get the desired roundness */
-    background-color: #e3e3e3;
-    border: 2px dashed #7d7d7d;
+    background-color: rgba(0, 110, 255, 0.041);
+    border: 2px dashed royalblue;
+    border-radius: 10px;
     margin-top: 15px;
     margin-bottom: 10px;
   }
