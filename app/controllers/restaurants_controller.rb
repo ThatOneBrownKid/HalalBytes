@@ -52,6 +52,7 @@ class RestaurantsController < ApplicationController
   # POST /restaurants/request_create
   def request_create
     @restaurant = Restaurant.new(restaurant_params)
+    @restaurant.notes = params[:restaurant][:notes]&.join(';') if params[:restaurant][:halal_status] == 'Partially Halal'
     process_operating_times
     @restaurant.requested_by = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
     @restaurant.keep = false
@@ -91,6 +92,7 @@ class RestaurantsController < ApplicationController
   # POST /restaurants or /restaurants.json
   def create
     @restaurant = Restaurant.new(restaurant_params)
+    @restaurant.notes = params[:restaurant][:notes]&.join(';') if params[:restaurant][:halal_status] == 'Partially Halal'
     process_operating_times
     if user_signed_in?
       @restaurant.created_by = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
@@ -130,6 +132,7 @@ class RestaurantsController < ApplicationController
   def update
     process_operating_times
     @restaurant.images.attach(params[:restaurant][:images]) if params[:restaurant][:images].present?
+    @restaurant.notes = params[:restaurant][:notes]&.join(';') if params[:restaurant][:halal_status] == 'Partially Halal'
   
     respond_to do |format|
       if @restaurant.save

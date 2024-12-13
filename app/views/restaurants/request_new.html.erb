@@ -103,17 +103,23 @@
     <div>
       <%= form.label :halal_status, style: "display: block" %>
       <%= form.select :halal_status, 
-                options_for_select([
-                  'Fully Halal', 
-                  'Partially Halal'
-                ]), 
-                {}, 
-                { class: "form-select", id: "halal_status_select" } %>
+              options_for_select(
+                ['Fully Halal', 'Partially Halal'], 
+                selected: @restaurant.halal_status
+              ), 
+              {}, 
+              { class: "form-select", id: "halal_status_select" } %>
     </div>
 
-    <div id="notes_field" style="display: none;">
-      <%= form.label :notes, style: "display: block" %>
-      <%= form.text_area :notes, class: "form-control", placeholder: "e.g. Everything but the beef is halal... \ne.g. Only chicken is halal..."%>
+    <div id="notes_container" style="display: none;">
+      <label for="notes">Select Meats</label>
+        <select id="notes" name="restaurant[notes][]" data-multi-select multiple>
+          <% ['Chicken', 'Beef', 'Lamb', 'Goat', 'Fish', 'Duck', 'Turkey'].each do |meat| %>
+            <option value="<%= meat %>" <%= @restaurant.notes&.split(';')&.include?(meat) ? 'selected' : '' %>>
+              <%= meat %>
+            </option>
+          <% end %>
+      </select>
     </div>
 
     <div class="pt-2">
@@ -334,5 +340,27 @@
       timeFormat: 'h:mm p',
       dropdown: false
     });
+  });
+</script>
+
+<script>
+  document.addEventListener("turbo:load", function () {
+    const halalStatusSelect = document.getElementById("halal_status_select");
+    const notesContainer = document.getElementById("notes_container");
+
+    // Toggle visibility of the notes container based on Halal Status
+    function toggleNotesField() {
+      if (halalStatusSelect.value === "Partially Halal") {
+        notesContainer.style.display = "block";
+      } else {
+        notesContainer.style.display = "none";
+      }
+    }
+
+    // Set initial state
+    toggleNotesField();
+
+    // Add event listener to the Halal Status dropdown
+    halalStatusSelect.addEventListener("change", toggleNotesField);
   });
 </script>

@@ -117,20 +117,27 @@
     <div>
       <%= form.label :halal_status, style: "display: block" %>
       <%= form.select :halal_status, 
-                options_for_select([
-                  'Fully Halal', 
-                  'Partially Halal'
-                ]), 
-                {}, 
-                { class: "form-select", id: "halal_status_select" } %>
+              options_for_select(
+                ['Fully Halal', 'Partially Halal'], 
+                selected: @restaurant.halal_status
+              ), 
+              {}, 
+              { class: "form-select", id: "halal_status_select" } %>
     </div>
 
-    <div id="notes_field" style="display: none;">
-      <%= form.label :notes, style: "display: block" %>
-      <%= form.text_area :notes, class: "form-control", placeholder: "e.g. Everything but the beef is halal... \ne.g. Only chicken is halal..."%>
+    <div id="notes_container" style="display: none;">
+      <label for="notes">Select Meats</label>
+        <select id="notes" name="restaurant[notes][]" data-multi-select multiple>
+          <% ['Chicken', 'Beef', 'Lamb', 'Goat', 'Fish', 'Duck', 'Turkey'].each do |meat| %>
+            <option value="<%= meat %>" <%= @restaurant.notes&.split(';')&.include?(meat) ? 'selected' : '' %>>
+              <%= meat %>
+            </option>
+          <% end %>
+      </select>
     </div>
 
-    <div>
+
+    <div class="pt-1">
       <p>Hours of Operations:</p>
       <% %w[sunday monday tuesday wednesday thursday friday saturday].each do |day| %>
         <div class="form-group row">
@@ -254,15 +261,15 @@
   }
 
   .form-control-select {
-  -webkit-appearance: none;  /* Removes default chrome and safari style */
-  -moz-appearance: none;    /* Removes default style Firefox */
-  appearance: none;         /* Removes default style for IE */
-  background-image: url('path_to_arrow_image.png'); /* Add your arrow image */
-  background-repeat: no-repeat;
-  background-position: right 10px center; /* Position the arrow image */
-  background-size: 12px; /* Size of the arrow image */
-  /* Add other styles as needed (padding, border, etc.) */
-}
+    -webkit-appearance: none;  /* Removes default chrome and safari style */
+    -moz-appearance: none;    /* Removes default style Firefox */
+    appearance: none;         /* Removes default style for IE */
+    background-image: url('path_to_arrow_image.png'); /* Add your arrow image */
+    background-repeat: no-repeat;
+    background-position: right 10px center; /* Position the arrow image */
+    background-size: 12px; /* Size of the arrow image */
+    /* Add other styles as needed (padding, border, etc.) */
+    }
 </style>
 
 <script>
@@ -317,5 +324,27 @@
       timeFormat: 'h:mm p',
       dropdown: false
     });
+  });
+</script>
+
+<script>
+  document.addEventListener("turbo:load", function () {
+    const halalStatusSelect = document.getElementById("halal_status_select");
+    const notesContainer = document.getElementById("notes_container");
+
+    // Toggle visibility of the notes container based on Halal Status
+    function toggleNotesField() {
+      if (halalStatusSelect.value === "Partially Halal") {
+        notesContainer.style.display = "block";
+      } else {
+        notesContainer.style.display = "none";
+      }
+    }
+
+    // Set initial state
+    toggleNotesField();
+
+    // Add event listener to the Halal Status dropdown
+    halalStatusSelect.addEventListener("change", toggleNotesField);
   });
 </script>
