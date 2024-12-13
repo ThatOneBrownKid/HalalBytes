@@ -62,7 +62,13 @@ class RestaurantsController < ApplicationController
 
     # Check if latitude or longitude is nil
     if @restaurant.latitude.nil? || @restaurant.longitude.nil?
-      @restaurant.errors.add(:address, "Address couldn't be recognized.")
+      @restaurant.errors.add(:address, "couldn't be recognized")
+    end
+
+    # Check for duplicate restaurant (name + address combination)
+    duplicate = Restaurant.find_by(name: @restaurant.name, street: @restaurant.street, city: @restaurant.city, state: @restaurant.state, zip_code: @restaurant.zip_code)
+    if duplicate.present?
+      @restaurant.errors.add(:base, "A restaurant with this name and address already exists.")
     end
 
     respond_to do |format|
@@ -95,7 +101,13 @@ class RestaurantsController < ApplicationController
 
     # Check if latitude or longitude is nil
     if @restaurant.latitude.nil? || @restaurant.longitude.nil?
-      @restaurant.errors.add(:address, "Address couldn't be recognized.")
+      @restaurant.errors.add(:address, "couldn't be recognized test.")
+    end
+
+    # Check for duplicate restaurant (name + address combination)
+    duplicate = Restaurant.find_by(name: @restaurant.name, street: @restaurant.street, city: @restaurant.city, state: @restaurant.state, zip_code: @restaurant.zip_code)
+    if duplicate.present?
+      @restaurant.errors.add(:base, "A restaurant with this name and address already exists.")
     end
 
     respond_to do |format|
@@ -104,7 +116,7 @@ class RestaurantsController < ApplicationController
         format.html { render :request_new, status: :unprocessable_entity }
         format.json { render json: @restaurant.errors, status: :unprocessable_entity }
       elsif @restaurant.save
-        format.html { redirect_to restaurant_url(@restaurant), notice: "Your request has been submitted." }
+        format.html { redirect_to restaurant_url(@restaurant), notice: "The restaurant has been created." }
         format.json { render :show, status: :created, location: @restaurant }
       else
         flash.now[:alert] = @restaurant.errors.full_messages.join(', ')

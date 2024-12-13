@@ -1,7 +1,7 @@
 Geocoder.configure(
   # Geocoding options
   # timeout: 3,                 # geocoding service timeout (secs)
-  lookup: :nominatim,         # name of geocoding service (symbol)
+  lookup: :geocoder_ca,         # name of geocoding service (symbol)
   ip_lookup: :ipinfo_io,      # name of IP address geocoding service (symbol)
   language: :en,              # ISO-639 language code
   # use_https: false,           # use HTTPS for lookup requests? (if supported)
@@ -19,7 +19,7 @@ Geocoder.configure(
   units: :mi,                 # :km for kilometers or :mi for miles
   distances: :linear,          # :spherical or :linear
   
-  http_headers: { "User-Agent" => "Yo Mama" }
+  http_headers: { "User-Agent" => "HalalBytes" }
   # Cache configuration
   # cache_options: {
   #   expiration: 2.days,

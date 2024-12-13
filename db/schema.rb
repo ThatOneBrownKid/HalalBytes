@@ -69,23 +69,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_08_16_012906) do
     t.string "zip_code"
     t.string "halal_status"
     t.string "notes"
-<<<<<<< Updated upstream
-=======
-    t.decimal "lon"
-    t.decimal "lat"
-    t.text "new_address"
-    t.integer "rating"
     t.float "latitude"
     t.float "longitude"
->>>>>>> Stashed changes
-  end
-
-  create_table "spatial_ref_sys", primary_key: "srid", id: :integer, default: nil, force: :cascade do |t|
-    t.string "auth_name", limit: 256
-    t.integer "auth_srid"
-    t.string "srtext", limit: 2048
-    t.string "proj4text", limit: 2048
-    t.check_constraint "srid > 0 AND srid <= 998999", name: "spatial_ref_sys_srid_check"
   end
 
   create_table "users", force: :cascade do |t|
