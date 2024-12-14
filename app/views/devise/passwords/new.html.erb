@@ -1,37 +1,35 @@
 <section class="h-100">
-		<div class="container h-100">
-			<div class="row justify-content-sm-center h-100">
-				<div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
-					<div class="text-center my-5">
-						<img src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt="logo" width="100">
-					</div>
-					<div class="card shadow-lg">
-						<div class="card-body p-5">
-							<h1 class="fs-4 card-title fw-bold mb-4">Forgot Password</h1>
-								<div class="mb-3">
-                <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-                  <%= f.label :email, class:"mb-2 text-muted" %>
-                  <%= f.email_field :email, autofocus: true, autocomplete: "email", class:"form-control" %>
-                  <% if resource.errors.has_key?(:email) %>
-                      <div class="text-danger ">
-                        Email <%= resource.errors[:email].join(", ") %>
-                      </div>
-                  <% end %>
-								</div>
-
-								<div class="d-flex align-items-center actions">
-                  <%= f.submit "Send Link", class:"btn btn-primary ms-auto" %>
-								</div>
-						</div>
-            <% end %>
-						<div class="card-footer py-3 border-0">
-							<div class="text-center">
-                Remember your password?<%= link_to 'Login', new_user_session_path, class: "text-dark" %>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
+  <div class="container h-100">
+    <div class="row justify-content-sm-center h-100">
+      <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
+        <div class="text-center my-5">
+          <img src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt="logo" width="100">
+        </div>
+        <div class="card shadow-lg">
+          <div class="card-body p-5">
+            <h1 class="fs-4 card-title fw-bold mb-4">Forgot Password</h1>
+            <div class="mb-3">
+              <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+                <%= f.label :email, class:"mb-2 text-muted" %>
+                <%= f.email_field :email, autofocus: true, autocomplete: "email", class:"form-control" %>
+                <% if resource.errors.has_key?(:email) %>
+                  <div class="text-danger ">
+                    Email <%= resource.errors[:email].join(", ") %>
+                  </div>
+                <% end %>
+              </div>
+              <div class="d-flex align-items-center actions">
+                <%= f.submit "Send Link", class:"btn btn-primary ms-auto" %>
+              </div>
+            </div>
+          <% end %>
+          <div class="card-footer py-3 border-0">
+            <div class="text-center">
+              Remember your password?<%= link_to 'Login', new_user_session_path, class: "text-dark" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

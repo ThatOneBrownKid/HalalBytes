@@ -13,7 +13,6 @@
                   <%= action_name == "edit" ? "Edit" : "Register" %>
                 </h1>
                 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-
                   <div class="mb-3">
                     <%= f.label :first_name, class: "mb-2 text-muted" %>
                     <%= f.text_field :first_name, class: "form-control", required: true, autofocus: true, value: resource.first_name&.downcase&.capitalize %>
@@ -23,7 +22,6 @@
                       </div>
                     <% end %>
                   </div>
-
                   <div class="mb-3">
                     <%= f.label :last_name, class: "mb-2 text-muted" %>
                     <%= f.text_field :last_name, class: "form-control", required: true, value: resource.last_name&.downcase&.capitalize %>
@@ -33,7 +31,6 @@
                       </div>
                     <% end %>
                   </div>
-
                   <div class="mb-3">
                     <%= f.label :email, class: "mb-2 text-muted" %>
                     <%= f.email_field :email, class: "form-control", required: true, value: resource.last_name&.downcase%>
@@ -43,7 +40,6 @@
                       </div>
                     <% end %>
                   </div>
-
                   <div>
                     <div class="mb-0">
                       <%= f.label :password, class: "mb-2 text-muted", id: "password" %>
@@ -56,7 +52,6 @@
                         </div>
                       <% end %>
                     </div>
-
                     <div class="col-6 mt-0 mt-xxl-0 w-auto h-auto">
                       <div class="alert px-4 py-1 mb-0 d-none" role="alert" data-mdb-color="warning" id="password-alert">
                         <ul class="list-unstyled mb-0 small">
@@ -84,7 +79,6 @@
                       </div>
                     </div>
                   </div>
-
                   <div class="align-items-center d-flex mt-2">
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
@@ -103,139 +97,135 @@
     </section>
   </body>
 <% end %>
-
 <style>
-    .wrong .bi-check {
-        display: none;
-    }
+  .wrong .bi-check {
+      display: none;
+  }
 
-    .good .bi-x {
-        display: none;
-    }
+  .good .bi-x {
+      display: none;
+  }
 
-    .valid-feedback,
-    .invalid-feedback {
-        margin-left: 0;
-    }
+  .valid-feedback,
+  .invalid-feedback {
+      margin-left: 0;
+  }
 </style>
-
 <script>
-    addEventListener("DOMContentLoaded", (event) => {
-        const password = document.getElementById("password-input");
-        const passwordAlert = document.getElementById("password-alert");
-        const requirements = document.querySelectorAll(".requirements");
-        let lengBoolean, bigLetterBoolean, numBoolean, specialCharBoolean;
-        let leng = document.querySelector(".leng");
-        let bigLetter = document.querySelector(".big-letter");
-        let num = document.querySelector(".num");
-        let specialChar = document.querySelector(".special-char");
-        const specialChars = "!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?`~";
-        const numbers = "0123456789";
+  addEventListener("DOMContentLoaded", (event) => {
+      const password = document.getElementById("password-input");
+      const passwordAlert = document.getElementById("password-alert");
+      const requirements = document.querySelectorAll(".requirements");
+      let lengBoolean, bigLetterBoolean, numBoolean, specialCharBoolean;
+      let leng = document.querySelector(".leng");
+      let bigLetter = document.querySelector(".big-letter");
+      let num = document.querySelector(".num");
+      let specialChar = document.querySelector(".special-char");
+      const specialChars = "!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?`~";
+      const numbers = "0123456789";
 
-        requirements.forEach((element) => element.classList.add("wrong"));
+      requirements.forEach((element) => element.classList.add("wrong"));
 
-        password.addEventListener("focus", () => {
-            passwordAlert.classList.remove("d-none");
-            if (!password.classList.contains("is-valid")) {
-                password.classList.add("is-invalid");
-            }
-        });
+      password.addEventListener("focus", () => {
+          passwordAlert.classList.remove("d-none");
+          if (!password.classList.contains("is-valid")) {
+              password.classList.add("is-invalid");
+          }
+      });
 
-        password.addEventListener("input", () => {
-            let value = password.value;
-            if (value.length < 8) {
-                lengBoolean = false;
-            } else if (value.length > 7) {
-                lengBoolean = true;
-            }
+      password.addEventListener("input", () => {
+          let value = password.value;
+          if (value.length < 8) {
+              lengBoolean = false;
+          } else if (value.length > 7) {
+              lengBoolean = true;
+          }
 
-            if (value.toLowerCase() == value) {
-                bigLetterBoolean = false;
-            } else {
-                bigLetterBoolean = true;
-            }
+          if (value.toLowerCase() == value) {
+              bigLetterBoolean = false;
+          } else {
+              bigLetterBoolean = true;
+          }
 
-            numBoolean = false;
-            for (let i = 0; i < value.length; i++) {
-                for (let j = 0; j < numbers.length; j++) {
-                    if (value[i] == numbers[j]) {
-                        numBoolean = true;
-                    }
-                }
-            }
+          numBoolean = false;
+          for (let i = 0; i < value.length; i++) {
+              for (let j = 0; j < numbers.length; j++) {
+                  if (value[i] == numbers[j]) {
+                      numBoolean = true;
+                  }
+              }
+          }
 
-            specialCharBoolean = false;
-            for (let i = 0; i < value.length; i++) {
-                for (let j = 0; j < specialChars.length; j++) {
-                    if (value[i] == specialChars[j]) {
-                        specialCharBoolean = true;
-                    }
-                }
-            }
+          specialCharBoolean = false;
+          for (let i = 0; i < value.length; i++) {
+              for (let j = 0; j < specialChars.length; j++) {
+                  if (value[i] == specialChars[j]) {
+                      specialCharBoolean = true;
+                  }
+              }
+          }
 
-            if (
-                lengBoolean == true &&
-                bigLetterBoolean == true &&
-                numBoolean == true &&
-                specialCharBoolean == true
-            ) {
-                password.classList.remove("is-invalid");
-                password.classList.add("is-valid");
+          if (
+              lengBoolean == true &&
+              bigLetterBoolean == true &&
+              numBoolean == true &&
+              specialCharBoolean == true
+          ) {
+              password.classList.remove("is-invalid");
+              password.classList.add("is-valid");
 
-                requirements.forEach((element) => {
-                    element.classList.remove("wrong");
-                    element.classList.add("good");
-                });
-                passwordAlert.classList.remove("alert-warning");
-                passwordAlert.classList.add("alert-success");
-            } else {
-                password.classList.remove("is-valid");
-                password.classList.add("is-invalid");
+              requirements.forEach((element) => {
+                  element.classList.remove("wrong");
+                  element.classList.add("good");
+              });
+              passwordAlert.classList.remove("alert-warning");
+              passwordAlert.classList.add("alert-success");
+          } else {
+              password.classList.remove("is-valid");
+              password.classList.add("is-invalid");
 
-                passwordAlert.classList.add("alert-warning");
-                passwordAlert.classList.remove("alert-success");
+              passwordAlert.classList.add("alert-warning");
+              passwordAlert.classList.remove("alert-success");
 
-                if (lengBoolean == false) {
-                    leng.classList.add("wrong");
-                    leng.classList.remove("good");
-                } else {
-                    leng.classList.add("good");
-                    leng.classList.remove("wrong");
-                }
+              if (lengBoolean == false) {
+                  leng.classList.add("wrong");
+                  leng.classList.remove("good");
+              } else {
+                  leng.classList.add("good");
+                  leng.classList.remove("wrong");
+              }
 
-                if (bigLetterBoolean == false) {
-                    bigLetter.classList.add("wrong");
-                    bigLetter.classList.remove("good");
-                } else {
-                    bigLetter.classList.add("good");
-                    bigLetter.classList.remove("wrong");
-                }
+              if (bigLetterBoolean == false) {
+                  bigLetter.classList.add("wrong");
+                  bigLetter.classList.remove("good");
+              } else {
+                  bigLetter.classList.add("good");
+                  bigLetter.classList.remove("wrong");
+              }
 
-                if (numBoolean == false) {
-                    num.classList.add("wrong");
-                    num.classList.remove("good");
-                } else {
-                    num.classList.add("good");
-                    num.classList.remove("wrong");
-                }
+              if (numBoolean == false) {
+                  num.classList.add("wrong");
+                  num.classList.remove("good");
+              } else {
+                  num.classList.add("good");
+                  num.classList.remove("wrong");
+              }
 
-                if (specialCharBoolean == false) {
-                    specialChar.classList.add("wrong");
-                    specialChar.classList.remove("good");
-                } else {
-                    specialChar.classList.add("good");
-                    specialChar.classList.remove("wrong");
-                }
-            }
-        });
+              if (specialCharBoolean == false) {
+                  specialChar.classList.add("wrong");
+                  specialChar.classList.remove("good");
+              } else {
+                  specialChar.classList.add("good");
+                  specialChar.classList.remove("wrong");
+              }
+          }
+      });
 
-        password.addEventListener("blur", () => {
-            passwordAlert.classList.add("d-none");
-        });
-    });
+      password.addEventListener("blur", () => {
+          passwordAlert.classList.add("d-none");
+      });
+  });
 </script>
-
-
 <script>
   const checkbox = document.getElementById('flexCheckDefault');
   const submitButton = document.getElementById('submitButton');

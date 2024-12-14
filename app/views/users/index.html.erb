@@ -11,53 +11,52 @@
         </tr>
       </thead>
       <tbody>
-      <% @users.order("admin DESC, last_name ASC").each do |user| %>
-        <tr>
-          <td><%= user.first_name %></td>
-          <td><%= user.last_name %></td>
-          <td><%= user.email %></td>
-          <td>
-            <% if user.admin? %>
+        <% @users.order("admin DESC, last_name ASC").each do |user| %>
+          <tr>
+            <td><%= user.first_name %></td>
+            <td><%= user.last_name %></td>
+            <td><%= user.email %></td>
+            <td>
+              <% if user.admin? %>
                 <i class="bi bi-check-lg text-primary"></i>
-            <% end %>
-          </td>
-          <td>
-            <% if current_user.admin? %>
-              <%= link_to "View Profile", edit_user_path(user) %>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
+              <% end %>
+            </td>
+            <td>
+              <% if current_user.admin? %>
+                <%= link_to "View Profile", edit_user_path(user) %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
       </tbody>
     </table>
   </div>
 </div>
-
 <style>
-.table-responsive {
-  height: 400px; /* set the max height of the table */
-  overflow-y: auto; /* allow the table to scroll vertically */
-  border: 1px solid #ddd; /* add a border */
-}
+  .table-responsive {
+    height: 400px; /* set the max height of the table */
+    overflow-y: auto; /* allow the table to scroll vertically */
+    border: 1px solid #ddd; /* add a border */
+  }
 
-.table th,
-.table td {
-  text-align: center; /* center the text in the cells */
-  vertical-align: middle; /* vertically center the content */
-}
+  .table th,
+  .table td {
+    text-align: center; /* center the text in the cells */
+    vertical-align: middle; /* vertically center the content */
+  }
 
-.table th {
-  background-color: #f5f5f5; /* add a light gray background to the header row */
-}
+  .table th {
+    background-color: #f5f5f5; /* add a light gray background to the header row */
+  }
 
-.table tbody tr:nth-child(even) {
-  background-color: #f9f9f9; /* alternate the row background colors */
-}
+  .table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* alternate the row background colors */
+  }
 
-.table thead th {
-  background-color: #9370DB !important;
-  color: #fff;
-  font-weight: 100;
-  font-size: 20px;
-}
+  .table thead th {
+    background-color: #9370DB !important;
+    color: #fff;
+    font-weight: 100;
+    font-size: 20px;
+  }
 </style>

@@ -1,5 +1,4 @@
 <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  
   <section class="h-100">
     <div class="container h-100">
       <div class="row justify-content-sm-center h-100">
@@ -15,7 +14,6 @@
                   <%= f.label :email, class: "mb-2 text-muted" %>
                   <%= f.email_field :email, class: "form-control" %>
                 </div>
-
                 <div class="mb-3">
                   <div class="mb-2 w-100">
                     <%= f.label :password, class: "text-muted" %>
@@ -31,77 +29,70 @@
                   </div>
                   <% if devise_mapping.rememberable? %>
                     <div class="feild form-check mt-1", style="padding-left: 0px;">
-                    <%= f.check_box :remember_me %>
-                    <%= f.label :remember_me %>
-                  <%end%>
-                </div>
-
-                <% if flash[:alert] || flash[:notice] %>
-                  <% if flash[:alert] || (flash[:notice] && flash[:notice] != "You will receive an email with instructions on how to reset your password in a few minutes.") %>
-                    <div class="alert alert-danger" id="login-alert">
-                      <% if flash[:alert] %>
-                        <%= flash[:alert] %>
-                      <% elsif flash[:notice] && flash[:notice] != "You will receive an email with instructions on how to reset your password in a few minutes." %>
-                        <%= flash[:notice] %>
-                      <% end %>
-                    </div>
+                      <%= f.check_box :remember_me %>
+                      <%= f.label :remember_me %>
+                    <%end%>
+                  </div>
+                  <% if flash[:alert] || flash[:notice] %>
+                    <% if flash[:alert] || (flash[:notice] && flash[:notice] != "You will receive an email with instructions on how to reset your password in a few minutes.") %>
+                      <div class="alert alert-danger" id="login-alert">
+                        <% if flash[:alert] %>
+                          <%= flash[:alert] %>
+                        <% elsif flash[:notice] && flash[:notice] != "You will receive an email with instructions on how to reset your password in a few minutes." %>
+                          <%= flash[:notice] %>
+                        <% end %>
+                      </div>
+                    <% end %>
                   <% end %>
+                  <div class="d-flex align-items-center">
+                    <%= f.submit "Login", class: "btn btn-primary ms-auto" %>
+                  </div>
                 <% end %>
-
-                <div class="d-flex align-items-center">
-                  <%= f.submit "Login", class: "btn btn-primary ms-auto" %>
+              </div>
+              <div class="card-footer py-3 border-0 bg-white">
+                <div class="text-center">
+                  Don't have an account? <%= link_to "Create One", new_user_registration_path %>
                 </div>
-              <% end %>
-            </div>
-            <div class="card-footer py-3 border-0 bg-white">
-              <div class="text-center">
-                Don't have an account? <%= link_to "Create One", new_user_registration_path %>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-</body>
-
+    </section>
+  </body>
 <% end %>
-
 <style>
-#toggle-password {
-  cursor: pointer;
-  background-color: transparent;
-  border-top: 1px solid #dee2e6;
-  border-bottom: 1px solid #dee2e6;
-  border-right: 1px solid #dee2e6;
-  border-radius: 0 0.25rem 0.25rem 0;
-  box-shadow: none;
-}
-
-#toggle-password:focus {
-  outline: none;
-}
-
-.btn-icon {
-  padding: 0;
-}
-</style>
-
-
-<script>
-document.getElementById("toggle-password").addEventListener("click", function() {
-  var passwordInput = document.getElementById("password-input");
-  var eyeIcon = document.getElementById("eye-icon");
-
-  if (passwordInput.type === "password") {
-    passwordInput.type = "text";
-    eyeIcon.classList.remove("bi-eye-slash");
-    eyeIcon.classList.add("bi-eye");
-  } else {
-    passwordInput.type = "password";
-    eyeIcon.classList.remove("bi-eye");
-    eyeIcon.classList.add("bi-eye-slash");
+  #toggle-password {
+    cursor: pointer;
+    background-color: transparent;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-radius: 0 0.25rem 0.25rem 0;
+    box-shadow: none;
   }
-});
 
+  #toggle-password:focus {
+    outline: none;
+  }
+
+  .btn-icon {
+    padding: 0;
+  }
+</style>
+<script>
+  document.getElementById("toggle-password").addEventListener("click", function() {
+    var passwordInput = document.getElementById("password-input");
+    var eyeIcon = document.getElementById("eye-icon");
+
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      eyeIcon.classList.remove("bi-eye-slash");
+      eyeIcon.classList.add("bi-eye");
+    } else {
+      passwordInput.type = "password";
+      eyeIcon.classList.remove("bi-eye");
+      eyeIcon.classList.add("bi-eye-slash");
+    }
+  });
 </script>
