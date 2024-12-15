@@ -1,0 +1,155 @@
+<%= form_with(model: [restaurant, review], local: true, id: "review-form") do |form| %>
+  <% if review.errors.any? %>
+    <div class="error-messages">
+      <h2><%= pluralize(review.errors.count, "error") %> prohibited this review from being saved:</h2>
+      <ul>
+        <% review.errors.full_messages.each do |error| %>
+          <li><%= error %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Quill Editor -->
+  <div>
+    <%= form.label :content, "Write your review:", style: "display: block", class: "h5 pb-2" %>
+    <div id="quill-editor" style="height: 150px;"></div> <!-- Quill editor container -->
+    <%= form.hidden_field :content, id: "quill-content" %> <!-- Hidden input for the actual content -->
+  </div>
+
+  <!-- Star Rating -->
+  <div class="form-group">
+    <label for="rating" style="display: block" class="h5 pt-2">Rating:</label>
+    <div id="star-rating" data-selected-rating="<%= review.rating || 0 %>">
+      <% 1.upto(5) do |star| %>
+        <i class="bi bi-star" data-value="<%= star %>" style="font-size: 2rem; cursor: pointer;"></i>
+      <% end %>
+    </div>
+    <%= form.hidden_field :rating, id: "rating-input", value: review.rating || 0 %> <!-- Hidden input for rating -->
+  </div>
+
+  <!-- Submit Button -->
+  <div class="pt-2 ">
+    <%= form.submit "Submit Review", class: "submit-button btn btn-primary" %>
+  </div>
+<% end %>
+
+
+<style>
+  /* Style for the Quill toolbar */
+  .ql-toolbar {
+    border-radius: 10px 10px 0 0; /* Round the top two corners */
+    border: 1px solid #ccc; /* Match the border style of the editor */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow */
+  }
+
+  /* Style for the Quill editor container */
+  .ql-container {
+    border-radius: 0 0 10px 10px; /* Round the bottom two corners */
+    border: 1px solid #ccc; /* Match the border style of the toolbar */
+    border-top: none; /* Remove the border between the toolbar and editor */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow */
+  }
+
+  /* Ensure stars are evenly spaced and clickable with no gaps */
+  #star-rating {
+    display: inline-flex; /* Align stars horizontally with no whitespace */
+    gap: 0; /* Remove extra space between stars */
+  }
+
+  #star-rating .bi-star, #star-rating .bi-star-fill {
+    margin: 0; /* Remove any internal margin */
+    padding: 0; /* Remove internal padding */
+    width: 40px; /* Set a fixed width for each star */
+    height: 40px; /* Set a fixed height for each star */
+    display: flex; /* Ensure each star takes up its full box */
+    align-items: center; /* Center the star icon vertically */
+    justify-content: center; /* Center the star icon horizontally */
+    transition: color 0.2s ease, transform 0.2s ease; /* Smooth hover effect */
+    color: #ccc; /* Default gray color for unselected stars */
+  }
+
+  #star-rating .bi-star:hover, #star-rating .bi-star-fill:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+  }
+
+  #star-rating .bi-star-fill {
+    color: gold; /* Gold color for selected stars */
+  }
+
+
+</style>
+
+<script>
+  document.addEventListener("turbo:load", () => {
+    const quillEditor = document.getElementById("quill-editor");
+
+    // Check if Quill is already initialized
+    if (quillEditor && !quillEditor.classList.contains("quill-initialized")) {
+      const quill = new Quill(quillEditor, {
+        theme: "snow", // Use the "snow" theme
+        placeholder: "Write your review here...",
+        modules: {
+          toolbar: [
+            ["bold", "italic", "underline", { list: "ordered" }, { list: "bullet" }, "image"], // Text formatting
+          ],
+        },
+      });
+
+      // Add a class to mark the editor as initialized
+      quillEditor.classList.add("quill-initialized");
+
+      // Sync Quill content with the hidden input field before form submission
+      const form = document.getElementById("review-form");
+      const hiddenContentInput = document.getElementById("quill-content");
+      form.addEventListener("submit", () => {
+        hiddenContentInput.value = quill.root.innerHTML; // Save Quill's HTML content to the hidden field
+      });
+    }
+  });
+</script>
+
+
+<script>
+  document.addEventListener("turbo:load", () => {
+    const starRating = document.getElementById("star-rating");
+    if (starRating) {
+      const stars = starRating.querySelectorAll(".bi-star");
+      const ratingInput = document.getElementById("rating-input");
+
+      // Highlight stars based on rating
+      const highlightStars = (rating) => {
+        stars.forEach((star, index) => {
+          if (index < rating) {
+            star.classList.remove("bi-star");
+            star.classList.add("bi-star-fill");
+            star.style.color = "gold"; // Fill with gold
+          } else {
+            star.classList.remove("bi-star-fill");
+            star.classList.add("bi-star");
+            star.style.color = "#ccc"; // Gray for unselected stars
+          }
+        });
+      };
+
+      // Handle mouse enter and leave (hover effects)
+      stars.forEach((star, index) => {
+        star.addEventListener("mouseenter", () => highlightStars(index + 1)); // Highlight stars up to the hovered one
+        star.addEventListener("mouseleave", () => highlightStars(parseInt(ratingInput.value, 10) || 0)); // Restore to current rating
+      });
+
+      // Handle star click (set rating)
+      stars.forEach((star, index) => {
+        star.addEventListener("click", () => {
+          const rating = index + 1;
+          ratingInput.value = rating; // Update hidden input value
+          highlightStars(rating); // Update the star UI
+        });
+      });
+
+      // Set initial rating
+      const initialRating = parseInt(starRating.getAttribute("data-selected-rating"), 10) || 0;
+      highlightStars(initialRating);
+    }
+  });
+</script>

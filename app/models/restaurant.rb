@@ -1,5 +1,6 @@
 class Restaurant < ApplicationRecord
   has_many_attached :images
+  has_many :reviews, dependent: :destroy
   geocoded_by :address
   after_validation :geocode
   before_save :ensure_website_format
@@ -75,7 +76,7 @@ class Restaurant < ApplicationRecord
 
   def ensure_website_format
     if website.present? && !website.start_with?('http://', 'https://')
-      self.website = "https://www.#{website}"
+      self.website = "https://#{website}"
     end
   end
 

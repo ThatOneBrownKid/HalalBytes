@@ -38,11 +38,21 @@
           <%= @restaurant.name %>
         </div>
         <div class="restaurant-rating d-inline" style="font-size: 20px; font-weight: bold;">
-          <% @restaurant.overall_rating.to_i.times do%>
-            <i class="bi bi-star-fill red"></i>
+          <% overall_rating = @restaurant.overall_rating %>
+          <% full_stars = overall_rating.floor %> <!-- Number of full stars -->
+          <% half_star = (overall_rating - full_stars >= 0.5) ? 1 : 0 %> <!-- Determine if a half star is needed -->
+          <% empty_stars = 5 - full_stars - half_star %> <!-- Remaining stars are empty -->
+          <!-- Display full stars -->
+          <% full_stars.times do %>
+            <i class="bi bi-star-fill full-star"></i>
           <% end %>
-          <% (5-@restaurant.overall_rating.to_i).times do%>
-            <i class="bi bi-star-fill gray"></i>
+          <!-- Display half star if needed -->
+          <% if half_star > 0 %>
+            <i class="bi bi-star-fill half-star"></i>
+          <% end %>
+          <!-- Display empty stars -->
+          <% empty_stars.times do %>
+            <i class="bi bi-star-fill empty-star"></i>
           <% end %>
           <div class="d-inline text-white">
             <%=@restaurant.overall_rating%>
@@ -131,6 +141,11 @@
               <% end %>
             </div>
           </div>
+        </div>
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-4">
+          <%= render 'reviews/form', restaurant: @restaurant, review: @restaurant.reviews.new %>
         </div>
       </div>
       <!-- Gallery Modal-->
@@ -266,19 +281,30 @@
   <% else %>
     <p>You do not have permission to view this page.</p>
   <% end %>
+
+
   <style>
-    .star-rating {
-      font-size: 50px;
+     /* Full stars (red) */
+    .full-star {
+      color: #dc3545; /* Red color for full stars */
+      font-size: 24px; /* Adjust size */
+      margin-right: 4px;
     }
 
-    .star {
-      display: inline-block;
-      font-size: inherit;
-      color: #FFFFFF; /* Default star color */
+    /* Empty stars (grey) */
+    .empty-star {
+      color: #d3d3d3; /* Grey color for empty stars */
+      font-size: 24px; /* Adjust size */
+      margin-right: 4px;
     }
 
-    .star.filled {
-      color: #FFAC2D; /* Filled star color */
+    /* Half stars (half red, half grey) */
+    .half-star {
+      font-size: 24px; /* Adjust size to match full stars */
+      margin-right: 4px;
+      background: linear-gradient(to right, #dc3545 50%, #d3d3d3 50%); /* Left red, right grey */
+      -webkit-background-clip: text; /* Only apply background to text */
+      -webkit-text-fill-color: transparent; /* Make the star transparent except for the gradient */
     }
 
     .red{
@@ -421,7 +447,9 @@
         margin-top: 15px;
         margin-bottom: 10px;
       }
+      
   </style>
+
   <script>
     // Function to toggle the icon, div visibility, and apply animation
     function toggleHours() {

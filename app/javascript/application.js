@@ -10,6 +10,8 @@ import "popper";
 import "bootstrap";
 import "leaflet";
 import "controllers/MultiSelect";
+import Quill from 'quill';
+import "quill/dist/quill.core.css";
 import Rails from "@rails/ujs";
 Rails.start();
 

@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  restaurant: one
+  user: one
+  content: MyText
+  likes: 1
+  rating: 1
+  parent_id: 1
+
+two:
+  restaurant: two
+  user: two
+  content: MyText
+  likes: 1
+  rating: 1
+  parent_id: 1

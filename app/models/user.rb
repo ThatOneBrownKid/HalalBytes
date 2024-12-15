@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   before_validation :format_names
   before_create :set_default_admin
-
+  has_many :reviews, dependent: :destroy
   has_one_attached :profile_picture
 
   # Devise modules

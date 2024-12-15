@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :reviews
   get 'restaurants/request_new', to: 'restaurants#request_new', as: :request_new_restaurants
   get '/restaurants', to: 'restaurants#index', as: :restaurants_index
   post 'restaurants/request_create', to: 'restaurants#request_create', as: :request_create_restaurants
@@ -17,6 +18,7 @@ Rails.application.routes.draw do
       delete 'images/:image_id', action: :delete_image, as: :delete_image
       post 'accept' => 'restaurants#accept_restaurant'
     end
+    resources :reviews
   end
   root 'home#index'
   resources :users, only: [:edit, :update, :show] do
