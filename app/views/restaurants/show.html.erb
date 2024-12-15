@@ -144,9 +144,22 @@
         </div>
         <div class="col-md-1">
         </div>
-        <div class="col-md-4">
-          <%= render 'reviews/form', restaurant: @restaurant, review: @restaurant.reviews.new %>
+        <% if user_signed_in? %>
+          <div class="col-md-4">
+            <%= render 'reviews/form', restaurant: @restaurant, review: @restaurant.reviews.new %>
+          </div>
+        <% else %>
+          <div class="col-md-4 border-bottom d-flex flex-column justify-content-center align-items-center">
+            <div class="h3 text-center">
+              Sign in to leave a review
+            </div>
+            <div class="mt-2">
+              <%= link_to 'Sign in', new_user_session_path, class: 'btn btn-primary btn-sm' %>
+            </div>
+        <% end %>
         </div>
+
+
       </div>
       <!-- Gallery Modal-->
       <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">

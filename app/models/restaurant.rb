@@ -3,7 +3,7 @@ class Restaurant < ApplicationRecord
   has_many :reviews, dependent: :destroy
   geocoded_by :address
   after_validation :geocode
-  before_save :ensure_website_format
+
   validate :image_count_within_limit, on: :create
   validates :phone, format: { with: /\(\d{3}\) \d{3}-\d{4}/, message: "must be in the format (xxx) xxx-xxxx" }
 
@@ -74,11 +74,9 @@ class Restaurant < ApplicationRecord
 
   private 
 
-  def ensure_website_format
-    if website.present? && !website.start_with?('http://', 'https://')
-      self.website = "https://#{website}"
-    end
-  end
+
+  
+  
 
   def image_count_within_limit
     if images.attached? && images.length > 10
@@ -121,5 +119,6 @@ class Restaurant < ApplicationRecord
 
     restaurants
   end
+
 
 end

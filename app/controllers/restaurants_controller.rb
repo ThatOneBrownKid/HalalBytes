@@ -57,7 +57,7 @@ class RestaurantsController < ApplicationController
     @restaurant.requested_by = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
     @restaurant.keep = false
     @restaurant.created_by = nil
-    @restaurant.overall_rating = 0
+    @restaurant.overall_rating = 0 
 
     # Geocode the address
     @restaurant.geocode # Ensure this method exists and is called to set latitude and longitude
@@ -135,9 +135,35 @@ class RestaurantsController < ApplicationController
     @restaurant.images.attach(params[:restaurant][:images]) if params[:restaurant][:images].present?
     @restaurant.notes = params[:restaurant][:notes]&.join(';') if params[:restaurant][:halal_status] == 'Partially Halal'
   
+    # Geocode the address if it has changed
+    if address_changed?(restaurant_params)
+      @restaurant.geocode
+  
+      # Check if latitude or longitude is nil
+      if @restaurant.latitude.nil? || @restaurant.longitude.nil?
+        @restaurant.errors.add(:address, "couldn't be recognized.")
+      end
+    end
+  
+    # Check for duplicate restaurant (name + address combination)
+    duplicate = Restaurant.where.not(id: @restaurant.id).find_by(
+      name: restaurant_params[:name],
+      street: restaurant_params[:street],
+      city: restaurant_params[:city],
+      state: restaurant_params[:state],
+      zip_code: restaurant_params[:zip_code]
+    )
+    if duplicate.present?
+      @restaurant.errors.add(:base, "A restaurant with this name and address already exists.")
+    end
+  
     respond_to do |format|
-      if @restaurant.save
-        format.html { redirect_to restaurant_url(@restaurant), notice: "Restaurant was successfully updated with new images." }
+      if @restaurant.errors.any?
+        flash.now[:alert] = @restaurant.errors.full_messages.join(', ')
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @restaurant.errors, status: :unprocessable_entity }
+      elsif @restaurant.update(restaurant_params)
+        format.html { redirect_to restaurant_url(@restaurant), notice: "Restaurant was successfully updated." }
         format.json { render :show, status: :ok, location: @restaurant }
       else
         flash.now[:alert] = @restaurant.errors.full_messages.join(', ')
@@ -146,6 +172,8 @@ class RestaurantsController < ApplicationController
       end
     end
   end
+  
+  
 
   def update_images_order
     respond_to do |format|
@@ -257,4 +285,11 @@ class RestaurantsController < ApplicationController
       restaurant_params
     end
   end
+
+  def address_changed?(params)
+    %i[street city state zip_code].any? do |attribute|
+      @restaurant.send(attribute) != params[attribute]
+    end
+  end
+
 end
