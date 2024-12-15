@@ -57,6 +57,7 @@ class RestaurantsController < ApplicationController
     @restaurant.requested_by = "#{current_user.first_name}_#{current_user.last_name}_#{current_user.id}"
     @restaurant.keep = false
     @restaurant.created_by = nil
+    @restaurant.overall_rating = 0
 
     # Geocode the address
     @restaurant.geocode # Ensure this method exists and is called to set latitude and longitude
