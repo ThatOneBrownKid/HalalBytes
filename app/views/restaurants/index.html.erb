@@ -1,4 +1,6 @@
-  <head>
+<%= javascript_include_tag 'resturant_index', defer: true, type: "module" %>
+<%= javascript_importmap_tags %>
+<head>
 </head>
 <body id="resturantpage" style="background-color: #FFFFFF;">
   <%= render '/restaurants/partials/filters'%>
@@ -6,30 +8,31 @@
     <div class="col-md-8 border-end right-shadow " id="restaurants-container" >
       <!-- Restaurants section -->
       <div id="restaurants">
-        <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
+        <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == nil }, as: :restaurant %>
       </div>
     </div>
     <!-- Map Section -->
     <div class="z-2 col-md-4 sticky-top" id="map" style="top: 50px;"></div>
   </div>
   <div class="offcanvas offcanvas-bottom" id="restaurantsOffcanvas" style="height: 80vh; overflow-y: auto; display: none;">
-    <div class="offcanvas-header">
+    <div class="offcanvas-header sticky-top bg-light">
       <h5 class="offcanvas-title">Restaurants</h5>
       <button type="button" class="btn-close text-reset" id="closeOffcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body" >
       <div id="restaurants-mobile">
-        <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == true }, as: :restaurant %>
+        <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == nil }, as: :restaurant %>
       </div>
     </div>
   </div>
   <!-- Button to Trigger Offcanvas -->
-  <button class="btn d-md-none restaurants-button" id="toggleOffcanvas" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; color: white;">
+  <button class="btn d-md-none restaurants-button" id="toggleOffcanvas" style="position: fixed; bottom: 33px; right: 20px; z-index: 49; color: white;">
     Show Restaurants
   </button>
   <script>
     window.geoapifyApiKey = "<%= ENV['GEOAPIFY_API_KEY'] %>";
-     document.addEventListener('DOMContentLoaded', function () {
+
+     document.addEventListener('turbo:load', function () {
       const offcanvasElement = document.getElementById('restaurantsOffcanvas');
       const toggleButton = document.getElementById('toggleOffcanvas');
       const closeButton = document.getElementById('closeOffcanvas');
@@ -46,6 +49,7 @@
     setTimeout(() => offcanvasElement.style.display = 'none', 300); // Hide after transition
       });
     });
+    window.addEventListener("popstate", getFiltersFromHash); // doesnt work currently
   </script>
   <!-- JavaScript to initialize Leaflet map and add layers -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -54,8 +58,6 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet-providers@latest/leaflet-providers.js"></script>
 </body>
-<%= javascript_include_tag 'resturant_index', defer: true, type: "module" %>
-<%= javascript_importmap_tags %>
 <style>
   /* Default (desktop view) */
   @media (max-width: 768px) {
@@ -75,7 +77,7 @@
   transform: translateY(0);
   }
   #map {
-  height: 100vh;
+  height: 90vh;
   width: 100%;
   z-index: 0; /* Background layer */
   }

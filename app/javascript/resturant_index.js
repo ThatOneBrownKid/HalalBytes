@@ -1,5 +1,34 @@
 var map;
+var filters = {
+  cuisine: "",
+  price: "",
+  rating: "",
+};
+var prevPrice = null;
+var prevRating = null;
+var prevCuisine = null;
+// Function to get filters from the URL hash
+function getFiltersFromHash() {
+  // Get the hash from the URL
+  const hash = window.location.hash;
+
+  // Check if the hash contains "filters="
+  if (hash && hash.startsWith("#filters=")) {
+    try {
+      // Extract and decode the filters
+      const serializedFilters = hash.split("=")[1];
+      if (serializedFilters != null) {
+        filters = JSON.parse(atob(serializedFilters));
+        updateFiltersAndUI();
+      }
+    } catch (e) {
+      console.error("Error parsing filters from URL hash:", e);
+    }
+  }
+}
 document.addEventListener("turbo:load", initMap);
+document.addEventListener("turbo:load", getFiltersFromHash);
+
 function initMap(updateMarkers = false) {
   // Pass the restaurants data from Rails to JavaScript
   const blackIcon = L.icon({
@@ -36,34 +65,46 @@ function initMap(updateMarkers = false) {
       geoapifyApiKey,
     {
       maxZoom: 20,
+      minZoom: 3,
       attribution:
         'Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> | <a href="https://openmaptiles.org/" target="_blank">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors',
     }
   ).addTo(map);
   // Try to locate the user and set the view based on their location
-  map.locate({ setView: true, maxZoom: 16 }).on("locationerror", function () {
-    console.error("Geolocation failed. Falling back to IP-based location.");
+  map
+    .locate({ setView: true, maxZoom: 16 })
+    .on("locationfound", function (e) {
+      loadRestaurants();
+    })
+    .on("locationerror", function () {
+      console.error("Geolocation failed. Falling back to IP-based location.");
 
-    // Make a fallback AJAX call to fetch IP-based location
-    $.ajax({
-      url: "/get_location", // Endpoint to get IP-based location
-      method: "GET",
-      success: function (data) {
-        if (data.latitude && data.longitude) {
-          // Set map view based on IP-based location
-          map.setView([data.latitude, data.longitude], 12); // Adjust zoom level as needed
-        } else {
-          console.error("IP-based location not available.");
-        }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.error("Error fetching IP-based location:", errorThrown);
-      },
+      // Make a fallback AJAX call to fetch IP-based location
+      $.ajax({
+        url: "/get_location", // Endpoint to get IP-based location
+        method: "GET",
+        success: function (data) {
+          if (data.latitude && data.longitude) {
+            // Set map view based on IP-based location
+            map.setView([data.latitude, data.longitude], 12); // Adjust zoom level as needed
+          } else {
+            console.error("IP-based location not available.");
+          }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.error("Error fetching IP-based location:", errorThrown);
+        },
+      });
+      loadRestaurants();
     });
-  });
 
   // Store the current selected card ID
   let currentSelectedCardId = null;
+  function updateFiltersInHash(filters) {
+    const serializedFilters = btoa(JSON.stringify(filters));
+    const newUrl = `${window.location.pathname}#filters=${serializedFilters}`;
+    history.pushState(null, "", newUrl); // Update the URL without reloading
+  }
 
   // Function to fetch and load restaurants within the visible map bounds
   function loadRestaurants() {
@@ -100,6 +141,7 @@ function initMap(updateMarkers = false) {
         if (jqXHR.status === 200) {
           $("#restaurants").html(data);
           $("#restaurants-mobile").html(data);
+          updateFiltersInHash(filters);
           if (lowZoom) {
             updateMapMarkers();
           } else {
@@ -213,38 +255,37 @@ function initMap(updateMarkers = false) {
   map.on("moveend", loadRestaurants);
 
   // Initial load of restaurants when the page first loads
-  loadRestaurants();
 }
 
-let filters = {
-  cuisine: "",
-  price: "",
-  rating: "",
-};
+function updateFiltersAndUI() {
+  // Iterate through all `.btn-check` elements
+  $(".btn-check").each(function () {
+    const buttonId = $(this).attr("id");
+    const button = $(this);
+    const buttonName = button.attr("name"); // e.g., "options", "price", "rating"
+    const buttonValue = button.val(); // Value of the button, e.g., "cuisine", "1", "4.0"
+    // Check if the button's name matches a filter key in `filters`
+    if (filters.hasOwnProperty(buttonName)) {
+      // Get the current selected value for the filter
+      const selectedValue = filters[buttonName];
+      if (selectedValue === buttonValue) {
+        // Mark the button as selected if it matches the filter value
 
-function selectionfilter(button, prev) {
-  if (prev != null) {
-    if (prev[0] == button[0]) {
-      button.toggleClass("selected");
-      prev = null;
-    } else {
-      prev.toggleClass("selected");
-      prev = button;
-      button.toggleClass("selected");
+        button.toggleClass("selected");
+        button.prop("checked", true);
+      } else {
+        // Deselect the button if it doesn't match
+        button.toggleClass("selected");
+        button.prop("checked", false);
+      }
     }
-  } else {
-    prev = button;
-    button.toggleClass("selected");
-  }
-  return prev;
+  });
 }
 
-var prevPrice = null;
-var prevRating = null;
-var prevCuisine = null;
-
-document.addEventListener("turbo:load", function () {
-  $(".btn-check").on("click", function () {
+//document.addEventListener("turbo:load", function () {
+$(document)
+  .off("click", ".btn-check")
+  .on("click", ".btn-check", function () {
     const buttonId = $(this).attr("id");
     const button = $(`label[for='${buttonId}']`);
     const selected = $(this).val();
@@ -255,33 +296,31 @@ document.addEventListener("turbo:load", function () {
       if (prevRating) prevRating.toggleClass("selected");
       if (prevCuisine) prevCuisine.toggleClass("selected");
       prevPrice = prevRating = prevCuisine = null;
+
       $(".btn-check").prop("checked", false);
     } else if (selected == 2.9 || selected == 4.0 || selected == 5) {
       if (filters.rating === selected) {
-        filters.rating = ""; // Deselecting the rating filter
-        prevRating = selectionfilter(button, prevRating);
-        $(this).prop("checked", false); // Uncheck the radio button
+        filters.rating = "";
+        updateFiltersAndUI();
       } else {
-        prevRating = selectionfilter(button, prevRating);
         filters.rating = selected;
+        updateFiltersAndUI();
       }
     } else if (selected == 1 || selected == 2 || selected == 3) {
       if (filters.price === selected) {
-        filters.price = ""; // Deselecting the price filter
-        prevPrice = selectionfilter(button, prevPrice);
-        $(this).prop("checked", false); // Uncheck the radio button
+        filters.price = "";
+        updateFiltersAndUI();
       } else {
-        prevPrice = selectionfilter(button, prevPrice);
         filters.price = selected;
+        updateFiltersAndUI();
       }
     } else {
       if (filters.cuisine === selected) {
-        filters.cuisine = ""; // Deselecting the cuisine filter
-        prevCuisine = selectionfilter(button, prevCuisine);
-        $(this).prop("checked", false); // Uncheck the radio button
+        filters.cuisine = "";
+        updateFiltersAndUI();
       } else {
-        prevCuisine = selectionfilter(button, prevCuisine);
         filters.cuisine = selected;
+        updateFiltersAndUI();
       }
     }
     var bounds = map.getBounds();
@@ -326,84 +365,80 @@ document.addEventListener("turbo:load", function () {
     });
   });
 
-  // arrows for scolling
-  var scrollpos = 0;
-  var prev = -1;
-  function slideRight() {
-    var scrollStep = 200; // Adjust the value to change scroll step
-    var container = $("#sildefilter");
-    container.scrollLeft(scrollpos + scrollStep);
-    if (prev != container.scrollLeft()) {
-      scrollpos += scrollStep;
-    }
-    prev = container.scrollLeft();
+// arrows for scolling
+var scrollpos = 0;
+var prev = -1;
+function slideRight() {
+  var scrollStep = 200; // Adjust the value to change scroll step
+  var container = $("#sildefilter");
+  container.scrollLeft(scrollpos + scrollStep);
+  if (prev != container.scrollLeft()) {
+    scrollpos += scrollStep;
   }
+  prev = container.scrollLeft();
+}
 
-  function slideLeft() {
-    var scrollStep = 200; // Adjust the value to change scroll step
-    var container = $("#sildefilter");
-    scrollpos -= scrollStep;
-    if (scrollpos < 0) {
-      scrollpos = 0;
-    }
-    container.scrollLeft(scrollpos);
+function slideLeft() {
+  var scrollStep = 200; // Adjust the value to change scroll step
+  var container = $("#sildefilter");
+  scrollpos -= scrollStep;
+  if (scrollpos < 0) {
+    scrollpos = 0;
   }
+  container.scrollLeft(scrollpos);
+}
 
-  var optionsPrice = {
-    html: true,
-    title: "Price",
-    //html element
-    //content: $("#popover-content")
-    content: $('[data-name="popover-content-price"]'),
-    //Doing below won't work. Shows title only
-    //content: $("#popover-content").html()
-  };
-  function insidepopover(popover, instance, event, name) {
-    if (
-      !popover.contains(event.target) && // Clicked outside of price popover trigger
-      !isElementInsidePricePopoverContent(event.target, name)
-    ) {
-      instance.hide();
-    }
+var optionsPrice = {
+  html: true,
+  title: "Price",
+  //html element
+  //content: $("#popover-content")
+  content: $('[data-name="popover-content-price"]'),
+  //Doing below won't work. Shows title only
+  //content: $("#popover-content").html()
+};
+function insidepopover(popover, instance, event, name) {
+  if (
+    !popover.contains(event.target) && // Clicked outside of price popover trigger
+    !isElementInsidePricePopoverContent(event.target, name)
+  ) {
+    instance.hide();
   }
-  function eventfilter(Popover, Instance, name) {
-    body.addEventListener("click", function (event) {
-      insidepopover(Popover, Instance, event, name);
-    });
-  }
-  function isElementInsidePricePopoverContent(element, name) {
-    if (element.id != "") {
-      if (element.id == name || element.name == name) {
-        return true;
-      } else return false;
-    }
-    return false;
-  }
-  var pricePopover = document.getElementById("price-filter");
-  var pricePopoverInstance = new bootstrap.Popover(pricePopover, optionsPrice);
-  var pricename = "price";
-  var body = document.getElementById("resturantpage");
-
-  pricePopover.addEventListener("click", function (event) {
-    eventfilter(pricePopover, pricePopoverInstance, pricename);
+}
+function eventfilter(Popover, Instance, name) {
+  body.addEventListener("click", function (event) {
+    insidepopover(Popover, Instance, event, name);
   });
+}
+function isElementInsidePricePopoverContent(element, name) {
+  if (element.id != "") {
+    if (element.id == name || element.name == name) {
+      return true;
+    } else return false;
+  }
+  return false;
+}
+var pricePopover = document.getElementById("price-filter");
+var pricePopoverInstance = new bootstrap.Popover(pricePopover, optionsPrice);
+var pricename = "price";
+var body = document.getElementById("resturantpage");
 
-  var optionsRating = {
-    html: true,
-    title: "Rating",
-    //html element
-    //content: $("#popover-content")
-    content: $('[data-name="popover-content-rating"]'),
-    //Doing below won't work. Shows title only
-    //content: $("#popover-content").html()
-  };
-  var ratingPopover = document.getElementById("rating-filter");
-  var ratingPopoverInstance = new bootstrap.Popover(
-    ratingPopover,
-    optionsRating
-  );
-  var ratingname = "rating";
-  ratingPopover.addEventListener("click", function (event) {
-    eventfilter(ratingPopover, ratingPopoverInstance, ratingname);
-  });
+pricePopover.addEventListener("click", function (event) {
+  eventfilter(pricePopover, pricePopoverInstance, pricename);
+});
+
+var optionsRating = {
+  html: true,
+  title: "Rating",
+  //html element
+  //content: $("#popover-content")
+  content: $('[data-name="popover-content-rating"]'),
+  //Doing below won't work. Shows title only
+  //content: $("#popover-content").html()
+};
+var ratingPopover = document.getElementById("rating-filter");
+var ratingPopoverInstance = new bootstrap.Popover(ratingPopover, optionsRating);
+var ratingname = "rating";
+ratingPopover.addEventListener("click", function (event) {
+  eventfilter(ratingPopover, ratingPopoverInstance, ratingname);
 });
