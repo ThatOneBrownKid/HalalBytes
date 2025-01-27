@@ -7,6 +7,19 @@ var filters = {
 var prevPrice = null;
 var prevRating = null;
 var prevCuisine = null;
+
+document.addEventListener("turbo:load", initMap);
+document.addEventListener("turbo:load", getFiltersFromHash);
+// Function to reinitialize the map and filters when navigating back
+function handlePopState() {
+  console.log("Popstate event detected");
+  location.reload();
+  getFiltersFromHash(); // Reapply filters from the URL
+  initMap(true); // Reinitialize the map with markers
+}
+
+// Add an event listener for the `popstate` event
+window.addEventListener("popstate", handlePopState);
 // Function to get filters from the URL hash
 function getFiltersFromHash() {
   // Get the hash from the URL
@@ -26,9 +39,6 @@ function getFiltersFromHash() {
     }
   }
 }
-document.addEventListener("turbo:load", initMap);
-document.addEventListener("turbo:load", getFiltersFromHash);
-
 function initMap(updateMarkers = false) {
   // Pass the restaurants data from Rails to JavaScript
   const blackIcon = L.icon({

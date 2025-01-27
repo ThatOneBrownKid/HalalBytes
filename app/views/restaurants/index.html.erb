@@ -5,14 +5,14 @@
 <body id="resturantpage" style="background-color: #FFFFFF;">
   <%= render '/restaurants/partials/filters'%>
   <div class="row g-0">
-    <div class="col-md-8 border-end right-shadow " id="restaurants-container" >
+    <div class="col-md-7 border-end right-shadow " id="restaurants-container" >
       <!-- Restaurants section -->
       <div id="restaurants">
         <%= render partial: 'restaurants/partials/restaurant', collection: @restaurants.select { |restaurant| restaurant.keep == nil }, as: :restaurant %>
       </div>
     </div>
     <!-- Map Section -->
-    <div class="z-2 col-md-4 sticky-top" id="map" style="top: 50px;"></div>
+    <div class="z-2 col-md-5 sticky-top" id="map" style="top: 50px;"></div>
   </div>
   <div class="offcanvas offcanvas-bottom" id="restaurantsOffcanvas" style="height: 80vh; overflow-y: auto; display: none;">
     <div class="offcanvas-header sticky-top bg-light">
