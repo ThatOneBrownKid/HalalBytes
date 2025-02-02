@@ -1,0 +1,36 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # Load rbenv
+            export RBENV_ROOT="$HOME/.rbenv"
+            export PATH="$RBENV_ROOT/bin:$PATH"
+            eval "$(rbenv init -)"
+
+            # Navigate to the app and deploy
+            cd ~/app_dev/HalalBytes/
+            git pull origin main
+            bundle install --deployment --without development test
+            bundle exec rake db:migrate RAILS_ENV=production
+            bundle exec rake assets:precompile RAILS_ENV=production
+            sudo service nginx restart
