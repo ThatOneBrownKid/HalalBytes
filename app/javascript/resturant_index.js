@@ -7,7 +7,7 @@ var filters = {
 var prevPrice = null;
 var prevRating = null;
 var prevCuisine = null;
-
+var currentMarkers = {};
 document.addEventListener("turbo:load", initMap);
 document.addEventListener("turbo:load", getFiltersFromHash);
 // Function to reinitialize the map and filters when navigating back
@@ -158,6 +158,7 @@ function initMap(updateMarkers = false) {
             map.eachLayer(function (layer) {
               if (layer instanceof L.Marker) {
                 map.removeLayer(layer);
+                currentMarkers = {};
               }
             });
           }
@@ -172,15 +173,9 @@ function initMap(updateMarkers = false) {
 
   // Function to update map markers
   function updateMapMarkers() {
-    // Remove existing markers
-    map.eachLayer(function (layer) {
-      if (layer instanceof L.Marker) {
-        map.removeLayer(layer);
-      }
-    });
+    const bounds = map.getBounds();
 
     // Fetch the restaurant data again to place markers
-    var bounds = map.getBounds();
     var northEast = bounds.getNorthEast();
     var southWest = bounds.getSouthWest();
     filters.northEastlat = northEast.lat;
@@ -194,40 +189,65 @@ function initMap(updateMarkers = false) {
       success: function (data, textStatus, jqXHR) {
         //console.log(data); // Contains the restaurant information
         if (data && data.length > 0) {
-          restaurants = data;
+          restaurants = data; // Store the restaurant data in a variable
+
+          // Remove existing markers that are outside the current map bounds
+          Object.keys(currentMarkers).forEach((key) => {
+            const marker = currentMarkers[key];
+            if (!bounds.contains(marker.getLatLng())) {
+              map.removeLayer(marker);
+              console.log("Removed marker with ID:", key);
+              delete currentMarkers[key];
+            }
+          });
+
           // Use `data` to update your map or DOM
           restaurants.forEach(function (restaurant) {
-            //console.log(restaurant.latitude)
+            console.log(restaurant);
             if (restaurant.latitude && restaurant.longitude) {
               // Add marker to the map
-              var marker = L.marker(
-                [restaurant.latitude, restaurant.longitude],
-                { icon: blackIcon }
-              ).addTo(map);
+              // Only create marker if it doesn't exist
+              if (!currentMarkers[restaurant.id]) {
+                var marker = L.marker(
+                  [restaurant.latitude, restaurant.longitude],
+                  { icon: blackIcon }
+                ).addTo(map);
+                const popupContent = `
+              <div style="padding: 10px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <h5 style="margin: 0 0 5px; font-size: 18px; color: #333;">${restaurant.name}</h5>
+                <p style="margin: 0 0 2px; font-size: 12px; color: #666;">${restaurant.street}, ${restaurant.city}, ${restaurant.state}, ${restaurant.zip_code}</p>
+                <p style="margin: 0 0 5px; font-size: 14px; color: #666;"><strong>Rating:</strong> ${restaurant.overall_rating}</p>
+                <p style="margin: 0 0 5px; font-size: 14px; color: #666;"><strong>Price:</strong> ${restaurant.price_range}</p>
+                <a href="/restaurants/${restaurant.id}" style="display: inline-block; padding: 5px 5px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px;">View Restaurant</a>
+              </div>
+              `;
+                marker.bindPopup(popupContent);
+                currentMarkers[restaurant.id] = marker;
 
-              // Marker click event to highlight the corresponding card
-              marker.on("click", function () {
-                // Deselect the previous card
-                if (currentSelectedCardId) {
-                  document
-                    .getElementById(currentSelectedCardId)
-                    .classList.remove("selected");
-                  currentSelectedCardId = "";
-                }
+                // Marker click event to highlight the corresponding card
+                marker.on("click", function () {
+                  // Deselect the previous card
+                  if (currentSelectedCardId) {
+                    document
+                      .getElementById(currentSelectedCardId)
+                      .classList.remove("selected");
+                    currentSelectedCardId = "";
+                  }
 
-                // Select the new card
-                currentSelectedCardId = "restaurant_" + restaurant.id;
-                var restaurantCard = document.getElementById(
-                  currentSelectedCardId
-                );
-                if (restaurantCard) {
-                  restaurantCard.classList.add("selected");
-                  restaurantCard.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                  });
-                }
-              });
+                  // Select the new card
+                  currentSelectedCardId = "restaurant_" + restaurant.id;
+                  var restaurantCard = document.getElementById(
+                    currentSelectedCardId
+                  );
+                  if (restaurantCard) {
+                    restaurantCard.classList.add("selected");
+                    restaurantCard.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }
+                });
+              }
             }
           });
         }

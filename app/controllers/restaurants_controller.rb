@@ -39,7 +39,7 @@ class RestaurantsController < ApplicationController
       return
     end
 
-    @data = @restaurants.select(:id, :name, :street, :latitude, :longitude)
+    @data = @restaurants.select(:id, :name, :street,:city,:state,:zip_code,:overall_rating,:price_range, :latitude, :longitude)
 
     respond_to do |format|
       format.html { render partial: 'restaurants/partials/restaurant', collection: @restaurants, as: :restaurant }
