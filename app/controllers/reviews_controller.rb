@@ -27,7 +27,7 @@ class ReviewsController < ApplicationController
   
     respond_to do |format|
       if @review.save
-        format.html { redirect_to restaurant_path(@restaurant), notice: "Review was successfully created." }
+        format.html { redirect_to restaurant_path(@restaurant)}
         format.json { render :show, status: :created, location: @review }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -41,7 +41,7 @@ class ReviewsController < ApplicationController
   def update
     respond_to do |format|
       if @review.update(review_params)
-        format.html { redirect_to restaurant_review_path(@restaurant, @review), notice: "Review was successfully updated." }
+        format.html { redirect_to restaurant_review_path(@restaurant, @review)}
         format.json { render :show, status: :ok, location: @review }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -55,8 +55,28 @@ class ReviewsController < ApplicationController
     @review.destroy
 
     respond_to do |format|
-      format.html { redirect_to restaurant_reviews_path(@restaurant), notice: "Review was successfully destroyed." }
+      # Changed redirect to go to the parent restaurant's show page
+      format.html { redirect_to restaurant_path(@restaurant)}
       format.json { head :no_content }
+    end
+  end
+
+  def upload_image
+    if params[:image]
+      # Attach the image to a temporary ActiveStorage blob
+      uploaded_image = ActiveStorage::Blob.create_and_upload!(
+        io: params[:image],
+        filename: params[:image].original_filename,
+        content_type: params[:image].content_type
+      )
+
+      # Generate the URL for the uploaded image
+      image_url = url_for(uploaded_image)
+
+      # Return the image URL as JSON
+      render json: { url: image_url }, status: :ok
+    else
+      render json: { error: "No image provided" }, status: :unprocessable_entity
     end
   end
 
@@ -74,6 +94,6 @@ class ReviewsController < ApplicationController
 
   # Permit the allowed parameters for creating/updating reviews
   def review_params
-    params.require(:review).permit(:content, :rating, :parent_id)
+    params.require(:review).permit(:content, :rating, :parent_id, images: [])
   end
 end

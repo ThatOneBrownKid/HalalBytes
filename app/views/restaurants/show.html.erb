@@ -38,7 +38,7 @@
           <%= @restaurant.name %>
         </div>
         <div class="restaurant-rating d-inline" style="font-size: 20px; font-weight: bold;">
-          <% overall_rating = @restaurant.overall_rating %>
+          <% overall_rating = @restaurant.overall_rating || 0%>
           <% full_stars = overall_rating.floor %> <!-- Number of full stars -->
           <% half_star = (overall_rating - full_stars >= 0.5) ? 1 : 0 %> <!-- Determine if a half star is needed -->
           <% empty_stars = 5 - full_stars - half_star %> <!-- Remaining stars are empty -->
@@ -144,10 +144,19 @@
         </div>
         <div class="col-md-1">
         </div>
+
         <% if user_signed_in? %>
-          <div class="col-md-4">
-            <%= render 'reviews/form', restaurant: @restaurant, review: @restaurant.reviews.new %>
-          </div>
+          <% if @restaurant.reviews.exists?(user: current_user) %>
+            <div class="col-md-4 border-bottom d-flex flex-column justify-content-center align-items-center">
+              <div class="h4 text-center text-success">
+                Thanks for your review!
+              </div>
+            </div>
+          <% else %>
+            <div class="col-md-4">
+              <%= render 'reviews/form', restaurant: @restaurant, review: Review.new(restaurant: @restaurant) %>
+            </div>
+          <% end %>
         <% else %>
           <div class="col-md-4 border-bottom d-flex flex-column justify-content-center align-items-center">
             <div class="h3 text-center">
@@ -156,11 +165,27 @@
             <div class="mt-2">
               <%= link_to 'Sign in', new_user_session_path, class: 'btn btn-primary btn-sm' %>
             </div>
+          </div>
         <% end %>
-        </div>
 
 
-      </div>
+          <!-- Reviews List -->
+          <div class="m-5">
+            <h3 class="text-center">Reviews</h3>
+
+            <% if @restaurant.reviews.any? %>
+              <div class="d-flex flex-column align-items-center">
+                <% @restaurant.reviews.each do |review| %>
+                  <div class="card shadow-sm p-3 mb-4 w-100" style="max-width: 800px;">
+                    <%= render partial: 'reviews/review', locals: { review: review } %>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-center text-muted">No Reviews Yet</p>
+            <% end %>
+          </div>
+
       <!-- Gallery Modal-->
       <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">

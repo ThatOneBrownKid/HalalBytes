@@ -3,6 +3,7 @@ class Review < ApplicationRecord
   belongs_to :user, optional: true
   has_many :replies, class_name: 'Review', foreign_key: 'parent_id', dependent: :destroy
   belongs_to :parent, class_name: 'Review', optional: true
+  has_many_attached :images
 
   after_save :update_restaurant_rating
   after_destroy :update_restaurant_rating
