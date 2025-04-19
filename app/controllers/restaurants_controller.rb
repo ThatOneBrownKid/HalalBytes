@@ -11,7 +11,7 @@ class RestaurantsController < ApplicationController
 
   # GET /get_location
   def get_location
-    ip = "98.31.12.178"#request.ip @ThatOneBrownKid  # Use this line to get the user's IP address #update to reuest.ip
+    ip = request.ip #"98.31.12.178" @ThatOneBrownKid  # Use this line to get the user's IP address #update to reuest.ip
     puts "Request IP: #{ip}"
     location = Geocoder.search(ip)
     puts "location: #{location}"
