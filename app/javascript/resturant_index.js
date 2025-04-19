@@ -13,7 +13,7 @@ document.addEventListener("turbo:load", initMap);
 document.addEventListener("turbo:load", getFiltersFromHash);
 // Function to reinitialize the map and filters when navigating back
 function handlePopState() {
-  console.log("Popstate event detected");
+  //console.log("Popstate event detected");
   location.reload();
   getFiltersFromHash(); // Reapply filters from the URL
   initMap(true); // Reinitialize the map with markers
@@ -130,7 +130,7 @@ function initMap(data = null) {
     // Check if the zoom level is too low (too zoomed out)
     if (zoomLevel < minZoomLevel) {
       lowZoom = false;
-      console.log("Zoom level is too low. Not fetching data.");
+      //console.log("Zoom level is too low. Not fetching data.");
       northEast.lat,
         northEast.lng,
         southWest.lat,
@@ -200,10 +200,14 @@ function initMap(data = null) {
     //    //console.log(data); // Contains the restaurant information
     if (data) {
       var restaurants = data; // Store the restaurant data in a variable
-      console.log("Restaurants loaded (markers):", restaurants);
       // Remove existing markers that are outside the current map bounds
       var MarkerKeys = Object.keys(currentMarkers);
-      var restaurant_ids = restaurants.map((restaurant) => restaurant.id);
+      var restaurant_ids;
+      if (!restaurants) {
+        restaurant_ids = [];
+      } else {
+        restaurant_ids = restaurants.map((restaurant) => restaurant.id);
+      }
       var removed_restaurant_ids = MarkerKeys.filter(
         (key) => !restaurant_ids.includes(key)
       );
@@ -214,14 +218,14 @@ function initMap(data = null) {
           removed_restaurant_ids.includes(key)
         ) {
           map.removeLayer(marker);
-          console.log("Removed marker with ID:", key);
+          //console.log("Removed marker with ID:", key);
           delete currentMarkers[key];
         }
       });
 
       // Use `data` to update your map or DOM
       restaurants.forEach(function (restaurant) {
-        console.log(restaurant);
+        //console.log(restaurant);
         if (restaurant.latitude && restaurant.longitude) {
           // Add marker to the map
           // Only create marker if it doesn't exist
@@ -361,7 +365,7 @@ $(document)
     var minZoomLevel = 10; // Adjust as needed (higher means more zoomed in)
     // Check if the zoom level is too low (too zoomed out)
     if (zoomLevel < minZoomLevel) {
-      console.log("Zoom level is too low. Not fetching data.");
+      //console.log("Zoom level is too low. Not fetching data.");
       northEast.lat,
         northEast.lng,
         southWest.lat,
@@ -384,7 +388,7 @@ $(document)
       data: filters,
       success: function (data, textStatus, jqXHR) {
         if (jqXHR.status === 200) {
-          console.log("Filters", filters);
+          //console.log("Filters", filters);
           $("#restaurants").html(data);
           $("#restaurants-mobile").html(data);
           $.ajax({
@@ -393,7 +397,7 @@ $(document)
             data: filters,
             success: function (data, textStatus, jqXHR) {
               if (jqXHR.status === 200) {
-                console.log("Filtered data:", data);
+                //console.log("Filtered data:", data);
                 // Update the map markers with the filtered data
                 initMap(data);
               }
