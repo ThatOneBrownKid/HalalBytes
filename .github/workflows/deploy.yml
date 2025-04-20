@@ -30,7 +30,16 @@ jobs:
             # Navigate to the app and deploy
             cd ~/app_dev/HalalBytes/
             git pull origin main
+
+            # Set the RAILS_MASTER_KEY environment variable for credentials decryption (if using credentials)
             export RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}
+            
+            # Set environment variables for database connection
+            export DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
+            export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            export DATABASE_HOST=${{ secrets.DATABASE_HOST }}
+            export DATABASE_PORT=${{ secrets.DATABASE_PORT }}
+            
             bundle install --deployment --without development test
             bundle exec rake assets:clobber RAILS_ENV=production
             bundle exec rake db:migrate RAILS_ENV=production
