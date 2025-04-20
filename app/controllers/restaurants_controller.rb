@@ -34,6 +34,16 @@ class RestaurantsController < ApplicationController
   def show
     @restaurant = Restaurant.find(params[:id])
     @ordered_images = @restaurant.ordered_images
+
+    # Collect images from all reviews
+    review_images = []
+    @restaurant.reviews.includes(:images_attachments).each do |review|
+      review_images.concat(review.images.attachments)
+    end
+
+    # Combine restaurant's ordered images with review images
+    @all_gallery_images = @ordered_images + review_images
+
   end
 
   # GET /restaurants/new
