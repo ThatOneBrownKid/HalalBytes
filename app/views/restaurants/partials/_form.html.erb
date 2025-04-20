@@ -1,57 +1,50 @@
 <% if current_user.admin? %>
-<section class="h-100">
-  <div class="container h-100">
-    <div class="row justify-content-sm-center h-100">
-      <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
-        <div class="text-center my-5">
-          <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
+  <section class="h-100">
+    <div class="container h-100">
+      <div class="row justify-content-sm-center h-100">
+        <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
+          <div class="text-center my-5">
+            <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-</section>
-
-<div class="contact-card mb-5">  
-  <%= form_with(model: restaurant, id: 'restaurant-form') do |form| %>
-    <% if restaurant.errors.any? %>
-      <div style="color: red">
-        <h2><%= pluralize(restaurant.errors.count, "error") %> prohibited this restaurant from being saved:</h2>
-
-        <ul>
-          <% restaurant.errors.each do |error| %>
-            <li><%= error.full_message %></li>
+  </section>
+  <div class="contact-card mb-5">
+    <%= form_with(model: restaurant, id: 'restaurant-form') do |form| %>
+      <% if restaurant.errors.any? %>
+        <div style="color: red">
+          <h2><%= pluralize(restaurant.errors.count, "error") %> prohibited this restaurant from being saved:</h2>
+          <ul>
+            <% restaurant.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <% if restaurant.errors.any? %>
+        <div id="error_explanation" style="display: none;">
+          <% restaurant.errors.full_messages.each do |message| %>
+            <div class="error_message"><%= message %></div>
           <% end %>
-        </ul>
+        </div>
+      <% end %>
+      <div>
+        <%= form.label :name, style: "display: block" %>
+        <%= form.text_field :name, class: "form-control" %>
       </div>
-    <% end %>
-
-    <% if restaurant.errors.any? %>
-  <div id="error_explanation" style="display: none;">
-    <% restaurant.errors.full_messages.each do |message| %>
-      <div class="error_message"><%= message %></div>
-    <% end %>
-  </div>
-<% end %>
-
-    <div>
-      <%= form.label :name, style: "display: block" %>
-      <%= form.text_field :name, class: "form-control" %>
-    </div>
-
-    <div>
-      <%= form.label :street, style: "display: block" %>
-      <%= form.text_field :street, class: "form-control" %>
-    </div>
-
-    <div>
-      <%= form.label :city, style: "display: block" %>
-      <%= form.text_field :city, class: "form-control" %>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <%= form.label :state, style: "display: block" %>
-        <%= form.select :state, 
+      <div>
+        <%= form.label :street, style: "display: block" %>
+        <%= form.text_field :street, class: "form-control" %>
+      </div>
+      <div>
+        <%= form.label :city, style: "display: block" %>
+        <%= form.text_field :city, class: "form-control" %>
+      </div>
+      <div class="row">
+        <div class="col">
+          <%= form.label :state, style: "display: block" %>
+          <%= form.select :state, 
                 options_for_select([
                   'AL', 'AK', 'AZ', 'AR', 'CA', 
                   'CO', 'CT', 'DE', 'FL', 'GA', 
@@ -66,28 +59,23 @@
                 ]), 
                 {}, 
                 {class: "form-select" } %>
+        </div>
+        <div class="col">
+          <%= form.label :zip_code, style: "display: block" %>
+          <%= form.text_field :zip_code, class: "form-control" %>
+        </div>
       </div>
-
-      <div class="col">
-        <%= form.label :zip_code, style: "display: block" %>
-        <%= form.text_field :zip_code, class: "form-control" %>
+      <div>
+        <%= form.label :phone, style: "display: block" %>
+        <%= form.telephone_field :phone, class: "form-control", id: "phone_field" %>
       </div>
-    </div>
-
-    <div>
-      <%= form.label :phone, style: "display: block" %>
-      <%= form.telephone_field :phone, class: "form-control", id: "phone_field" %>
-    </div>
-
-    <div>
-      <%= form.label :website, style: "display: block" %>
-      <%= form.text_field :website, class: "form-control", value: @restaurant.website.blank? ? 'www.' : @restaurant.website %>
-    </div>
-
-
-    <div>
-      <%= form.label :cuisine, style: "display: block" %>
-      <%= form.select :cuisine, 
+      <div>
+        <%= form.label :website, style: "display: block" %>
+        <%= form.text_field :website, class: "form-control" %>
+      </div>
+      <div>
+        <%= form.label :cuisine, style: "display: block" %>
+        <%= form.select :cuisine, 
                 options_for_select([
                   'Pizza', 
                   'Wings', 
@@ -102,211 +90,233 @@
                 ]), 
                 {}, 
                 {class: "form-select" } %>
-    </div>
-
-    <div>
-      <%= form.label :price_range, style: "display: block" %>
-      <%= form.select :price_range, options_for_select([['1', 1], ['2', 2], ['3', 3]]), {}, {class: "form-select"} %>
-    </div>
-
-    <div>
-      <%= form.label :overall_rating, style: "display: block" %>
-      <%= form.number_field :overall_rating, class: "form-control" %>
-    </div>
-
-    <div>
-      <%= form.label :halal_status, style: "display: block" %>
-      <%= form.select :halal_status, 
-                options_for_select([
-                  'Fully Halal', 
-                  'Partially Halal'
-                ]), 
-                {}, 
-                { class: "form-select", id: "halal_status_select" } %>
-    </div>
-
-    <div id="notes_field" style="display: none;">
-      <%= form.label :notes, style: "display: block" %>
-      <%= form.text_area :notes, class: "form-control", placeholder: "e.g. Everything but the beef is halal... \ne.g. Only chicken is halal..."%>
-    </div>
-
-    <div>
-      <p>Hours of Operations:</p>
-      <% %w[sunday monday tuesday wednesday thursday friday saturday].each do |day| %>
-        <div class="form-group row">
-          <label class="col-sm-3 col-form-label"><%= day.capitalize %></label>
-          <div class="col-sm-4">
-            <%= form.text_field "#{day}_open", class: 'timepicker form-control mb-2', value: extract_time(@restaurant.send(day), :open) %>
-          </div>
-          <label class="col-sm-1 col-form-label text-center">to</label>
-            <div class="col-sm-4">
-              <%= form.text_field "#{day}_close", class: 'timepicker form-control mb-2', value: extract_time(@restaurant.send(day), :close) %>
-            </div>
-        </div>
-      <% end %>
-    </div>
-
-    <% if restaurant.new_record? %>
-      <div class = "mt-4">
-      <div class="dropzone dropzone-default dz-clickable" data-controller="dropzone" data-dropzone-max-file-size="255" data-dropzone-accepted-files="image/*" data-dropzone-max-files="10" data-upload-multiple="true">
-        <%= form.file_field :images, multiple: true, direct_upload: true, data: { dropzone_target: 'input' } %>
-        <div class="dropzone-msg dz-message needsclick">
-          <h5 class="dropzone-msg-title">Drag here to upload or click here to browse</h5>
-        </div>
       </div>
-    </div>
+      <div>
+        <%= form.label :price_range, style: "display: block" %>
+        <%= form.select :price_range, options_for_select([['1', 1], ['2', 2], ['3', 3]]), {}, {class: "form-select"} %>
+      </div>
+      <div>
+        <%= form.label :overall_rating, style: "display: block" %>
+        <%= form.number_field :overall_rating, class: "form-control" %>
+      </div>
+      <div>
+        <%= form.label :halal_status, style: "display: block" %>
+        <%= form.select :halal_status, 
+              options_for_select(
+                ['Fully Halal', 'Partially Halal'], 
+                selected: @restaurant.halal_status
+              ), 
+              {}, 
+              { class: "form-select", id: "halal_status_select" } %>
+      </div>
+      <div id="notes_container" style="display: none;">
+        <label for="notes">Select Meats</label>
+        <select id="notes" name="restaurant[notes][]" data-multi-select multiple>
+          <% ['Chicken', 'Beef', 'Lamb', 'Goat', 'Fish', 'Duck', 'Turkey'].each do |meat| %>
+            <option value="<%= meat %>" <%= @restaurant.notes&.split(';')&.include?(meat) ? 'selected' : '' %>>
+              <%= meat %>
+            </option>
+            <% end %>
+          </select>
+        </div>
+        <div class="pt-1">
+          <p>Hours of Operations:</p>
+          <% %w[sunday monday tuesday wednesday thursday friday saturday].each do |day| %>
+            <div class="form-group row">
+              <label class="col-sm-3 col-form-label"><%= day.capitalize %></label>
+              <div class="col-sm-4">
+                <%= form.text_field "#{day}_open", class: 'timepicker form-control mb-2', value: extract_time(@restaurant.send(day), :open) %>
+              </div>
+              <label class="col-sm-1 col-form-label text-center">to</label>
+              <div class="col-sm-4">
+                <%= form.text_field "#{day}_close", class: 'timepicker form-control mb-2', value: extract_time(@restaurant.send(day), :close) %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        <% if restaurant.new_record? %>
+          <div class = "mt-4">
+            <div class="dropzone dropzone-default dz-clickable" data-controller="dropzone" data-dropzone-max-file-size="255" data-dropzone-accepted-files="image/*" data-dropzone-max-files="10" data-upload-multiple="true">
+              <%= form.file_field :images, multiple: true, direct_upload: true, data: { dropzone_target: 'input' } %>
+              <div class="dropzone-msg dz-message needsclick">
+                <i class="bi bi-cloud-upload fa-3x"></i>
+                <p class="dropzone-msg-title">Browse/Drag File to Upload</p>
+              </div>
+            </div>
+          <% end %>
+          <div>
+            <%= form.submit 'Submit', class: 'btn btn-primary mt-3', type: 'submit' %>
+          </div>
+        <% end %>
+        <div id="flash-alert" class="flash-alert"></div>
+      </div>
     <% end %>
+    <style>
+      .contact-card {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
 
+      .contact-card h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
 
-    <div>
-      <%= form.submit 'Submit', class: 'btn btn-primary mt-3', type: 'submit' %>
-    </div>
+      .contact-card p {
+        margin-bottom: 10px;
+      }
 
-  <% end %>
+      .contact-card label {
+        display: block;
+        margin-bottom: 5px;
+      }
 
-  <div id="flash-alert" class="flash-alert"></div>
-</div>
-<% end %>
+      .contact-card input,
+      .contact-card textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+      }
 
-<style>
-  .contact-card {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .contact-card h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-  }
-  
-  .contact-card p {
-    margin-bottom: 10px;
-  }
-  
-  .contact-card label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .contact-card input,
-  .contact-card textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    resize: vertical;
-  }
+      .time-input::-webkit-resizer {
+      display: none;
+      }
 
-  .time-input::-webkit-resizer {
-  display: none;
-  }
+      .time-input {
+        overflow: hidden; /* Hide overflow content */
+      }
 
-  .time-input {
-    overflow: hidden; /* Hide overflow content */
-  }
-  
-  /* Flash Alert */
-  .flash-alert {
-    display: none;
-    background-color: #C0C0C0;
-    color: #fff;
-    text-align: center;
-    padding: 10px;
-    border-radius: 4px;
-    margin-top: 10px;
-  }
-  
-  .contact-info {
-    text-align: center;
-    margin-top: 40px;
-  }
-  
-  .contact-info p {
-    margin-bottom: 10px;
-  }
-  
-  .contact-info .logo-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-  }
-  
-  .contact-info .logo {
-    display: inline-block;
-    margin: 0 10px;
-    height: 40px;
-    width: 40px;
-  }
+      /* Flash Alert */
+      .flash-alert {
+        display: none;
+        background-color: #C0C0C0;
+        color: #fff;
+        text-align: center;
+        padding: 10px;
+        border-radius: 4px;
+        margin-top: 10px;
+      }
 
-  .form-control-select {
-  -webkit-appearance: none;  /* Removes default chrome and safari style */
-  -moz-appearance: none;    /* Removes default style Firefox */
-  appearance: none;         /* Removes default style for IE */
-  background-image: url('path_to_arrow_image.png'); /* Add your arrow image */
-  background-repeat: no-repeat;
-  background-position: right 10px center; /* Position the arrow image */
-  background-size: 12px; /* Size of the arrow image */
-  /* Add other styles as needed (padding, border, etc.) */
-}
-</style>
+      .contact-info {
+        text-align: center;
+        margin-top: 40px;
+      }
 
-<script>
-  document.addEventListener('turbo:load', function () {
-    const phoneField = document.getElementById('phone_field');
+      .contact-info p {
+        margin-bottom: 10px;
+      }
 
-    // It's a good practice to check if the element exists before adding event listeners
-    if (phoneField) {
-      phoneField.addEventListener('input', function(e) {
-        let input = this.value.replace(/\D/g, ''); // Remove all non-digits
-        input = input.substring(0, 10); // Trim the input to 10 digits
+      .contact-info .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px;
+      }
 
-        let formattedInput = "";
-        for (let i = 0; i < input.length; i++) {
-          if (i === 0) formattedInput += "(";
-          if (i === 3) formattedInput += ") ";
-          if (i === 6) formattedInput += "-";
-          formattedInput += input[i];
+      .contact-info .logo {
+        display: inline-block;
+        margin: 0 10px;
+        height: 40px;
+        width: 40px;
+      }
+
+      .dropzone {
+        border-radius: 20px; /* Adjust this value to get the desired roundness */
+        background-color: rgba(0, 110, 255, 0.041);
+        border: 2px dashed royalblue;
+        border-radius: 10px;
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
+
+      .form-control-select {
+        -webkit-appearance: none;  /* Removes default chrome and safari style */
+        -moz-appearance: none;    /* Removes default style Firefox */
+        appearance: none;         /* Removes default style for IE */
+        background-image: url('path_to_arrow_image.png'); /* Add your arrow image */
+        background-repeat: no-repeat;
+        background-position: right 10px center; /* Position the arrow image */
+        background-size: 12px; /* Size of the arrow image */
+        /* Add other styles as needed (padding, border, etc.) */
+        }
+    </style>
+    <script>
+      document.addEventListener('turbo:load', function () {
+        const phoneField = document.getElementById('phone_field');
+
+        // It's a good practice to check if the element exists before adding event listeners
+        if (phoneField) {
+          phoneField.addEventListener('input', function(e) {
+            let input = this.value.replace(/\D/g, ''); // Remove all non-digits
+            input = input.substring(0, 10); // Trim the input to 10 digits
+
+            let formattedInput = "";
+            for (let i = 0; i < input.length; i++) {
+              if (i === 0) formattedInput += "(";
+              if (i === 3) formattedInput += ") ";
+              if (i === 6) formattedInput += "-";
+              formattedInput += input[i];
+            }
+
+            this.value = formattedInput;
+          });
+        }
+      });
+    </script>
+    <script>
+      document.addEventListener("turbo:load", function() {
+        const halalStatusSelect = document.getElementById("halal_status_select");
+        const notesField = document.getElementById("notes_field");
+
+        // Function to toggle visibility of the notes field
+        function toggleNotesField() {
+          if (halalStatusSelect.value === "Partially Halal") {
+            notesField.style.display = "block";
+          } else {
+            notesField.style.display = "none";
+          }
         }
 
-        this.value = formattedInput;
+        // Call toggleNotesField initially to set the initial state
+        toggleNotesField();
+
+        // Add event listener to the halal_status select field to toggle the notes field
+        halalStatusSelect.addEventListener("change", toggleNotesField);
       });
-    }
-  });
-</script>
+    </script>
+    <script type="module">
+      $(document).ready(function(){
+        $('.timepicker').timepicker({
+          timeFormat: 'h:mm p',
+          dropdown: false
+        });
+      });
+    </script>
+    <script>
+      document.addEventListener("turbo:load", function () {
+        const halalStatusSelect = document.getElementById("halal_status_select");
+        const notesContainer = document.getElementById("notes_container");
 
-<script>
-  document.addEventListener("turbo:load", function() {
-    const halalStatusSelect = document.getElementById("halal_status_select");
-    const notesField = document.getElementById("notes_field");
+        // Toggle visibility of the notes container based on Halal Status
+        function toggleNotesField() {
+          if (halalStatusSelect.value === "Partially Halal") {
+            notesContainer.style.display = "block";
+          } else {
+            notesContainer.style.display = "none";
+          }
+        }
 
-    // Function to toggle visibility of the notes field
-    function toggleNotesField() {
-      if (halalStatusSelect.value === "Partially Halal") {
-        notesField.style.display = "block";
-      } else {
-        notesField.style.display = "none";
-      }
-    }
+        // Set initial state
+        toggleNotesField();
 
-    // Call toggleNotesField initially to set the initial state
-    toggleNotesField();
-
-    // Add event listener to the halal_status select field to toggle the notes field
-    halalStatusSelect.addEventListener("change", toggleNotesField);
-  });
-</script>
-
-<script type="module">
-  $(document).ready(function(){
-    $('.timepicker').timepicker({
-      timeFormat: 'h:mm p',
-      dropdown: false
-    });
-  });
-</script>
+        // Add event listener to the Halal Status dropdown
+        halalStatusSelect.addEventListener("change", toggleNotesField);
+      });
+    </script>

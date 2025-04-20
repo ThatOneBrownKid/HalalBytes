@@ -1,0 +1,329 @@
+<%# app/views/reviews/_review.html.erb %>
+
+<div id="<%= dom_id review %>" class="d-flex flex-column gap-2 position-relative">
+  <%# --- Review Options Button (Conditional) --- %>
+<% if review.user == current_user %> <%# Check if the review belongs to the current user %>
+  <%# Position the dropdown container in the top right %>
+  <div class="review-options-dropdown position-absolute top-0 end-0 mt-2 me-2">
+    <%# The button that triggers the dropdown %>
+    <button class="btn btn-sm review-options-button" type="button" id="reviewOptions_<%= review.id %>" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-three-dots-vertical"></i> <%# Bootstrap Icon for vertical three dots %>
+    </button>
+    <%# The dropdown menu %>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="reviewOptions_<%= review.id %>">
+      <li>
+        <%# The delete link %>
+        <%= link_to "Delete", restaurant_review_path(review.restaurant, review),
+                    method: :delete, # Use HTTP DELETE method
+                    data: { turbo_confirm: "Are you sure you want to delete this review?" }, # Confirmation prompt
+                    class: "dropdown-item" # Bootstrap class for danger styling
+                    %>
+      </li>
+    </ul>
+  </div>
+<% end %>
+<%# --- End Review Options Button --- %>
+  <%# --- Review Author and Timestamp --- %>
+  <div class="d-flex align-items-center mb-2">
+    <% if review.user.present? %>
+      <%= image_tag(
+            review.user.profile_picture.attached? ? review.user.profile_picture : "blank-profile.png",
+            class: "rounded-circle",
+            size: "48x48"
+          ) %>
+      <div class="ms-3">
+        <strong><%= review.user.full_name %></strong><br>
+        <small class="text-muted">Posted <%= time_ago_in_words(review.created_at) %> ago</small>
+      </div>
+    <% else %>
+      <%= image_tag("blank-profile.png", class: "rounded-circle", size: "48x48") %>
+      <div class="ms-3">
+        <strong>Anonymous User</strong><br>
+        <small class="text-muted">Posted <%= time_ago_in_words(review.created_at) %> ago</small>
+      </div>
+    <% end %>
+  </div>
+
+  <%# --- Review Rating and Content --- %>
+  <div>
+    <%# Star rating %>
+    <p class="star-container mb-2"> <%# Added mb-2 for spacing %>
+      <% if review.rating.present? %>
+        <% review.rating.times do %><i class="bi bi-star-fill full-star-review"></i><% end %><% (5 - review.rating).times do %><i class="bi bi-star empty-star-review"></i><% end %>
+      <% else %>
+        <%# Optional: Display something if rating is missing %>
+        <span class="text-muted">No rating provided</span>
+      <% end %>
+    </p>
+
+    <%# Review text content %>
+    <p><%= simple_format(review.content) %></p>
+  </div>
+
+  <%# --- Start: Review Images Section (Trigger Thumbnails and Modal) --- %>
+  <% if review.images.attached? %>
+    <%# --- Trigger Thumbnails --- %>
+    <div class="review-thumbnails mt-3">
+      <div class="d-flex flex-wrap gap-1">
+        <% review.images.each_with_index do |image, index| %>
+          <%= image_tag(
+                image.variant(resize_to_fill: [100, 100]),
+                class: "img-thumbnail review-thumbnail-trigger", # Class for the clickable trigger
+                alt: "Review image #{index + 1}",
+                style: "cursor: pointer; object-fit: cover; width: 100px; height: 100px;",
+                data: {
+                  bs_toggle: "modal",
+                  bs_target: "#reviewGalleryModal_#{review.id}", # Points to the correct modal
+                  bs_slide_to: index                             # Sets the initial slide for the modal's carousel
+                }
+              ) %>
+        <% end %>
+      </div>
+    </div>
+
+    <%# --- Modal structure mimicking galleryModal --- %>
+    <div class="modal fade" id="reviewGalleryModal_<%= review.id %>" tabindex="-1" aria-labelledby="reviewGalleryModalLabel_<%= review.id %>" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered"> <%# Centered modal %>
+        <div class="modal-content">
+          
+          <div class="modal-body">
+              <%# Left Column: Main Carousel %>
+              <div class="col-12 d-block review-image-carousel-container" style="background-color: #000;">
+                <div id="reviewImageCarousel_<%= review.id %>" class="carousel slide" data-bs-interval="false"> <%# Removed data-bs-ride %>
+                  <div class="carousel-inner">
+                    <% review.images.each_with_index do |image, index| %>
+                      <div class="carousel-item <%= 'active' if index == 0 %>" data-image-index="<%= index %>">
+                        <%= image_tag(
+                              image.variant(resize_and_pad: [730, 500, gravity: 'Center', background: '#000']), # Fixed aspect ratio, black padding
+                              class: "d-block w-100",
+                              alt: "Review Image #{index + 1}",
+                              style: "max-height: 75vh; object-fit: contain;" # Adjusted max-height, contain ensures visibility
+                            ) %>
+                      </div>
+                    <% end %>
+                  </div>
+                  <%# Only show controls if more than one image %>
+                  <% if review.images.size > 1 %>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#reviewImageCarousel_<%= review.id %>" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#reviewImageCarousel_<%= review.id %>" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                  <% end %>
+                </div>
+              </div> <%# End col-lg-8 %>
+          </div> <%# End modal-body %>
+        </div> <%# End modal-content %>
+      </div> <%# End modal-dialog %>
+    </div> <%# End modal %>
+  <% end %>
+  <%# --- End: Review Images Section --- %>
+
+</div> <%# End of main review div %>
+
+
+<%# ============================================================ %>
+<%# Page Specific Styles and Scripts                           %>
+<%# ============================================================ %>
+
+  <style>
+    /* Ensure star colors are defined */
+    .star-container {
+      color: #ffc107; /* Fallback or default color */
+    }
+    .full-star-review {
+      color: #dc3545; /* Your red color */
+    }
+    .empty-star-review {
+      color: #e4e5e9; /* Light grey for empty stars */
+    }
+
+    /* Styles specific to the review modals (mimicking show.html) */
+    .review-image-carousel-container {
+       /* Ensures the container itself has the black background */
+    }
+
+    /* Style for the scrollable thumbnail container on the right */
+    .review-scrollable-gallery-container {
+       max-height: calc(75vh + 1rem); /* Match max-height of carousel image + padding */
+       overflow-y: auto;
+       overflow-x: hidden;
+    }
+
+    /* Style for the thumbnails inside the modal (navigation) */
+    .review-modal-thumbnail-nav {
+      border: 3px solid transparent; /* Base border - increased thickness */
+      transition: border-color 0.2s ease-in-out;
+      opacity: 0.7; /* Slightly faded when not active */
+    }
+
+    .review-modal-thumbnail-nav:hover {
+      border-color: #adb5bd; /* Indicate hover */
+      opacity: 1.0;
+    }
+
+    /* Style for the active thumbnail inside the modal */
+    .review-modal-thumbnail-nav.active-thumbnail {
+      border-color: #0d6efd; /* Bootstrap primary blue for active */
+      opacity: 1.0;
+    }
+
+    /* Style for the trigger thumbnails below the review */
+.review-thumbnail-trigger {
+  /* Default style for the trigger thumbnail */
+  border: none; /* Removed default Bootstrap img-thumbnail border */
+  transition: opacity 0.2s ease-in-out; /* Keep hover transition */
+  /* Add padding/margin here if gap-1 wasn't enough space, e.g., margin: 2px; */
+}
+
+.review-thumbnail-trigger:hover {
+  opacity: 0.8;
+  /* Removed border-color on hover */
+}
+
+    /* Ensure backdrop is sufficiently dark */
+    .modal-backdrop {
+      background-color: rgba(0, 0, 0, 0.85); /* Darker backdrop */
+    }
+
+    /* --- Custom Styles for the Options Button --- */
+    .review-options-button {
+      border: none; /* Remove default button border */
+      background-color: transparent; /* Remove default button background */
+      padding: 0.25rem 0.5rem; /* Small padding around the icon */
+      border-radius: 50%; /* Make the clickable area round */
+      transition: background-color 0.2s ease-in-out; /* Smooth hover effect */
+      color: #6c757d; /* Default icon color (Bootstrap muted text) */
+      line-height: 1; /* Center the icon vertically */
+      display: flex; /* Use flexbox to easily center icon */
+      align-items: center; /* Center icon vertically */
+      justify-content: center; /* Center icon horizontally */
+    }
+
+    .review-options-button:hover {
+      background-color: rgba(0, 0, 0, 0.05); /* Light grey background on hover */
+      color: #343a40; /* Darker icon color on hover */
+    }
+
+    /* Optional: Remove default focus outline */
+    .review-options-button:focus {
+      outline: none;
+      box-shadow: none;
+    }
+</style>
+
+<% content_for :page_specific_scripts do %>
+<script>
+document.addEventListener('turbo:load', () => {
+
+  // --- Handle clicking thumbnails INSIDE the modal to navigate the carousel ---
+  document.querySelectorAll('.review-modal-thumbnail-nav').forEach(thumbnail => {
+    thumbnail.addEventListener('click', function(e) {
+      e.preventDefault(); // Prevent potential default anchor behavior if tags change
+      const targetCarouselSelector = this.dataset.targetCarousel;
+      const slideToIndex = parseInt(this.dataset.slideTo, 10);
+      const targetCarouselElement = document.querySelector(targetCarouselSelector);
+
+      if (targetCarouselElement) {
+        const carouselInstance = bootstrap.Carousel.getOrCreateInstance(targetCarouselElement);
+        if (carouselInstance) {
+          carouselInstance.to(slideToIndex); // Go to the specific slide
+        }
+      }
+
+      // It's better to let the 'slide.bs.carousel' event handle the active class
+      // to avoid race conditions, but if immediate feedback is desired:
+      /*
+      const thumbnailContainer = this.closest('.row');
+      if (thumbnailContainer) {
+          thumbnailContainer.querySelectorAll('.review-modal-thumbnail-nav').forEach(th => {
+              th.classList.remove('active-thumbnail');
+          });
+          this.classList.add('active-thumbnail');
+      }
+      */
+    });
+  });
+
+  // --- Handle carousel slide event to update the active thumbnail INSIDE the modal ---
+  document.querySelectorAll('.carousel.slide[id^="reviewImageCarousel_"]').forEach(carouselElement => {
+    carouselElement.addEventListener('slide.bs.carousel', function (event) {
+      // event.to is the index of the target slide
+      const slideToIndex = event.to;
+      // Find the parent modal to scope the thumbnail search
+      const modalElement = this.closest('.modal');
+      if (!modalElement) return; // Exit if modal context not found
+
+      const thumbnailContainer = modalElement.querySelector('.review-scrollable-gallery-container .row');
+
+      if (thumbnailContainer) {
+        // Remove active class from all thumbnails in this specific modal
+        thumbnailContainer.querySelectorAll('.review-modal-thumbnail-nav').forEach(thumbnail => {
+          thumbnail.classList.remove('active-thumbnail');
+        });
+
+        // Add active class to the corresponding thumbnail
+        const activeThumbnail = thumbnailContainer.querySelector(`.review-modal-thumbnail-nav[data-slide_to="${slideToIndex}"]`);
+        if (activeThumbnail) {
+          activeThumbnail.classList.add('active-thumbnail');
+
+          // Scroll the thumbnail container to keep the active thumbnail visible
+          const containerRect = thumbnailContainer.parentElement.getBoundingClientRect(); // Get rect of scrollable parent
+          const thumbRect = activeThumbnail.getBoundingClientRect();
+          const scrollTop = thumbnailContainer.parentElement.scrollTop; // Current scroll position
+
+          // Calculate desired scroll position to center the thumbnail vertically
+          const desiredScrollTop = scrollTop + (thumbRect.top - containerRect.top) - (containerRect.height / 2) + (thumbRect.height / 2);
+
+          // Check if thumbnail is outside the visible area or not centered
+           if (thumbRect.top < containerRect.top || thumbRect.bottom > containerRect.bottom) {
+             thumbnailContainer.parentElement.scrollTo({
+                 top: desiredScrollTop,
+                 behavior: 'smooth' // Smooth scroll
+             });
+           }
+        }
+      }
+    });
+  });
+
+  // --- Handle modal shown event to set initial active thumbnail state ---
+  // This is needed because the 'slide' event might not fire for the initial slide (index 0)
+  document.querySelectorAll('.modal[id^="reviewGalleryModal_"]').forEach(modalElement => {
+    modalElement.addEventListener('shown.bs.modal', function () {
+        const carouselElement = this.querySelector('.carousel.slide');
+        const thumbnailContainer = this.querySelector('.review-scrollable-gallery-container .row');
+        if (!carouselElement || !thumbnailContainer) return;
+
+        const carouselInstance = bootstrap.Carousel.getInstance(carouselElement);
+        // Determine the current index (Bootstrap might set it based on data-bs-slide-to)
+        // Note: Accessing internal properties like _activeIndex is fragile.
+        // It's safer to find the '.active.carousel-item'.
+        const activeItem = carouselElement.querySelector('.carousel-item.active');
+        const currentIndex = activeItem ? parseInt(activeItem.dataset.imageIndex, 10) : 0;
+
+        // Remove active class from all thumbnails initially
+        thumbnailContainer.querySelectorAll('.review-modal-thumbnail-nav').forEach(thumbnail => {
+          thumbnail.classList.remove('active-thumbnail');
+        });
+
+        // Add active class to the correct thumbnail
+        const activeThumbnail = thumbnailContainer.querySelector(`.review-modal-thumbnail-nav[data-slide_to="${currentIndex}"]`);
+        if (activeThumbnail) {
+          activeThumbnail.classList.add('active-thumbnail');
+           // Optionally scroll to the active thumbnail on modal open as well
+          const containerRect = thumbnailContainer.parentElement.getBoundingClientRect();
+          const thumbRect = activeThumbnail.getBoundingClientRect();
+           if (thumbRect.top < containerRect.top || thumbRect.bottom > containerRect.bottom) {
+               thumbnailContainer.parentElement.scrollTop = activeThumbnail.offsetTop - (containerRect.height / 2) + (thumbRect.height / 2);
+           }
+        }
+    });
+  });
+
+});
+</script>
+<% end %>

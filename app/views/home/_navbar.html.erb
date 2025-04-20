@@ -17,10 +17,7 @@
         <li class="nav-item">
           <a class="nav-link active" href="<%= request_new_restaurants_path %>">Request</a>
         </li>
-
       </ul>
-      
-
       <ul class="navbar-nav mb-2 mb-lg-0">
         <% if user_signed_in? %>
           <li class="nav-item dropdown position-static">
@@ -33,21 +30,17 @@
                   <%= link_to "Add Restaurant", new_restaurant_path, class: "dropdown-item" %>
                 </li>
               <% end %>
-
               <% if current_user.admin? %>
                 <li class="nav-item">
                   <%= link_to "All Requests", all_requested_path, class: "dropdown-item" %>
                 </li>
               <% end %>
-
               <li class="nav-item">
                 <%= link_to 'My Requests', requested_restaurants_path, class: 'dropdown-item' %>
               </li>
-
               <li class="nav-item">
                 <%= link_to "Account", edit_user_registration_path, class: "dropdown-item" %>
               </li>
-
               <li>
                 <%= button_to 'Sign out', destroy_user_session_path, method: :delete, class: "dropdown-item", form_class: "nav-item" %>
               </li>
@@ -66,7 +59,6 @@
     </div>
   </div>
 </nav>
-
 <style>
   .dropdown-menu-end {
     top: 20px;
@@ -74,4 +66,3 @@
     left: auto;
   }
 </style>
-

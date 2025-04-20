@@ -1,168 +1,147 @@
-
-   <div id="restaurant_<%= restaurant.id %>" class="card-res rounded-0 border-0 border-bottom " style="width: 100%; height: 300px; margin:0px" data-latitude="<%= restaurant.latitude %>" data-longitude="<%= restaurant.longitude %>">
-      <div class="row g-0" style="width: card;">
-         <div class="col-xs-10 col-lg-4 ">
-            <div id="imageCarousel" class="card-img my-2" data-ride="carousel">
-               <% if restaurant.images.attached? %>
-               <div class="carousel-inner">
-                  <% restaurant.images.each_with_index do |image, index| %>
-                  <div class="carousel-item <%= 'active' if index.zero? %>">
-                     <%= image_tag image, class: "card-img", alt: "Restaurant Image" %>
-                     <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev" style="left: 10px;">
-                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                     <span class="sr-only"></span>
-                     </a>
-                     <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next" style="right: 20px;">
-                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                     <span class="sr-only"></span>
-                     </a>
-                  </div>
-                  <% end %>
-               </div>
-               <% else %> <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image" %> <% end %>
-            </div>
-         </div>
-         <div class=" col-xs-10 col-lg-7 ps-4 pe-0">
-            <div class="card-body pb-0 " style= "padding-left: 0px;">
-               
-               <h5 class="card-title mb-1 text-truncate">
-                  <a href="<%= restaurant_url(restaurant) %>" class="custom-link" style="color: black; text-decoration: none;">
-                  <%= restaurant.name %>
-                  </a>
-                  
-              
-               </h5>
-                </div>
-               
-               <!--rating stars-->
-               <div class="price " style="display: none;">
-                <%= restaurant.price_range %>
-               </div>
-               <div class="rating " style="display: none;">
-                 <%= restaurant.overall_rating %>
-               </div> 
-               <% restaurant.overall_rating.to_i.times do%>
-               <i class="bi bi-star-fill red"></i>
-               <% end %> <% (5-restaurant.overall_rating.to_i).times do%>
-               <i class="bi bi-star-fill gray"></i>
-               <% end %>
-               
-               <div class="text-secondary" style="font-size: 14px;">
-                 
-                  <!--price range-->
-                  
-                  <div class="row fw-bold pt-2 ps-2">
-                    <div class="Restaurant Price align-middle d-inline col-auto px-0 pt-1"> 
-                      <% restaurant.price_range.to_i.times do %>
-                        $
-                      <% end %>
-                    </div>
-
-                    <i class="bi bi-dot fs-5 col-auto px-0"></i>
-
-                    <div class="Restaurant Cuisine d-inline col-auto px-0 pt-1">
-                      <div class="hover-box">
-                        <%= restaurant.cuisine %>
-                      </div>
-                    </div>
-
-                    <i class="bi bi-dot fs-5 col-auto px-0"></i>
-
-                    <div class="Restaurant City d-inline col-auto px-0 pt-1">
-                      <%= restaurant.city %>
-                    </div>
-                  </div>
-
-               </div>
-               <p></p>
-               <div class="text-secondary" style="font-size: 14px;">
-                  
-               </div>
-            </div>
-         </div>
+<div id="restaurant_<%= restaurant.id %>" class="card-res rounded-0 border-0 border-bottom " style="width: 100%; height: 300px; margin:0px" data-latitude="<%= restaurant.latitude %>" data-longitude="<%= restaurant.longitude %>">
+  <div class="row g-0" style="width: card;">
+    <div class="col-xs-10 col-lg-4 ">
+      <div id="imageCarousel" class="card-img my-2" data-ride="carousel">
+        <% if restaurant.images.attached? %>
+          <div class="carousel-inner">
+            <% restaurant.images.each_with_index do |image, index| %>
+              <div class="carousel-item <%= 'active' if index.zero? %>">
+                <%= image_tag image, class: "card-img", alt: "Restaurant Image" %>
+                <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev" style="left: 10px;">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="sr-only"></span>
+                </a>
+                <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next" style="right: 20px;">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="sr-only"></span>
+                </a>
+              </div>
+            <% end %>
+          </div>
+        <% else %> <%= image_tag "default-restaurant-image.jpg", class: "card-img", alt: "Restaurant Image" %> <% end %>
       </div>
-    
+    </div>
+    <div class=" col-xs-10 col-lg-7 ps-4 pe-0">
+      <div class="card-body pb-0 " style= "padding-left: 0px;">
+        <h5 class="card-title mb-1 text-truncate">
+          <a href="<%= restaurant_url(restaurant) %>" class="custom-link" style="color: black; text-decoration: none;">
+            <%= restaurant.name %>
+          </a>
+        </h5>
+      </div>
+      <!--rating stars-->
+      <div class="price " style="display: none;">
+        <%= restaurant.price_range %>
+      </div>
+      <div class="rating " style="display: none;">
+        <%= restaurant.overall_rating %>
+      </div>
+      <% restaurant.overall_rating.to_i.times do%>
+        <i class="bi bi-star-fill red"></i>
+      <% end %> <% (5-restaurant.overall_rating.to_i).times do%>
+        <i class="bi bi-star-fill gray"></i>
+      <% end %>
+      <div class="text-secondary" style="font-size: 14px;">
+        <!--price range-->
+        <div class="row fw-bold pt-2 ps-2">
+          <div class="Restaurant Price align-middle d-inline col-auto px-0 pt-1">
+            <% restaurant.price_range.to_i.times do %>
+              $
+            <% end %>
+          </div>
+          <i class="bi bi-dot fs-5 col-auto px-0"></i>
+          <div class="Restaurant Cuisine d-inline col-auto px-0 pt-1">
+            <div class="hover-box">
+              <%= restaurant.cuisine %>
+            </div>
+          </div>
+          <i class="bi bi-dot fs-5 col-auto px-0"></i>
+          <div class="Restaurant City d-inline col-auto px-0 pt-1">
+            <%= restaurant.city %>
+          </div>
+        </div>
+      </div>
+      <p></p>
+      <div class="text-secondary" style="font-size: 14px;">
+      </div>
+    </div>
+  </div>
+</div>
 <!--col no padding-->
 <style>
-.nopadding {
-   padding: 0 !important;
-   margin: 0 !important;
-}
-
-
+  .nopadding {
+     padding: 0 !important;
+     margin: 0 !important;
+  }
 </style>
 <style>
-<!--title overflow -->
-.truncate{
-  max-width: 10ch;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+  <!--title overflow -->
+  .truncate{
+    max-width: 10ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 </style>
 <!--card body size-->
-
 <!--card image size-->
-
 <style>
-@media (min-width: 1200px) {
-  .card-img {
-    width: 100%;
-    height: 280px;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-top: 1px;
-    object-fit: cover;
+  @media (min-width: 1200px) {
+    .card-img {
+      width: 100%;
+      height: 280px;
+      margin-left: 5px;
+      margin-right: 5px;
+      margin-top: 1px;
+      object-fit: cover;
+    }
   }
-}
 
-@media (max-width: 1199.98px) {
-  .card-img {
-     width: 100%;
-    height: 280px;
-    margin-left: 5px;
-    margin-top: 1px;
-    margin-right: 5px;
-    margin-bottom: 2px;
-    object-fit: cover;
+  @media (max-width: 1199.98px) {
+    .card-img {
+       width: 100%;
+      height: 280px;
+      margin-left: 5px;
+      margin-top: 1px;
+      margin-right: 5px;
+      margin-bottom: 2px;
+      object-fit: cover;
+    }
   }
-}
 
-@media (max-width: 999.98px) {
-  .card-img {
-    width: 100%;
-    height: 170px;
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 1px;
-    margin-bottom: 1px;
+  @media (max-width: 999.98px) {
+    .card-img {
+      width: 100%;
+      height: 170px;
+      margin-left: 0px;
+      margin-right: 0px;
+      margin-top: 1px;
+      margin-bottom: 1px;
+    }
   }
-}
-</style>       
+</style>
 <!--card title size-->
-
 <style>
-@media (min-width: 1200px) {
-  .card-title {
-    font-size: 40px;
+  @media (min-width: 1200px) {
+    .card-title {
+      font-size: 40px;
+    }
   }
-}
 
-@media (max-width: 1199.98px) {
-  .card-title {
-    font-size: 30px;
+  @media (max-width: 1199.98px) {
+    .card-title {
+      font-size: 30px;
+    }
   }
-}
 
-@media (max-width: 999.98px) {
-  .card-title {
-    font-size: 18px;
-    padding: 0px
+  @media (max-width: 999.98px) {
+    .card-title {
+      font-size: 18px;
+      padding: 0px
+    }
   }
-}
 </style>
 <!--card hover-->
-
 <style>
   .card-res {
     transition: box-shadow 0.3s;
@@ -170,7 +149,7 @@
   .card-res:hover {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   }
-  
+
   .custom-link {
     color: black;
     text-decoration: none;
@@ -199,11 +178,7 @@
   .gray{
     color: #D3D3D3;
   }
-
-
 </style>
-
-
 <script type="module">
   $(document).ready(function() {
     // Enable the carousel functionality

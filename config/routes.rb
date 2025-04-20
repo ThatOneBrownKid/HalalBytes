@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+
   get 'restaurants/request_new', to: 'restaurants#request_new', as: :request_new_restaurants
   get '/restaurants', to: 'restaurants#index', as: :restaurants_index
   post 'restaurants/request_create', to: 'restaurants#request_create', as: :request_create_restaurants
@@ -18,6 +19,11 @@ Rails.application.routes.draw do
       delete 'images/:image_id', action: :delete_image, as: :delete_image
       post 'accept' => 'restaurants#accept_restaurant'
     end
+    resources :reviews do
+      collection do
+        post :upload_image # This creates a route for uploading images
+      end
+    end
   end
   root 'home#index'
   resources :users, only: [:edit, :update, :show] do
@@ -29,7 +35,9 @@ Rails.application.routes.draw do
   patch '/users/basic_info', to: 'users/registrations#update', as: :update_basic_info
   patch 'restaurants/:id/update_images_order', to: 'restaurants#update_images_order', as: 'update_images_order'
   post '/requests/upload_images', to: 'requests#upload_images', as: :request_upload_images
+  post 'reviews/upload_image', to: 'reviews#upload_image'
   
+
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

@@ -6,15 +6,14 @@
     <title>HalalBytes</title>
     <%= favicon_link_tag 'HalalBytes.ico' %>
     <%= csrf_meta_tags %>
-    <%= javascript_importmap_tags %> 
+    <%= javascript_importmap_tags %>
     <%= stylesheet_link_tag "application" %>
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
     <link href="https://unpkg.com/dropzone@6.0.0-beta.1/dist/dropzone.css" rel="stylesheet" type="text/css" />
-    
 
-
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CJM0VENVMF"></script>
     <script>
@@ -24,11 +23,7 @@
 
       gtag('config', 'G-CJM0VENVMF');
     </script>
-
-
-
   </head>
-
   <body>
     <% flash.each do |key, value| %>
       <% if key.to_s == 'notice' %>
@@ -37,8 +32,6 @@
         </div>
       <% end %>
     <% end %>
-    
-
     <% flash.each do |key, value| %>
       <% if key.to_s == 'error' %>
         <div class="alert alert-dark fixed-top start-50 translate-middle-x" style="margin-top: 80px; width: fit-content; max-width: 100%; background-color: rgba(255, 0, 0, 0.5);
@@ -47,15 +40,10 @@
         </div>
       <% end %>
     <% end %>
-    
-      <%= render 'home/navbar'%>
-      <%= yield %>
-
-
-
+    <%= render 'home/navbar'%>
+    <%= yield %>
   </body>
 </html>
-
 <script>
   document.addEventListener("turbo:load", function() {
     var notifications = document.querySelectorAll(".alert:not(#password-alert,#login-alert)");
@@ -72,7 +60,6 @@
     }
   });
 </script>
-
 <script>
   document.addEventListener("turbo:load", function() {
     var notifications = document.querySelectorAll(".alert.error");
@@ -89,7 +76,6 @@
     }
   });
 </script>
-
 <script>
   document.addEventListener("turbo:load", function() {
     var noticeNotifications = document.querySelectorAll(".alert.notice");
@@ -106,7 +92,3 @@
     }
   });
 </script>
-
-
-
-

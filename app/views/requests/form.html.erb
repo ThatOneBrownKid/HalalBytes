@@ -1,33 +1,28 @@
-  <section class="h-100">
-    <div class="container h-100">
-      <div class="row justify-content-sm-center h-100">
-        <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
-          <div class="text-center my-5">
-            <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
-          </div>
+  
+<section class="h-100">
+  <div class="container h-100">
+    <div class="row justify-content-sm-center h-100">
+      <div class="col-xxl-4 col-xl-5 col-lg-5 col-md-7 col-sm-9">
+        <div class="text-center my-5">
+          <%= image_tag 'halalbytes-logo.png', style: 'width: 158px;' %>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 <div class="contact-card">
   <h2>Got A Request?</h2>
   <p>Cant find your favorite restaurant? Feel free to request it here, and our team will do the rest.</p>
-  
   <form id="contact-form">
     <label for="name">Restaurant Name</label>
     <input class= "form-control" type="text" id="name" name="name" required>
-    
     <label for="email">Location</label>
     <input class= "form-control" type="email" id="email" name="email" required>
-    
     <label for="message">Details</label>
     <textarea class= "form-control" id="message" name="message" rows="4" required></textarea>
-    
     <button class = "btn btn-primary mt-2" type="submit">Send</button>
   </form>
-
   <div id="flash-alert" class="flash-alert"></div>
-
   <script>
     // Flash alert after form submission
     var contactForm = document.getElementById('contact-form');
@@ -44,71 +39,70 @@
     });
   </script>
 </div>
-
 <style>
-.contact-card {
-      background-color: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Updated shadow */
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto; /* Center the contact card */
-    }
-    
-    .contact-card h2 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    
-    .contact-card p {
-      margin-bottom: 10px;
-    }
-    
-    .contact-card label {
-      display: block;
-      margin-bottom: 5px;
-    }
-    
-    .contact-card input,
-    .contact-card textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      resize: vertical;
-    }
-    
-    /* Flash Alert */
-    .flash-alert {
-      display: none;
-      background-color: #C0C0C0;
-      color: #fff;
-      text-align: center;
-      padding: 10px;
-      border-radius: 4px;
-      margin-top: 10px;
-    }
-    .contact-info {
-      text-align: center;
-      margin-top: 40px;
-    }
-    
-    .contact-info p {
-      margin-bottom: 10px;
-    }
-    
-    .contact-info .logo-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-top: 10px;
-    }
-    
-    .contact-info .logo {
-      display: inline-block;
-      margin: 0 10px;
-      height: 40px;
-      width: 40px;
-    }
-  </style>
+  .contact-card {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Updated shadow */
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto; /* Center the contact card */
+      }
+
+      .contact-card h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      .contact-card p {
+        margin-bottom: 10px;
+      }
+
+      .contact-card label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .contact-card input,
+      .contact-card textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        resize: vertical;
+      }
+
+      /* Flash Alert */
+      .flash-alert {
+        display: none;
+        background-color: #C0C0C0;
+        color: #fff;
+        text-align: center;
+        padding: 10px;
+        border-radius: 4px;
+        margin-top: 10px;
+      }
+      .contact-info {
+        text-align: center;
+        margin-top: 40px;
+      }
+
+      .contact-info p {
+        margin-bottom: 10px;
+      }
+
+      .contact-info .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      .contact-info .logo {
+        display: inline-block;
+        margin: 0 10px;
+        height: 40px;
+        width: 40px;
+      }
+</style>
