@@ -5,6 +5,7 @@ pin "@rails/ujs", to: "https://cdn.skypack.dev/@rails/ujs", preload: true
 pin '@hotwired/turbo-rails', to: 'turbo.min.js', preload: true
 pin '@hotwired/stimulus', to: 'stimulus.min.js', preload: true
 pin '@hotwired/stimulus-loading', to: 'stimulus-loading.js', preload: true
+pin "controllers/restaurant_index", to: "controllers/restaurant_index.js", preload: true
 pin_all_from 'app/javascript/controllers', under: 'controllers', preload: true
 pin "dropzone", to: "https://ga.jspm.io/npm:dropzone@6.0.0-beta.2/dist/dropzone.mjs", preload: true
 pin "just-extend", to: "https://ga.jspm.io/npm:just-extend@5.1.1/index.esm.js", preload: true
