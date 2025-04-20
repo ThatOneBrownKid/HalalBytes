@@ -318,100 +318,103 @@ function updateFiltersAndUI() {
 }
 
 //document.addEventListener("turbo:load", function () {
-$(document)
-  .off("click", ".btn-check")
-  .on("click", ".btn-check", function () {
-    const buttonId = $(this).attr("id");
-    const button = $(`label[for='${buttonId}']`);
-    const selected = $(this).val();
+document.addEventListener("turbo:load", function () {
+  $(document)
+    .off("click", ".btn-check")
+    .on("click", ".btn-check", function () {
+      const buttonId = $(this).attr("id");
+      const button = $(`label[for='${buttonId}']`);
+      const selected = $(this).val();
 
-    if (selected === "reset") {
-      filters = { cuisine: "", price: "", rating: "" };
-      if (prevPrice) prevPrice.toggleClass("selected");
-      if (prevRating) prevRating.toggleClass("selected");
-      if (prevCuisine) prevCuisine.toggleClass("selected");
-      prevPrice = prevRating = prevCuisine = null;
+      if (selected === "reset") {
+        filters = { cuisine: "", price: "", rating: "" };
+        if (prevPrice) prevPrice.toggleClass("selected");
+        if (prevRating) prevRating.toggleClass("selected");
+        if (prevCuisine) prevCuisine.toggleClass("selected");
+        prevPrice = prevRating = prevCuisine = null;
 
-      $(".btn-check").prop("checked", false);
-    } else if (selected == 2.9 || selected == 4.0 || selected == 5) {
-      if (filters.rating === selected) {
-        filters.rating = "";
-        updateFiltersAndUI();
-      } else {
-        filters.rating = selected;
-        updateFiltersAndUI();
-      }
-    } else if (selected == 1 || selected == 2 || selected == 3) {
-      if (filters.price === selected) {
-        filters.price = "";
-        updateFiltersAndUI();
-      } else {
-        filters.price = selected;
-        updateFiltersAndUI();
-      }
-    } else {
-      if (filters.cuisine === selected) {
-        filters.cuisine = "";
-        updateFiltersAndUI();
-      } else {
-        filters.cuisine = selected;
-        updateFiltersAndUI();
-      }
-    }
-    var bounds = map.getBounds();
-    var northEast = bounds.getNorthEast();
-    var southWest = bounds.getSouthWest();
-    var zoomLevel = map.getZoom();
-    var minZoomLevel = 10; // Adjust as needed (higher means more zoomed in)
-    // Check if the zoom level is too low (too zoomed out)
-    if (zoomLevel < minZoomLevel) {
-      //console.log("Zoom level is too low. Not fetching data.");
-      northEast.lat,
-        northEast.lng,
-        southWest.lat,
-        (southWest.lng = 200),
-        800,
-        100,
-        200;
-    }
-    filters.northEastlat = northEast.lat;
-    filters.northEastlng = northEast.lng;
-    filters.southWestlat = southWest.lat;
-    filters.southWestlng = southWest.lng;
-
-    //console.log(filters)
-    // Perform AJAX request to fetch filtered data
-
-    $.ajax({
-      url: "/restaurants/filter",
-      method: "GET",
-      data: filters,
-      success: function (data, textStatus, jqXHR) {
-        if (jqXHR.status === 200) {
-          //console.log("Filters", filters);
-          $("#restaurants").html(data);
-          $("#restaurants-mobile").html(data);
-          $.ajax({
-            url: "/restaurants/filter.json",
-            method: "GET",
-            data: filters,
-            success: function (data, textStatus, jqXHR) {
-              if (jqXHR.status === 200) {
-                //console.log("Filtered data:", data);
-                // Update the map markers with the filtered data
-                initMap(data);
-              }
-            },
-          });
+        $(".btn-check").prop("checked", false);
+      } else if (selected == 2.9 || selected == 4.0 || selected == 5) {
+        if (filters.rating === selected) {
+          filters.rating = "";
+          updateFiltersAndUI();
+        } else {
+          filters.rating = selected;
+          updateFiltersAndUI();
         }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.error("Error fetching filtered data:", errorThrown);
-        alert("There was an issue loading the restaurants. Please try again.");
-      },
-    });
-  });
+      } else if (selected == 1 || selected == 2 || selected == 3) {
+        if (filters.price === selected) {
+          filters.price = "";
+          updateFiltersAndUI();
+        } else {
+          filters.price = selected;
+          updateFiltersAndUI();
+        }
+      } else {
+        if (filters.cuisine === selected) {
+          filters.cuisine = "";
+          updateFiltersAndUI();
+        } else {
+          filters.cuisine = selected;
+          updateFiltersAndUI();
+        }
+      }
+      var bounds = map.getBounds();
+      var northEast = bounds.getNorthEast();
+      var southWest = bounds.getSouthWest();
+      var zoomLevel = map.getZoom();
+      var minZoomLevel = 10; // Adjust as needed (higher means more zoomed in)
+      // Check if the zoom level is too low (too zoomed out)
+      if (zoomLevel < minZoomLevel) {
+        //console.log("Zoom level is too low. Not fetching data.");
+        northEast.lat,
+          northEast.lng,
+          southWest.lat,
+          (southWest.lng = 200),
+          800,
+          100,
+          200;
+      }
+      filters.northEastlat = northEast.lat;
+      filters.northEastlng = northEast.lng;
+      filters.southWestlat = southWest.lat;
+      filters.southWestlng = southWest.lng;
 
+      //console.log(filters)
+      // Perform AJAX request to fetch filtered data
+
+      $.ajax({
+        url: "/restaurants/filter",
+        method: "GET",
+        data: filters,
+        success: function (data, textStatus, jqXHR) {
+          if (jqXHR.status === 200) {
+            //console.log("Filters", filters);
+            $("#restaurants").html(data);
+            $("#restaurants-mobile").html(data);
+            $.ajax({
+              url: "/restaurants/filter.json",
+              method: "GET",
+              data: filters,
+              success: function (data, textStatus, jqXHR) {
+                if (jqXHR.status === 200) {
+                  //console.log("Filtered data:", data);
+                  // Update the map markers with the filtered data
+                  initMap(data);
+                }
+              },
+            });
+          }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          console.error("Error fetching filtered data:", errorThrown);
+          alert(
+            "There was an issue loading the restaurants. Please try again."
+          );
+        },
+      });
+    });
+});
 // arrows for scolling
 var scrollpos = 0;
 var prev = -1;
