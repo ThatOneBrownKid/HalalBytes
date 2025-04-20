@@ -9,6 +9,23 @@ class RestaurantsController < ApplicationController
       @restaurants = Restaurant.all
   end
 
+  # GET /get_location
+  def get_location
+    ip = request.ip #"98.31.12.178" @ThatOneBrownKid  # Use this line to get the user's IP address #update to reuest.ip
+    puts "Request IP: #{ip}"
+    location = Geocoder.search(ip)
+    puts "location: #{location}"
+    location = Geocoder.search(ip).first
+    if location
+      render json: {
+        latitude: location.latitude,
+        longitude: location.longitude
+      }
+    else
+      render json: { error: 'Unable to determine location' }, status: :unprocessable_entity
+    end
+  end
+
   # GET /restaurants/filter
   def filter
     @restaurants = Restaurant.filtered_results(params)
@@ -22,7 +39,7 @@ class RestaurantsController < ApplicationController
       return
     end
 
-    @data = @restaurants.select(:id, :name, :street, :latitude, :longitude)
+    @data = @restaurants.select(:id, :name, :street,:city,:state,:zip_code,:overall_rating,:price_range, :latitude, :longitude)
 
     respond_to do |format|
       format.html { render partial: 'restaurants/partials/restaurant', collection: @restaurants, as: :restaurant }

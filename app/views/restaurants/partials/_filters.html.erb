@@ -29,7 +29,7 @@
             <div class="row flex-nowrap" >
               <% cuisines.each do |cuisine| %>
                 <div class="col-auto">
-                  <input type="radio" class="btn-check " name="options" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
+                  <input type="radio" class="btn-check " name="cuisine" id='<%= cuisine %>' value="<%= cuisine %>" autocomplete="off">
                   <label class="btn btn-outline-secondary  border-0" for="<%= cuisine %>" style="--btn-outline-opacity: .5;">
                     <%= image_tag "#{cuisine}.png", class: "filter-img", alt: "Restaurant Image" %>
                     <figcaption class="figure-caption"><%= cuisine %></figcaption>
@@ -56,7 +56,7 @@
                 </button>
               </div>
               <div class="col-auto">
-                <input type="button" class="btn-check " name="rating" id="reset" value="reset" autocomplete="off">
+                <input type="button" class="btn-check " name="reset" id="reset" value="reset" autocomplete="off">
                 <label class="btn btn-btngray border-0 rounded-5" style='width: 100%; background-color:#E8E8E8; ' for="reset">Reset</label>
               </div>
               <!--! -->

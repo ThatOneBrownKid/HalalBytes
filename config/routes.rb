@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get 'requested_restaurants', to: 'restaurants#requested'
   get 'all_requested', to: 'restaurants#all_requested'
   get 'restaurants/filter', to: 'restaurants#filter'
+  get '/get_location', to: 'restaurants#get_location'
   get 'users/index'
   get '/terms_and_services', to: 'home#terms_and_services'
   get '/map_tiles/:z/:x/:y', to: 'map_tiles#show'
