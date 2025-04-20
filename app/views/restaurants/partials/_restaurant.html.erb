@@ -41,6 +41,9 @@
       <% end %> <% (5-restaurant.overall_rating.to_i).times do%>
         <i class="bi bi-star-fill gray"></i>
       <% end %>
+        <%# Add the review count in parentheses %>
+        <%# Assuming your restaurant object has a 'reviews_count' attribute or method %>
+        (<%= restaurant.reviews_count %>)
       <div class="text-secondary" style="font-size: 14px;">
         <!--price range-->
         <div class="row fw-bold pt-2 ps-2">

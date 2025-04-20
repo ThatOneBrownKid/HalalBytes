@@ -58,6 +58,10 @@
             <%=@restaurant.overall_rating%>
             <i class="bi bi-dot"></i>
           </div>
+          <div class="d-inline text-white">
+            <%=@restaurant.reviews_count%> Review(s)
+            <i class="bi bi-dot"></i>
+          </div>
           <div class="restaurant-open-close d-inline" style="font-size: 20px; font-weight: bold;">
             <% if @restaurant.open? %>
               <span style="color: green;">Open</span>
