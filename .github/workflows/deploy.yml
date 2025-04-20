@@ -30,6 +30,7 @@ jobs:
             # Navigate to the app and deploy
             cd ~/app_dev/HalalBytes/
             git pull origin main
+            export RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}
             bundle install --deployment --without development test
             bundle exec rake assets:clobber RAILS_ENV=production
             bundle exec rake db:migrate RAILS_ENV=production
