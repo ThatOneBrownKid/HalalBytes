@@ -7,12 +7,13 @@ var filters = {
 var prevPrice = null;
 var prevRating = null;
 var prevCuisine = null;
+let currentSelectedCardId = null;
 var currentMarkers = {};
 document.addEventListener("turbo:load", initMap);
 document.addEventListener("turbo:load", getFiltersFromHash);
 // Function to reinitialize the map and filters when navigating back
 function handlePopState() {
-  console.log("Popstate event detected");
+  //console.log("Popstate event detected");
   location.reload();
   getFiltersFromHash(); // Reapply filters from the URL
   initMap(true); // Reinitialize the map with markers
@@ -39,8 +40,8 @@ function getFiltersFromHash() {
     }
   }
 }
-function initMap(updateMarkers = false) {
-  // Pass the restaurants data from Rails to JavaScript
+
+function initMap(data = null) {
   const blackIcon = L.icon({
     iconUrl:
       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png",
@@ -51,25 +52,27 @@ function initMap(updateMarkers = false) {
       "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
     shadowSize: [41, 41], // Size of the shadow
   });
-  if (updateMarkers === true) {
-    loadRestaurants();
+  // If map is already initialized and we just need to update markers
+  if (map && data) {
+    updateMapMarkers(data);
+    updateFiltersInHash(filters);
     return;
   }
-  var restaurants;
-  var geoapifyApiKey = window.geoapifyApiKey;
 
-  console.log("Turbo load triggered");
-  // Initialize the map with a default view
+  // Initialize the map if it hasn't been initialized yet
   if (typeof L === "undefined") {
     console.error("Leaflet (L) is not defined. Retrying...");
-    setTimeout(initMap, 100); // Retry after a short delay if L is not yet loaded
+    setTimeout(initMap, 100);
     return;
   }
 
-  // Initialize the map with a default view
+  // Create the map instance
   map = L.map("map");
 
-  // Add base tile layer from OpenStreetMap
+  // Add the moveend event listener
+  map.on("moveend", loadRestaurants);
+
+  // Add the tile layer
   L.tileLayer(
     "https://maps.geoapify.com/v1/tile/klokantech-basic/{z}/{x}/{y}.png?apiKey=" +
       geoapifyApiKey,
@@ -80,12 +83,11 @@ function initMap(updateMarkers = false) {
         'Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a> | <a href="https://openmaptiles.org/" target="_blank">© OpenMapTiles</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors',
     }
   ).addTo(map);
-  // Try to locate the user and set the view based on their location
+
+  // Try to locate user
   map
     .locate({ setView: true, maxZoom: 16 })
-    .on("locationfound", function (e) {
-      loadRestaurants();
-    })
+    .on("locationfound", loadRestaurants)
     .on("locationerror", function () {
       console.error("Geolocation failed. Falling back to IP-based location.");
 
@@ -109,7 +111,6 @@ function initMap(updateMarkers = false) {
     });
 
   // Store the current selected card ID
-  let currentSelectedCardId = null;
   function updateFiltersInHash(filters) {
     const serializedFilters = btoa(JSON.stringify(filters));
     const newUrl = `${window.location.pathname}#filters=${serializedFilters}`;
@@ -129,7 +130,7 @@ function initMap(updateMarkers = false) {
     // Check if the zoom level is too low (too zoomed out)
     if (zoomLevel < minZoomLevel) {
       lowZoom = false;
-      console.log("Zoom level is too low. Not fetching data.");
+      //console.log("Zoom level is too low. Not fetching data.");
       northEast.lat,
         northEast.lng,
         southWest.lat,
@@ -153,7 +154,16 @@ function initMap(updateMarkers = false) {
           $("#restaurants-mobile").html(data);
           updateFiltersInHash(filters);
           if (lowZoom) {
-            updateMapMarkers();
+            $.ajax({
+              url: "/restaurants/filter.json",
+              method: "GET",
+              data: filters,
+              success: function (data, textStatus, jqXHR) {
+                if (jqXHR.status === 200) {
+                  updateMapMarkers(data);
+                }
+              },
+            });
           } else {
             map.eachLayer(function (layer) {
               if (layer instanceof L.Marker) {
@@ -172,121 +182,116 @@ function initMap(updateMarkers = false) {
   }
 
   // Function to update map markers
-  function updateMapMarkers() {
+  function updateMapMarkers(data) {
     const bounds = map.getBounds();
 
-    // Fetch the restaurant data again to place markers
-    var northEast = bounds.getNorthEast();
-    var southWest = bounds.getSouthWest();
-    filters.northEastlat = northEast.lat;
-    filters.northEastlng = northEast.lng;
-    filters.southWestlat = southWest.lat;
-    filters.southWestlng = southWest.lng;
-    $.ajax({
-      url: "/restaurants/filter.json",
-      method: "GET",
-      data: filters,
-      success: function (data, textStatus, jqXHR) {
-        //console.log(data); // Contains the restaurant information
-        if (data && data.length > 0) {
-          restaurants = data; // Store the restaurant data in a variable
+    // Fetch the restaurant data again to place markers (get data from filtered data NO CALL HERE)
+    //var northEast = bounds.getNorthEast();
+    //var southWest = bounds.getSouthWest();
+    //filters.northEastlat = northEast.lat;
+    //filters.northEastlng = northEast.lng;
+    //filters.southWestlat = southWest.lat;
+    //filters.southWestlng = southWest.lng;
+    //$.ajax({
+    //  url: "/restaurants/filter.json",
+    //  method: "GET",
+    //  data: filters,
+    //  success: function (data, textStatus, jqXHR) {
+    //    //console.log(data); // Contains the restaurant information
+    if (data) {
+      var restaurants = data; // Store the restaurant data in a variable
+      // Remove existing markers that are outside the current map bounds
+      var MarkerKeys = Object.keys(currentMarkers);
+      var restaurant_ids;
+      if (!restaurants) {
+        restaurant_ids = [];
+      } else {
+        restaurant_ids = restaurants.map((restaurant) => restaurant.id);
+      }
+      var removed_restaurant_ids = MarkerKeys.filter(
+        (key) => !restaurant_ids.includes(key)
+      );
+      MarkerKeys.forEach((key) => {
+        const marker = currentMarkers[key];
+        if (
+          !bounds.contains(marker.getLatLng()) ||
+          removed_restaurant_ids.includes(key)
+        ) {
+          map.removeLayer(marker);
+          //console.log("Removed marker with ID:", key);
+          delete currentMarkers[key];
+        }
+      });
 
-          // Remove existing markers that are outside the current map bounds
-          Object.keys(currentMarkers).forEach((key) => {
-            const marker = currentMarkers[key];
-            if (!bounds.contains(marker.getLatLng())) {
-              map.removeLayer(marker);
-              console.log("Removed marker with ID:", key);
-              delete currentMarkers[key];
-            }
-          });
+      // Use `data` to update your map or DOM
+      restaurants.forEach(function (restaurant) {
+        //console.log(restaurant);
+        if (restaurant.latitude && restaurant.longitude) {
+          // Add marker to the map
+          // Only create marker if it doesn't exist
+          if (!currentMarkers[restaurant.id]) {
+            var marker = L.marker([restaurant.latitude, restaurant.longitude], {
+              icon: blackIcon,
+            }).addTo(map);
+            const popupContent = `
+            <div style="padding: 10px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+              <h5 style="margin: 0 0 5px; font-size: 18px; color: #333;">${restaurant.name}</h5>
+              <p style="margin: 0 0 2px; font-size: 12px; color: #666;">${restaurant.street}, ${restaurant.city}, ${restaurant.state}, ${restaurant.zip_code}</p>
+              <p style="margin: 0 0 5px; font-size: 14px; color: #666;"><strong>Rating:</strong> ${restaurant.overall_rating}</p>
+              <p style="margin: 0 0 5px; font-size: 14px; color: #666;"><strong>Price:</strong> ${restaurant.price_range}</p>
+              <a href="/restaurants/${restaurant.id}" style="display: inline-block; padding: 5px 5px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px;">View Restaurant</a>
+            </div>
+            `;
+            marker.bindPopup(popupContent);
+            currentMarkers[restaurant.id] = marker;
 
-          // Use `data` to update your map or DOM
-          restaurants.forEach(function (restaurant) {
-            console.log(restaurant);
-            if (restaurant.latitude && restaurant.longitude) {
-              // Add marker to the map
-              // Only create marker if it doesn't exist
-              if (!currentMarkers[restaurant.id]) {
-                var marker = L.marker(
-                  [restaurant.latitude, restaurant.longitude],
-                  { icon: blackIcon }
-                ).addTo(map);
-                const popupContent = `
-              <div style="padding: 10px; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                <h5 style="margin: 0 0 5px; font-size: 18px; color: #333;">${restaurant.name}</h5>
-                <p style="margin: 0 0 2px; font-size: 12px; color: #666;">${restaurant.street}, ${restaurant.city}, ${restaurant.state}, ${restaurant.zip_code}</p>
-                <p style="margin: 0 0 5px; font-size: 14px; color: #666;"><strong>Rating:</strong> ${restaurant.overall_rating}</p>
-                <p style="margin: 0 0 5px; font-size: 14px; color: #666;"><strong>Price:</strong> ${restaurant.price_range}</p>
-                <a href="/restaurants/${restaurant.id}" style="display: inline-block; padding: 5px 5px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px;">View Restaurant</a>
-              </div>
-              `;
-                marker.bindPopup(popupContent);
-                currentMarkers[restaurant.id] = marker;
+            // Marker click event to highlight the corresponding card
+            marker.on("click", function () {
+              // Deselect the previous card
+              if (currentSelectedCardId) {
+                document
+                  .getElementById(currentSelectedCardId)
+                  .classList.remove("selected");
+                currentSelectedCardId = "";
+              }
 
-                // Marker click event to highlight the corresponding card
-                marker.on("click", function () {
-                  // Deselect the previous card
-                  if (currentSelectedCardId) {
-                    document
-                      .getElementById(currentSelectedCardId)
-                      .classList.remove("selected");
-                    currentSelectedCardId = "";
-                  }
-
-                  // Select the new card
-                  currentSelectedCardId = "restaurant_" + restaurant.id;
-                  var restaurantCard = document.getElementById(
-                    currentSelectedCardId
-                  );
-                  if (restaurantCard) {
-                    restaurantCard.classList.add("selected");
-                    restaurantCard.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
-                  }
+              // Select the new card
+              currentSelectedCardId = "restaurant_" + restaurant.id;
+              var restaurantCard = document.getElementById(
+                currentSelectedCardId
+              );
+              if (restaurantCard) {
+                restaurantCard.classList.add("selected");
+                restaurantCard.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
                 });
               }
-            }
-          });
+            });
+          }
         }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        if (jqXHR.status === 404) {
-          // Handle 404 Not Found error
-          console.error("No restaurants found in this area.");
-        } else {
-          // Handle other errors
-          console.error("Error fetching filtered data:", errorThrown);
-          alert(
-            "There was an issue loading the restaurants. Please try again."
-          );
-        }
-      },
-    });
-  }
-
-  document.addEventListener("click", function (event) {
-    // Check if the clicked target is not within a restaurant card or a marker
-    if (
-      !event.target.closest(".restaurant-card") &&
-      !event.target.closest(".leaflet-marker-icon")
-    ) {
-      if (currentSelectedCardId) {
-        document
-          .getElementById(currentSelectedCardId)
-          .classList.remove("selected"); // Remove the selected class from the currently selected card
-        currentSelectedCardId = null; // Reset the selected card ID
-      }
+      });
     }
-  });
-  // Load restaurants when the map is moved or zoomed
-  map.on("moveend", loadRestaurants);
 
-  // Initial load of restaurants when the page first loads
+    document.addEventListener("click", function (event) {
+      // Check if the clicked target is not within a restaurant card or a marker
+      if (
+        !event.target.closest(".restaurant-card") &&
+        !event.target.closest(".leaflet-marker-icon")
+      ) {
+        if (currentSelectedCardId) {
+          document
+            .getElementById(currentSelectedCardId)
+            .classList.remove("selected"); // Remove the selected class from the currently selected card
+          currentSelectedCardId = null; // Reset the selected card ID
+        }
+      }
+    });
+    // Load restaurants when the map is moved or zoomed
+
+    // Initial load of restaurants when the page first loads
+  }
 }
-
 function updateFiltersAndUI() {
   // Iterate through all `.btn-check` elements
   $(".btn-check").each(function () {
@@ -360,7 +365,7 @@ $(document)
     var minZoomLevel = 10; // Adjust as needed (higher means more zoomed in)
     // Check if the zoom level is too low (too zoomed out)
     if (zoomLevel < minZoomLevel) {
-      console.log("Zoom level is too low. Not fetching data.");
+      //console.log("Zoom level is too low. Not fetching data.");
       northEast.lat,
         northEast.lng,
         southWest.lat,
@@ -376,16 +381,28 @@ $(document)
 
     //console.log(filters)
     // Perform AJAX request to fetch filtered data
+
     $.ajax({
       url: "/restaurants/filter",
       method: "GET",
       data: filters,
       success: function (data, textStatus, jqXHR) {
         if (jqXHR.status === 200) {
+          //console.log("Filters", filters);
           $("#restaurants").html(data);
           $("#restaurants-mobile").html(data);
-          var updateMarkers = true;
-          initMap(updateMarkers);
+          $.ajax({
+            url: "/restaurants/filter.json",
+            method: "GET",
+            data: filters,
+            success: function (data, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                //console.log("Filtered data:", data);
+                // Update the map markers with the filtered data
+                initMap(data);
+              }
+            },
+          });
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
