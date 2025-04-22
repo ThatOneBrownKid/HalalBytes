@@ -19,4 +19,5 @@ pin "bootstrap", to: "vendor/bootstrap.min.js", preload: true
 pin "dropzone-helper", to: "helpers/dropzone.js", preload: true
 pin "leaflet", to: "https://unpkg.com/leaflet@1.9.4/dist/leaflet-src.esm.js", preload: true
 pin "leaflet-providers", to: "https://unpkg.com/leaflet-providers@latest/leaflet-providers.js", preload: true
+pin "select2", to: "https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js", preload: true
 

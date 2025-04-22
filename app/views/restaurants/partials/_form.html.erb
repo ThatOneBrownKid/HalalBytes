@@ -56,7 +56,7 @@
                   'OK', 'OR', 'PA', 'RI', 'SC', 
                   'SD', 'TN', 'TX', 'UT', 'VT', 
                   'VA', 'WA', 'WV', 'WI', 'WY'
-                ]), 
+                ],restaurant.state), 
                 {}, 
                 {class: "form-select" } %>
         </div>
@@ -192,8 +192,8 @@
       </div>
       <div id="notes_container" style="display: none;">
         <label for="notes">Select Meats</label>
-        <select id="notes" name="restaurant[notes][]" data-multi-select multiple>
-          <% ['Chicken', 'Beef', 'Lamb', 'Goat', 'Fish', 'Duck', 'Turkey'].each do |meat| %>
+        <select class="js-example-basic-multiple form-control" id="notes" name="restaurant[notes][]" multiple="multiple" style="width: 100%">
+          <% ['Chicken', 'Beef', 'Lamb', 'Goat', 'Duck', 'Turkey'].each do |meat| %>
             <option value="<%= meat %>" <%= @restaurant.notes&.split(';')&.include?(meat) ? 'selected' : '' %>>
               <%= meat %>
             </option>
@@ -351,27 +351,7 @@
         }
       });
     </script>
-    <script>
-      document.addEventListener("turbo:load", function() {
-        const halalStatusSelect = document.getElementById("halal_status_select");
-        const notesField = document.getElementById("notes_field");
-
-        // Function to toggle visibility of the notes field
-        function toggleNotesField() {
-          if (halalStatusSelect.value === "Partially Halal") {
-            notesField.style.display = "block";
-          } else {
-            notesField.style.display = "none";
-          }
-        }
-
-        // Call toggleNotesField initially to set the initial state
-        toggleNotesField();
-
-        // Add event listener to the halal_status select field to toggle the notes field
-        halalStatusSelect.addEventListener("change", toggleNotesField);
-      });
-    </script>
+    
     <script type="module">
       $(document).ready(function(){
         $('.timepicker').timepicker({
@@ -380,6 +360,13 @@
         });
       });
     </script>
+
+    <script type="module">
+      $(document).ready(function() {
+        $('.js-example-basic-multiple').select2();
+      });
+    </script>
+
     <script>
       document.addEventListener("turbo:load", function () {
         const halalStatusSelect = document.getElementById("halal_status_select");

@@ -76,11 +76,246 @@ class Restaurant < ApplicationRecord
     reviews.count # This will run a COUNT query each time it's called
   end
 
+  def cuisine_image_exists?(cuisine)
+    return false if cuisine.blank?
+    image_filename = "#{cuisine.parameterize}.png"
+    begin
+      !!Rails.application.assets.resolve(image_filename, content_type: 'image/png')
+    rescue Sprockets::FileNotFound
+      false
+    end
+
+  end
+
+  FILTER_CATEGORIES = {
+    # === Popular Item-Based Categories ===
+    'Pizza' => [
+      'Pizza'
+    ],
+    'Burgers' => [
+      'Burgers',
+      'Hot Dogs' # Often found at burger places
+    ],
+    'Sandwiches & Wraps' => [
+      'Sandwiches',
+      'Wraps',
+      'Deli',
+      'Cheesesteaks',
+      'Bagels', # Often function as sandwiches
+      'Paninis', # Assuming you add this
+      'Subs'     # Assuming you add this
+    ],
+    'Chicken & Wings' => [
+      'Chicken', # Generic chicken shops
+      'Wings',
+      'Fried Chicken'
+    ],
+    'Sushi' => [ # Kept separate due to high search volume
+      'Sushi',
+      'Poke' # Often served at Sushi places or similar style
+    ],
+    'Tacos' => [ # Kept separate due to high search volume
+      'Tacos'
+    ],
+    'Bubble Tea' => [
+      'Bubble Tea'
+    ],
+
+    # === Regional/National Cuisine Categories ===
+    'Mexican & Latin American' => [
+      'Mexican',
+      'Latin American',
+      'Burritos',
+      'Empanadas',
+      'Tex-Mex',
+      'Peruvian',
+      'Colombian',
+      'Brazilian',
+      'Argentinian',
+      'Cuban',
+      'Puerto Rican',
+      'Salvadoran',
+      'Venezuelan',
+      'South American',
+      'Caribbean' # Closely related for Browse
+    ],
+    'Asian (General)' => [ # For broad Browse or less common types
+      'Asian',
+      'Asian Fusion',
+      'Mongolian',
+      'Tibetan',
+      'Southeast Asian' # Broad
+    ],
+    'Chinese' => [
+      'Chinese',
+      'Dim Sum',
+      'Taiwanese' # Often grouped or similar
+    ],
+    'Japanese' => [ # Excludes Sushi here as it has its own category
+      'Japanese',
+      'Ramen',
+      'Donburi' # Assuming you add this
+    ],
+    'Korean' => [
+      'Korean'
+    ],
+    'Thai & Vietnamese' => [ # Often searched together or have similar profiles
+      'Thai',
+      'Vietnamese',
+      'Pho'
+    ],
+    'Indian & South Asian' => [
+      'Indian',
+      'Pakistani',
+      'Afghan',
+      'Sri Lankan',
+      'Nepalese' # Assuming you add this
+    ],
+    'Italian' => [
+      'Italian',
+      'Pasta' # Primarily associated with Italian
+    ],
+    'Mediterranean' => [
+      'Mediterranean',
+      'Greek',
+      'Gyros',
+      'Spanish',   # Often shares ingredients/styles
+      'Portuguese',# Often shares ingredients/styles
+      'Tapas'
+    ],
+    'Middle Eastern' => [
+      'Middle Eastern',
+      'Lebanese',
+      'Turkish',
+      'Persian',
+      'Kebab',
+      'Egyptian'
+    ],
+    'American' => [
+      'American',
+      'New American',
+      'Southern',
+      'Soul Food',
+      'Diner',
+      'Comfort Food',
+      'Barbeque', # Or BBQ
+      'Steakhouse',
+      'Californian'
+    ],
+    'European (Other)' => [ # Catches European not covered above
+      'European',
+      'French',
+      'German',
+      'British',
+      'Irish',
+      'Polish',
+      'Russian',
+      'Ukrainian',
+      'Belgian',
+      'Eastern European',
+      'Modern European',
+      'Scandinavian'
+    ],
+    'African' => [
+      'African',
+      'Ethiopian',
+      'Moroccan',
+      'Nigerian',
+      'North African',
+      'West African',
+      'South African',
+      'Senegalese',
+      'Egyptian' # Could also fit Middle Eastern, place based on local context
+    ],
+    'Hawaiian' => [ # Distinct enough
+        'Hawaiian',
+        # Poke might fit here too, but often associated/filtered with Sushi
+    ],
+
+    # === Meal Type / Style Categories ===
+    'Breakfast & Brunch' => [
+      'Breakfast & Brunch',
+      'Waffles',
+      'Crepes',
+      'Pancakes' # Assuming you add this
+      # Bagels could fit here too, primary is Sandwiches though
+    ],
+    'Bakery & Desserts' => [
+      'Bakery',
+      'Desserts',
+      'Cupcakes',
+      'Pastries',
+      'Donuts',
+      'Ice Cream & Frozen Yogurt',
+      'Cookies' # Assuming you add this
+    ],
+    'Coffee & Tea' => [
+      'Coffee & Tea'
+    ],
+    'Healthy' => [
+      'Healthy',
+      'Salads',
+      'Acai Bowls',
+      'Juice & Smoothies',
+      'Wraps' # Often seen as a healthy alternative
+    ],
+    'Fast Food' => [
+      'Fast Food',
+      'Fries' # Strongly associated
+    ],
+    'Seafood' => [
+      'Seafood',
+      'Fish & Chips'
+    ],
+    'Soup' => [
+      'Soup'
+    ],
+    'Pub Food' => [
+      'Pub Food',
+      'Gastropub',
+      'Fish & Chips' # Fits here too
+    ],
+    'Street Food' => [ # Style rather than origin
+      'Street Food'
+      # Tacos, Empanadas, Kebabs etc. could *also* be tagged this, but primary filter is cuisine type
+    ],
+    'Convenience & Grocery' => [
+        'Grocery',
+        # Maybe snacks, drinks etc if you add them
+    ],
+
+    # === Dietary / Cultural Categories (Often separate filters but can be primary) ===
+    'Halal' => [
+      'Halal'
+    ],
+    'Vegan' => [
+      'Vegan'
+    ],
+    'Vegetarian' => [
+      'Vegetarian'
+    ],
+    'Gluten-Free Friendly' => [ # Use "Friendly" as places might not be 100% certified GF
+        'Gluten-Free',
+    ],
+    'Kosher' => [
+        'Kosher',
+    ],
+
+    # === Other / Uncategorized ===
+    # Catch-all or items needing specific placement
+    'Other' => [
+      'Australian',
+      'Canadian',
+      'Kids Menu',
+      'Fondue',
+      'Poutine',
+      'Contemporary', # If not American/European
+      'Fusion'        # If not Asian Fusion specifically
+      # Add any remaining from your list here
+    ]
+  }
+
   private 
-
-
-  
-  
 
   def image_count_within_limit
     if images.attached? && images.length > 10
