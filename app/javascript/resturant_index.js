@@ -41,7 +41,7 @@ function getFiltersFromHash() {
   }
 }
 
-function initMap(data = null) {
+function initMap(loadRestaurants = null) {
   const blackIcon = L.icon({
     iconUrl:
       "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-black.png",
@@ -53,8 +53,8 @@ function initMap(data = null) {
     shadowSize: [41, 41], // Size of the shadow
   });
   // If map is already initialized and we just need to update markers
-  if (map && data) {
-    updateMapMarkers(data);
+  if (map && loadRestaurants) {
+    loadRestaurants();
     updateFiltersInHash(filters);
     return;
   }
@@ -382,37 +382,39 @@ document.addEventListener("turbo:load", function () {
 
       //console.log(filters)
       // Perform AJAX request to fetch filtered data
-
-      $.ajax({
-        url: "/restaurants/filter",
-        method: "GET",
-        data: filters,
-        success: function (data, textStatus, jqXHR) {
-          if (jqXHR.status === 200) {
-            //console.log("Filters", filters);
-            $("#restaurants").html(data);
-            $("#restaurants-mobile").html(data);
-            $.ajax({
-              url: "/restaurants/filter.json",
-              method: "GET",
-              data: filters,
-              success: function (data, textStatus, jqXHR) {
-                if (jqXHR.status === 200) {
-                  //console.log("Filtered data:", data);
-                  // Update the map markers with the filtered data
-                  initMap(data);
-                }
-              },
-            });
-          }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          console.error("Error fetching filtered data:", errorThrown);
-          alert(
-            "There was an issue loading the restaurants. Please try again."
-          );
-        },
-      });
+      var loadRestaurants = true; // Set to true to load restaurants
+      initMap(loadRestaurants);
+      //  $.ajax({
+      //    url: "/restaurants/filter",
+      //    method: "GET",
+      //    data: filters,
+      //    success: function (data, textStatus, jqXHR) {
+      //      if (jqXHR.status === 200) {
+      //        //console.log("Filters", filters);
+      //        $("#restaurants").html(data);
+      //        $("#restaurants-mobile").html(data);
+      //        $.ajax({
+      //          url: "/restaurants/filter.json",
+      //          method: "GET",
+      //          data: filters,
+      //          success: function (data, textStatus, jqXHR) {
+      //            if (jqXHR.status === 200) {
+      //              //console.log("Filtered data:", data);
+      //              // Update the map markers with the filtered data
+      //              initMap(data);
+      //            }
+      //          },
+      //        });
+      //      }
+      //    },
+      //    error: function (jqXHR, textStatus, errorThrown) {
+      //      console.error("Error fetching filtered data:", errorThrown);
+      //      alert(
+      //        "There was an issue loading the restaurants. Please try again."
+      //      );
+      //    },
+      //  });
+      //});
     });
 });
 // arrows for scolling
