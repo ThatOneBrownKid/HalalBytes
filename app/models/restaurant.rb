@@ -72,6 +72,10 @@ class Restaurant < ApplicationRecord
     [street, city, state, zip_code].compact.join(', ')
   end
 
+  def reviews_count
+    reviews.count # This will run a COUNT query each time it's called
+  end
+
   private 
 
 
@@ -120,5 +124,6 @@ class Restaurant < ApplicationRecord
     restaurants
   end
 
+  
 
 end
