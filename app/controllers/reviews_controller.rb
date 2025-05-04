@@ -61,20 +61,50 @@ class ReviewsController < ApplicationController
     end
   end
 
+  
   def upload_image
-    if params[:image]
-      # Attach the image to a temporary ActiveStorage blob
-      uploaded_image = ActiveStorage::Blob.create_and_upload!(
-        io: params[:image],
-        filename: params[:image].original_filename,
-        content_type: params[:image].content_type
-      )
+    """ Handles the upload of an image, performs content moderation, and stores the image if deemed appropriate.
+    
+    This method expects an image file to be provided in the `params[:image]`.
+    It uses an external service (`AwsImageAnalysisService`) to analyze the image for inappropriate content.
+    If the image passes moderation, it is uploaded using ActiveStorage and metadata is updated with moderation labels.
+    
+    Responses:
+    - Returns a JSON response with the uploaded image URL if successful.
+    - Returns an error message if the image is inappropriate, upload fails, or no image is provided."""
 
-      # Generate the URL for the uploaded image
-      image_url = url_for(uploaded_image)
+   if params[:image]
+      
+      # First analyze the image
+      analysis_service = AwsImageAnalysisService.new
+      
+      begin
+        analysis_result = analysis_service.analyze_image(params[:image])
 
-      # Return the image URL as JSON
-      render json: { url: image_url }, status: :ok
+        unless analysis_result[:safe_for_work]
+          render json: { error: 'Image content not appropriate' }, status: :unprocessable_entity
+          return
+        end
+
+        # If image is safe, proceed with upload
+        uploaded_image = ActiveStorage::Blob.create_and_upload!(
+          io: params[:image],
+          filename: params[:image].original_filename,
+          content_type: params[:image].content_type
+        )
+
+        #Store analysis results as metadata
+        uploaded_image.metadata = uploaded_image.metadata.merge(
+          moderation_labels: analysis_result[:labels]
+        )
+        uploaded_image.save!
+#
+        image_url = url_for(uploaded_image)
+        
+        render json: { url: image_url }, status: :ok
+      rescue => e
+        render json: { error: "Upload failed: #{e.message}" }, status: :unprocessable_entity
+      end
     else
       render json: { error: "No image provided" }, status: :unprocessable_entity
     end

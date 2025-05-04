@@ -10,6 +10,7 @@ class Review < ApplicationRecord
 
   validates :content, presence: true
   validates :rating, presence: true, inclusion: { in: 1..5 }
+  validate :validate_image_safety
 
   private
 
@@ -19,4 +20,18 @@ class Review < ApplicationRecord
     restaurant.update(overall_rating: new_rating.round(1)) # Optional: Round to 2 decimal places
   end
 
+  def validate_image_safety
+    return unless images.attached?
+
+    images.each do |image|
+      analysis_service = AwsImageAnalysisService.new
+      result = analysis_service.analyze_image(image.blob)
+      
+      unless result[:safe_for_work]
+        images.purge
+        errors.add(:images, 'contains inappropriate content')
+        break
+      end
+    end
+  end
 end
