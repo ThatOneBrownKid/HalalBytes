@@ -23,11 +23,19 @@ class ReviewsController < ApplicationController
   # POST /restaurants/:restaurant_id/reviews
   def create
     @review = @restaurant.reviews.new(review_params)
-    @review.user = current_user # Automatically associate logged-in user
-  
+    @review.user = current_user
+
+    # Check text content before saving
+    analysis_service = AwsAnalysisService.new
+    text_analysis = analysis_service.analyze_text(@review.content)
+
     respond_to do |format|
-      if @review.save
-        format.html { redirect_to restaurant_path(@restaurant)}
+      if !text_analysis[:safe_content]
+        @review.errors.add(:content, "contains inappropriate content")
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: { error: "Inappropriate content detected", warnings: text_analysis[:content_warnings] }, status: :unprocessable_entity }
+      elsif @review.save
+        format.html { redirect_to restaurant_path(@restaurant) }
         format.json { render :show, status: :created, location: @review }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -35,13 +43,19 @@ class ReviewsController < ApplicationController
       end
     end
   end
-  
 
   # PATCH/PUT /restaurants/:restaurant_id/reviews/1
   def update
+    analysis_service = AwsAnalysisService.new
+    text_analysis = analysis_service.analyze_text(review_params[:content])
+
     respond_to do |format|
-      if @review.update(review_params)
-        format.html { redirect_to restaurant_review_path(@restaurant, @review)}
+      if !text_analysis[:safe_content]
+        @review.errors.add(:content, "contains inappropriate content")
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: { error: "Inappropriate content detected", warnings: text_analysis[:content_warnings] }, status: :unprocessable_entity }
+      elsif @review.update(review_params)
+        format.html { redirect_to restaurant_review_path(@restaurant, @review) }
         format.json { render :show, status: :ok, location: @review }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -65,18 +79,12 @@ class ReviewsController < ApplicationController
   def upload_image
     """ Handles the upload of an image, performs content moderation, and stores the image if deemed appropriate.
     
-    This method expects an image file to be provided in the `params[:image]`.
-    It uses an external service (`AwsImageAnalysisService`) to analyze the image for inappropriate content.
-    If the image passes moderation, it is uploaded using ActiveStorage and metadata is updated with moderation labels.
-    
-    Responses:
-    - Returns a JSON response with the uploaded image URL if successful.
-    - Returns an error message if the image is inappropriate, upload fails, or no image is provided."""
+    It uses an external service (`AwsImageAnalysisService`) to analyze the image for inappropriate content."""
 
    if params[:image]
       
       # First analyze the image
-      analysis_service = AwsImageAnalysisService.new
+      analysis_service = AwsAnalysisService.new
       
       begin
         analysis_result = analysis_service.analyze_image(params[:image])
