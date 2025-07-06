@@ -175,8 +175,7 @@
           <h3 class="text-center">Reviews</h3>
           <!-- Reviews Sorting Buttons -->
           <div class="d-flex justify-content-center mb-4">
-            <span class="me-2 fw-bold">Sort by:</span>
-            <form method="get" action="<%= restaurant_path(@restaurant) %>" data-turbo-frame="reviews_frame" class="d-flex gap-2 flex-wrap">
+            <form method="get" action="<%= restaurant_path(@restaurant) %>" data-turbo-frame="reviews_frame" class="sort-btn-grid d-flex gap-2 flex-wrap" style="max-width:599px;">
               <button type="submit" name="sort" value="newest" class="sort-btn">Newest</button>
               <button type="submit" name="sort" value="oldest" class="sort-btn">Oldest</button>
               <button type="submit" name="sort" value="highest_rating" class="sort-btn">Highest Rating</button>
@@ -583,6 +582,31 @@
         background: #dc3545;
         color: #fff;
         box-shadow: 0 4px 16px rgba(220,53,69,0.10);
+      }
+
+
+
+      /* Optional: Make review cards a bit tighter on mobile */
+      @media (max-width: 400px) {
+        .review-card {
+          padding: 0.5rem 0.2rem 0.5rem 0.2rem;
+          font-size: 0.95rem;
+        }
+      }
+      @media (max-width: 600px) {
+        .sort-btn-grid {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.5rem;
+          width: 100%;
+          justify-items: stretch;
+        }
+        .sort-btn {
+          width: 100%;
+          font-size: 0.95rem;
+          padding: 0.3rem 0.1rem;
+          margin: 0;
+        }
       }
     </style>
     <script>
