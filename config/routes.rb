@@ -37,6 +37,9 @@ Rails.application.routes.draw do
   post '/requests/upload_images', to: 'requests#upload_images', as: :request_upload_images
   post 'reviews/upload_image', to: 'reviews#upload_image'
   
+  resources :restaurants do
+    resources :reviews
+  end
 
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

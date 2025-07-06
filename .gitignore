@@ -37,3 +37,5 @@
 
 
 /config/credentials/production.key
+config/credentials.yml.enc
+config/database.yml

@@ -4,7 +4,20 @@ class ReviewsController < ApplicationController
 
   # GET /restaurants/:restaurant_id/reviews
   def index
-    @reviews = @restaurant.reviews
+    sort = params[:sort]
+
+    @reviews = case sort
+               when 'newest'
+                 @restaurant.reviews.order(created_at: :desc)
+               when 'oldest'
+                 @restaurant.reviews.order(created_at: :asc)
+               when 'highest_rating'
+                 @restaurant.reviews.order(rating: :desc)
+               when 'lowest_rating'
+                 @restaurant.reviews.order(rating: :asc)
+               else
+                 @restaurant.reviews.order(created_at: :desc) # Default: newest first
+               end
   end
 
   # GET /restaurants/:restaurant_id/reviews/1
