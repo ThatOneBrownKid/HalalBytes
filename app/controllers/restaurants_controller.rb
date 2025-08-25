@@ -61,6 +61,24 @@ class RestaurantsController < ApplicationController
     # Combine restaurant's ordered images with review images
     @all_gallery_images = @ordered_images + review_images
 
+    sort = params[:sort]
+
+    @reviews = case sort
+             when 'newest'
+               @restaurant.reviews.order(created_at: :desc)
+             when 'oldest'
+               @restaurant.reviews.order(created_at: :asc)
+             when 'highest_rating'
+               @restaurant.reviews.order(rating: :desc)
+             when 'lowest_rating'
+               @restaurant.reviews.order(rating: :asc)
+             else
+               @restaurant.reviews.order(created_at: :desc)
+             end
+    respond_to do |format|
+      format.html # normal page load
+      format.turbo_stream { render partial: "restaurants/reviews_frame", locals: { restaurant: @restaurant, reviews: @reviews } }
+    end
   end
 
   # GET /restaurants/new
