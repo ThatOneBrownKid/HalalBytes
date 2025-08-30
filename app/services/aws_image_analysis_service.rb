@@ -33,7 +33,8 @@ class AwsAnalysisService
     }
     
     credentials[:session_token] = ENV['AWS_SESSION_TOKEN'] if ENV['AWS_SESSION_TOKEN']
-    
+    @s3_client = Aws::S3::Client.new(credentials)
+    #@lambda_client = Aws::Lambda::Client.new(credentials)
     @rekognition_client = Aws::Rekognition::Client.new(credentials)
     @comprehend_client = Aws::Comprehend::Client.new(credentials)
   rescue => e
@@ -41,73 +42,95 @@ class AwsAnalysisService
     raise
   end
 
-  def analyze_image(image_blob)
-    response = @rekognition_client.detect_moderation_labels(
-      image: {
-        bytes: image_blob.download
-      },
-      min_confidence: 60
-    )
+  def upload_to_s3(bucket_name,key,file_path,metadata):
+    bucket = @s3_client.bucket(bucket_name)
+    response = true
+    begin
+      bucket.object(key).upload_file(file_path)
+    rescue => each
+      Rails.logger.error "Bucket Upload Failed: #{e.message}"
+      response = false
+    begin
+      bucket.object(key).put_tagging(
+        bucket: bucket_name, 
+        key: KEY, 
+        tagging: {
+          tag_set: [
+           metadata
+          ]
+        }
+      )
+    rescue => each
+      Rails.logger.error "Tagging Failed: #{e.message}"
+    return response
 
-    {
-      safe_for_work: safe_for_work?(response.moderation_labels),
-      labels: response.moderation_labels.map(&:name)
-    }
-  rescue Aws::Rekognition::Errors::ServiceError => e
-    Rails.logger.error "AWS Rekognition error: #{e.message}"
-    { error: 'Image analysis failed', safe_for_work: false }
-  end
+   def analyze_image(image_blob)
+     response = @rekognition_client.detect_moderation_labels(
+       image: {
+         bytes: image_blob.download
+       },
+       min_confidence: 60
+     )
 
-  def analyze_text(text)
-    return nil if text.blank?
+     {
+       safe_for_work: safe_for_work?(response.moderation_labels),
+       labels: response.moderation_labels.map(&:name)
+     }
+   rescue Aws::Rekognition::Errors::ServiceError => e
+     Rails.logger.error "AWS Rekognition error: {e.message}"
+     { error: 'Image analysis failed', safe_for_work: false }
+   end
 
-    sentiment = @comprehend_client.detect_sentiment(
-      text: text,
-      language_code: 'en'
-    )
+   def analyze_text(text)
+     return nil if text.blank?
 
-    toxic_content = @comprehend_client.detect_toxic_content(
-      text: text,
-      language_code: 'en'
-    )
+     sentiment = @comprehend_client.detect_sentiment(
+       text: text,
+       language_code: 'en'
+     )
 
-    {
-      sentiment: {
-        label: sentiment.sentiment.downcase,
-        score: sentiment.sentiment_score
-      },
-      content_warnings: extract_warnings(text, toxic_content.toxic_spans),
-      safe_content: toxic_content.toxic_spans.empty?
-    }
-  rescue Aws::Comprehend::Errors::ServiceError => e
-    Rails.logger.error "AWS Comprehend error: #{e.message}"
-    { error: 'Text analysis failed', safe_content: false }
-  end
+     toxic_content = @comprehend_client.detect_toxic_content(
+       text: text,
+       language_code: 'en'
+     )
 
-  private
+     {
+       sentiment: {
+         label: sentiment.sentiment.downcase,
+         score: sentiment.sentiment_score
+       },
+       content_warnings: extract_warnings(text, toxic_content.toxic_spans),
+       safe_content: toxic_content.toxic_spans.empty?
+     }
+   rescue Aws::Comprehend::Errors::ServiceError => e
+     Rails.logger.error "AWS Comprehend error: {e.message}"
+     { error: 'Text analysis failed', safe_content: false }
+   end
 
-  def safe_for_work?(labels)
-    unsafe_categories = [
-      'Explicit', 
-      'Non-Explicit Nudity of Intimate parts and Kissing',
-      'Violence',
-      'Swimwear or Underwear',
-      'Visually Disturbing',
-      'Drugs & Tobacco',
-      'Alcohol',
-      'Hate Symbols',
-      'Suggestive'
-    ]
-    labels.none? { |label| unsafe_categories.include?(label.name) }
-  end
+   private
 
-  def extract_warnings(text, toxic_spans)
-    toxic_spans.map do |span|
-      {
-        category: span.toxic_category,
-        score: span.score,
-        text: text[span.begin_offset...span.end_offset]
-      }
-    end
-  end
+   def safe_for_work?(labels)
+     unsafe_categories = [
+       'Explicit', 
+       'Non-Explicit Nudity of Intimate parts and Kissing',
+       'Violence',
+       'Swimwear or Underwear',
+       'Visually Disturbing',
+       'Drugs & Tobacco',
+       'Alcohol',
+       'Hate Symbols',
+       'Suggestive'
+     ]
+     labels.none? { |label| unsafe_categories.include?(label.name) }
+   end
+
+   def extract_warnings(text, toxic_spans)
+     toxic_spans.map do |span|
+       {
+         category: span.toxic_category,
+         score: span.score,
+         text: text[span.begin_offset...span.end_offset]
+       }
+     end
+   end
 end

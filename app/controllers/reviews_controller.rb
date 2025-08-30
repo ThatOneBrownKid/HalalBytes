@@ -82,9 +82,11 @@ class ReviewsController < ApplicationController
     It uses an external service (`AwsImageAnalysisService`) to analyze the image for inappropriate content."""
 
    if params[:image]
-      
-      # First analyze the image
+
       analysis_service = AwsAnalysisService.new
+
+      # First analyze the image
+      
       
       begin
         analysis_result = analysis_service.analyze_image(params[:image])
@@ -95,19 +97,10 @@ class ReviewsController < ApplicationController
         end
 
         # If image is safe, proceed with upload
-        uploaded_image = ActiveStorage::Blob.create_and_upload!(
-          io: params[:image],
-          filename: params[:image].original_filename,
-          content_type: params[:image].content_type
-        )
-
-        #Store analysis results as metadata
-        uploaded_image.metadata = uploaded_image.metadata.merge(
-          moderation_labels: analysis_result[:labels]
-        )
-        uploaded_image.save!
-#
-        image_url = url_for(uploaded_image)
+        # Then Upload the image to S3 halalbytes-photos bucket
+        uploaded_image = analysis_service.upload_to_s3('halalbytes-photos', "#{params[:image].original_filename}", params[:image].path,metadata: { moderation_labels: analysis_result[:labels].to_json })
+        
+        image_url = "s3//:halalbytes-photos/#{params[:image].original_filename}"
         
         render json: { url: image_url }, status: :ok
       rescue => e
