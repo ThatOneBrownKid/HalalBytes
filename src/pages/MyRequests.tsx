@@ -18,12 +18,19 @@ interface RestaurantRequest {
   submission_data: {
     name?: string | { text: string; languageCode?: string };
     address?: string | { text: string; languageCode?: string };
-    cuisine_type?: string;
+    cuisine_type?: string | { text: string; languageCode?: string };
   };
   admin_notes: string | null;
   created_at: string;
   reviewed_at: string | null;
 }
+
+const getString = (val: any) => {
+  if (!val) return undefined;
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object' && val.text && typeof val.text === 'string') return val.text;
+  return undefined;
+};
 
 const MyRequests = () => {
   const navigate = useNavigate();
@@ -125,20 +132,23 @@ const MyRequests = () => {
           </div>
         ) : requests && requests.length > 0 ? (
           <div className="space-y-4">
-            {requests.map((request) => (
+            {requests.map((request) => {
+              const submissionData = request.submission_data || {};
+              
+              const name = getString(submissionData.name) || "Unnamed Restaurant";
+              const address = getString(submissionData.address) || "No address provided";
+              const cuisine = getString(submissionData.cuisine_type);
+
+              return (
               <Card key={request.id}>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div>
                       <CardTitle className="text-lg">
-                        {typeof request.submission_data?.name === 'string'
-                          ? request.submission_data.name
-                          : request.submission_data?.name?.text || "Unnamed Restaurant"}
+                        {name}
                       </CardTitle>
                       <CardDescription>
-                        {typeof request.submission_data?.address === 'string'
-                          ? request.submission_data.address
-                          : request.submission_data?.address?.text || "No address provided"}
+                        {address}
                       </CardDescription>
                     </div>
                     <Badge variant="outline" className={getStatusColor(request.status)}>
@@ -152,10 +162,10 @@ const MyRequests = () => {
                     <span>
                       Submitted: {format(new Date(request.created_at), "MMM d, yyyy")}
                     </span>
-                    {request.submission_data?.cuisine_type && (
+                    {cuisine && (
                       <>
                         <span>•</span>
-                        <span>{request.submission_data.cuisine_type}</span>
+                        <span>{cuisine}</span>
                       </>
                     )}
                     {request.reviewed_at && (
@@ -175,7 +185,7 @@ const MyRequests = () => {
                   )}
                 </CardContent>
               </Card>
-            ))}
+            )})}
           </div>
         ) : (
           <EmptyState

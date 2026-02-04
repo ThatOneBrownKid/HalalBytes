@@ -49,9 +49,9 @@ interface RestaurantRequest {
   id: string;
   status: "pending" | "approved" | "rejected";
   submission_data: {
-    name?: string;
-    address?: string;
-    cuisine_type?: string;
+    name?: string | { text: string; languageCode?: string };
+    address?: string | { text: string; languageCode?: string };
+    cuisine_type?: string | { text: string; languageCode?: string };
     halal_status?: string;
     price_range?: string;
     description?: string;
@@ -66,6 +66,13 @@ interface RestaurantRequest {
   created_at: string;
   reviewed_at: string | null;
 }
+
+const getString = (val: any) => {
+  if (!val) return "";
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object' && val.text && typeof val.text === 'string') return val.text;
+  return "";
+};
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -129,8 +136,9 @@ const AdminDashboard = () => {
       let lat = submissionData.lat;
       let lng = submissionData.lng;
 
-      if ((!lat || !lng) && submissionData.address) {
-        const geocoded = await geocodeAddress(submissionData.address);
+      const addressStr = getString(submissionData.address);
+      if ((!lat || !lng) && addressStr) {
+        const geocoded = await geocodeAddress(addressStr);
         if (geocoded) {
           lat = geocoded.lat;
           lng = geocoded.lng;
@@ -138,9 +146,9 @@ const AdminDashboard = () => {
       }
 
       const { data: restaurant, error: insertError } = await supabase.from("restaurants").insert({
-        name: submissionData.name || "Unnamed Restaurant",
-        address: submissionData.address || "",
-        cuisine_type: submissionData.cuisine_type || "Other",
+        name: getString(submissionData.name) || "Unnamed Restaurant",
+        address: getString(submissionData.address) || "",
+        cuisine_type: getString(submissionData.cuisine_type) || "Other",
         halal_status: (submissionData.halal_status as "Full Halal" | "Partial Halal") || "Full Halal",
         price_range: (submissionData.price_range as "$" | "$$" | "$$$" | "$$$$") || "$$",
         description: submissionData.description || null,
@@ -423,14 +431,14 @@ const AdminDashboard = () => {
                               className="font-medium text-sm text-left hover:text-primary transition-colors line-clamp-1"
                               onClick={() => navigate(`/admin/request/${request.id}`)}
                             >
-                              {request.submission_data?.name || "Unnamed"}
+                              {getString(request.submission_data?.name) || "Unnamed"}
                             </button>
                             <Badge variant="outline" className={getStatusBadgeColor(request.status)}>
                               {request.status}
                             </Badge>
                           </div>
-                          <p className="text-xs text-muted-foreground mb-1">{request.submission_data?.cuisine_type}</p>
-                          <p className="text-xs text-muted-foreground mb-3 line-clamp-1">{request.submission_data?.address}</p>
+                          <p className="text-xs text-muted-foreground mb-1">{getString(request.submission_data?.cuisine_type)}</p>
+                          <p className="text-xs text-muted-foreground mb-3 line-clamp-1">{getString(request.submission_data?.address)}</p>
                           <div className="flex items-center justify-between">
                             <span className="text-xs text-muted-foreground">
                               {format(new Date(request.created_at), "MMM d, yyyy")}
@@ -526,12 +534,12 @@ const AdminDashboard = () => {
                                   className="font-medium hover:text-primary transition-colors text-left"
                                   onClick={() => navigate(`/admin/request/${request.id}`)}
                                 >
-                                  {request.submission_data?.name || "Unnamed"}
+                                  {getString(request.submission_data?.name) || "Unnamed"}
                                 </button>
                               </TableCell>
                               <TableCell className="text-sm text-muted-foreground">
-                                <div>{request.submission_data?.cuisine_type}</div>
-                                <div className="text-xs">{request.submission_data?.address}</div>
+                                <div>{getString(request.submission_data?.cuisine_type)}</div>
+                                <div className="text-xs">{getString(request.submission_data?.address)}</div>
                               </TableCell>
                               <TableCell className="text-sm">
                                 {format(new Date(request.created_at), "MMM d, yyyy")}

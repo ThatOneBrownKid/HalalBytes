@@ -41,12 +41,12 @@ import { geocodeAddress } from "@/utils/geocoding";
 
 // This interface represents the structure of the `submission_data` column in the `restaurant_requests` table.
 interface SubmissionData {
-  name?: string;
+  name?: string | { text: string; languageCode?: string };
   description?: string;
-  address?: string;
+  address?: string | { text: string; languageCode?: string };
   phone?: string;
   website_url?: string;
-  cuisine_type?: string;
+  cuisine_type?: string | { text: string; languageCode?: string };
   price_range?: string;
   halal_status?: string;
   
@@ -56,6 +56,13 @@ interface SubmissionData {
   lng?: number;
   opening_hours?: Record<string, { isOpen: boolean; openTime?: string; closeTime?: string }>;
 }
+
+const getString = (val: any) => {
+  if (!val) return "";
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object' && val.text && typeof val.text === 'string') return val.text;
+  return "";
+};
 
 const RequestPreview = () => {
   const { id } = useParams();
@@ -90,8 +97,9 @@ const RequestPreview = () => {
       let lat = submissionData.lat || 0;
       let lng = submissionData.lng || 0;
 
-      if (lat === 0 && lng === 0 && submissionData.address) {
-        const geocoded = await geocodeAddress(submissionData.address);
+      const addressStr = getString(submissionData.address);
+      if (lat === 0 && lng === 0 && addressStr) {
+        const geocoded = await geocodeAddress(addressStr);
         if (geocoded) {
           lat = geocoded.lat;
           lng = geocoded.lng;
@@ -102,9 +110,9 @@ const RequestPreview = () => {
       const { data: restaurant, error: insertError } = await supabase
         .from("restaurants")
         .insert({
-          name: submissionData.name || "Unnamed Restaurant",
-          address: submissionData.address || "",
-          cuisine_type: submissionData.cuisine_type || "Other",
+          name: getString(submissionData.name) || "Unnamed Restaurant",
+          address: getString(submissionData.address) || "",
+          cuisine_type: getString(submissionData.cuisine_type) || "Other",
           halal_status: (submissionData.halal_status as "Full Halal" | "Partial Halal") || "Full Halal",
           price_range: (submissionData.price_range as "$" | "$$" | "$$$" | "$$$$") || "$$",
           description: submissionData.description || null,
@@ -246,29 +254,12 @@ const RequestPreview = () => {
     },
   });
 
-  const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+  const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
   const today = dayNames[new Date().getDay()];
-
-  const formatTo12Hour = (time24: string): string => {
-    if (!time24 || typeof time24 !== 'string') return time24;
-    if (time24.toLowerCase().includes('am') || time24.toLowerCase().includes('pm')) {
-      return time24;
-    }
-    const [hoursStr, minutesStr] = time24.split(':');
-    if (!hoursStr || !minutesStr) return time24;
-    const hours = parseInt(hoursStr, 10);
-    const minutes = parseInt(minutesStr, 10);
-    if (isNaN(hours) || isNaN(minutes)) return time24;
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
-  };
 
   const formatHours = (hours: { isOpen: boolean; openTime?: string; closeTime?: string } | undefined): string => {
     if (!hours || !hours.isOpen) return "Closed";
-    if (hours.openTime && hours.closeTime) {
-      return `${formatTo12Hour(hours.openTime)} - ${formatTo12Hour(hours.closeTime)}`;
-    }
+    if (hours.openTime && hours.closeTime) return `${hours.openTime} - ${hours.closeTime}`;
     return "Open";
   };
 
@@ -364,14 +355,14 @@ const RequestPreview = () => {
                 <div>
                   <div className="flex items-center gap-3 mb-2">
                     <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground">
-                      {submissionData.name || "Unnamed Restaurant"}
+                      {getString(submissionData.name) || "Unnamed Restaurant"}
                     </h1>
                     <Badge variant="outline" className={getStatusColor(request.status)}>
                       {request.status}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-3 flex-wrap text-muted-foreground">
-                    <span>{submissionData.cuisine_type || "Not specified"}</span>
+                    <span>{getString(submissionData.cuisine_type) || "Not specified"}</span>
                     <span>•</span>
                     <span className="font-medium">{submissionData.price_range || "$$"}</span>
                   </div>
@@ -484,7 +475,7 @@ const RequestPreview = () => {
                     <div>
                       <p className="font-medium">Address</p>
                       <p className="text-muted-foreground text-sm">
-                        {submissionData.address || "Not provided"}
+                        {getString(submissionData.address) || "Not provided"}
                       </p>
                     </div>
                   </div>
