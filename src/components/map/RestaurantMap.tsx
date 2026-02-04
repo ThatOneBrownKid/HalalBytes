@@ -30,6 +30,7 @@ interface RestaurantMapProps {
   onBoundsChange?: (bounds: { north: number; south: number; east: number; west: number }) => void;
   onNavigateToRestaurant?: (id: string) => void;
   center?: { lat: number; lng: number };
+  hoveredId?: string | null;
   zoom?: number;
   isMobile?: boolean;
 }
@@ -319,6 +320,7 @@ export const RestaurantMap = ({
   onBoundsChange,
   onNavigateToRestaurant,
   center = { lat: 40.7128, lng: -74.0060 },
+  hoveredId,
   zoom = 12,
   isMobile = false,
 }: RestaurantMapProps) => {
@@ -385,73 +387,13 @@ export const RestaurantMap = ({
             position={[restaurant.lat, restaurant.lng]}
             icon={createMarkerIcon(
               getMarkerColor(restaurant),
-              selectedId === restaurant.id || selectedRestaurant?.id === restaurant.id
+              selectedId === restaurant.id || selectedRestaurant?.id === restaurant.id || hoveredId === restaurant.id
             )}
             eventHandlers={{
               click: () => handleMarkerClick(restaurant),
             }}
           >
-            {/* Only show popup on desktop - card-like styling */}
-            {!isMobile && (
-              <Popup className="restaurant-popup" closeButton={true}>
-                <div className="popup-card">
-                  {restaurant.images && restaurant.images[0] && (
-                    <div className="popup-card-image">
-                      <img 
-                        src={restaurant.images[0]} 
-                        alt={restaurant.name}
-                      />
-                    </div>
-                  )}
-                  <div className="popup-card-content">
-                    <div className="popup-card-header">
-                      <h3 className="popup-card-title">{restaurant.name}</h3>
-                      {restaurant.rating !== undefined && restaurant.rating > 0 && (
-                        <div className="popup-card-rating">
-                          <Star className="h-3.5 w-3.5 fill-gold text-gold" />
-                          <span>{restaurant.rating.toFixed(1)}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="popup-card-meta">
-                      {restaurant.cuisine_type && (
-                        <span>{restaurant.cuisine_type}</span>
-                      )}
-                      {restaurant.price_range && (
-                        <>
-                          <span className="popup-card-dot">•</span>
-                          <span className="popup-card-price">{restaurant.price_range}</span>
-                        </>
-                      )}
-                    </div>
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "text-xs font-medium",
-                        restaurant.halal_status === 'Full Halal' 
-                          ? "bg-halal-full text-halal-full-foreground" 
-                          : "bg-halal-partial text-halal-partial-foreground"
-                      )}
-                    >
-                      {restaurant.halal_status}
-                    </Badge>
-                    {onNavigateToRestaurant && (
-                      <Button 
-                        size="sm" 
-                        className="w-full mt-2 gap-2"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onNavigateToRestaurant(restaurant.id);
-                        }}
-                      >
-                        View Details
-                        <ExternalLink className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </Popup>
-            )}
+            {/* Popup removed for desktop as requested */}
           </Marker>
         ))}
       </MapContainer>

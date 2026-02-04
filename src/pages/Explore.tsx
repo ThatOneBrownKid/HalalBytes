@@ -78,6 +78,7 @@ const Explore = () => {
   
   const [mobileView, setMobileView] = useState<'list' | 'map'>('list');
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | undefined>();
+  const [hoveredRestaurantId, setHoveredRestaurantId] = useState<string | null>(null);
   const [highlightedCardId, setHighlightedCardId] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentLocation, setCurrentLocation] = useState("Loading...");
@@ -386,7 +387,11 @@ const Explore = () => {
                 ref={virtuosoRef}
                 data={sortedRestaurants}
                 itemContent={(index, restaurant) => (
-                  <div className="p-3 sm:p-4">
+                  <div 
+                    className="p-3 sm:p-4"
+                    onMouseEnter={() => setHoveredRestaurantId(restaurant.id)}
+                    onMouseLeave={() => setHoveredRestaurantId(null)}
+                  >
                     <RestaurantCard
                       restaurant={restaurant}
                       isHighlighted={highlightedCardId === restaurant.id || selectedRestaurantId === restaurant.id}
@@ -416,6 +421,7 @@ const Explore = () => {
               <RestaurantMap
                 restaurants={mapRestaurants}
                 selectedId={selectedRestaurantId}
+                hoveredId={hoveredRestaurantId}
                 onMarkerClick={handleMarkerClick}
                 onBoundsChange={handleBoundsChange}
                 center={mapCenter}
