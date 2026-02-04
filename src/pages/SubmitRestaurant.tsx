@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Loader2, MapPin, Phone, Globe, Search, PenLine, Check } from "lucide-react";
+import { ArrowLeft, Loader2, MapPin, Phone, Globe, Search, PenLine, Check, AlertTriangle, ExternalLink } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -87,6 +88,7 @@ const SubmitRestaurant = () => {
   const [entryMode, setEntryMode] = useState<"search" | "manual">("search");
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [duplicateStatus, setDuplicateStatus] = useState<{ type: 'existing' | 'pending', id?: string } | null>(null);
   const [cuisineError, setCuisineError] = useState<string | null>(null);
 
   // Track uploaded Google images to clean up if form is abandoned
@@ -124,6 +126,48 @@ const SubmitRestaurant = () => {
 
     };
 
+
+  // Check for duplicates when name or address changes
+  useEffect(() => {
+    const checkDuplicate = async () => {
+      if (!formData.name || !formData.address) {
+        setDuplicateStatus(null);
+        return;
+      }
+
+      // Check existing restaurants
+      const { data: existing } = await supabase
+        .from('restaurants')
+        .select('id')
+        .ilike('name', formData.name)
+        .ilike('address', formData.address)
+        .maybeSingle();
+
+      if (existing) {
+        setDuplicateStatus({ type: 'existing', id: existing.id });
+        return;
+      }
+
+      // Check pending requests
+      const { data: pending } = await supabase
+        .from('restaurant_requests')
+        .select('id')
+        .eq('status', 'pending')
+        .ilike('submission_data->>name', formData.name)
+        .ilike('submission_data->>address', formData.address)
+        .maybeSingle();
+
+      if (pending) {
+        setDuplicateStatus({ type: 'pending' });
+        return;
+      }
+
+      setDuplicateStatus(null);
+    };
+
+    const timeoutId = setTimeout(checkDuplicate, 500);
+    return () => clearTimeout(timeoutId);
+  }, [formData.name, formData.address]);
 
   const handleMeatToggle = (meatId: string) => {
     setFormData(prev => ({
@@ -316,6 +360,15 @@ const SubmitRestaurant = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (duplicateStatus) {
+      if (duplicateStatus.type === 'existing') {
+        toast.error("This restaurant is already listed.");
+      } else {
+        toast.error("A submission for this restaurant is already under review.");
+      }
+      return;
+    }
     
     if (!user) {
       toast.error("Please sign in to submit a restaurant");
@@ -436,6 +489,29 @@ const SubmitRestaurant = () => {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
+                {duplicateStatus?.type === 'existing' && (
+                  <Alert className="border-yellow-500/50 bg-yellow-500/10 text-yellow-600">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Restaurant already exists</AlertTitle>
+                    <AlertDescription className="mt-2">
+                      This restaurant is already in our directory. 
+                      <Button variant="link" className="p-0 h-auto font-semibold ml-1 text-yellow-700" onClick={() => navigate(`/restaurant/${duplicateStatus.id}`)} type="button">
+                        View Restaurant <ExternalLink className="h-3 w-3 ml-1" />
+                      </Button>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {duplicateStatus?.type === 'pending' && (
+                  <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-600">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>Submission under review</AlertTitle>
+                    <AlertDescription>
+                      Someone has already submitted this restaurant. We are currently reviewing it.
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 {/* Entry Mode Toggle */}
                 <Tabs value={entryMode} onValueChange={(v) => setEntryMode(v as "search" | "manual")}>
                   <TabsList className="grid w-full grid-cols-2">

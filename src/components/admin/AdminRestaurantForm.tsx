@@ -12,9 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Search, PenLine } from "lucide-react";
+import { Loader2, Search, PenLine, AlertTriangle, ExternalLink } from "lucide-react";
 import { ImageUploadZone } from "@/components/forms/ImageUploadZone";
 import { GooglePlacesAutocomplete } from "@/components/forms/GooglePlacesAutocomplete";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -125,6 +126,7 @@ export const AdminRestaurantForm = ({ editRestaurantId, onSuccess }: AdminRestau
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [formData, setFormData] = useState<RestaurantFormData>(getDefaultFormData());
   const [searchQuery, setSearchQuery] = useState("");
+  const [duplicateWarning, setDuplicateWarning] = useState<{ id: string; message: string } | null>(null);
   const [cuisineError, setCuisineError] = useState<string | null>(null);
 
   // Track uploaded Google images to clean up if form is abandoned
@@ -198,6 +200,39 @@ export const AdminRestaurantForm = ({ editRestaurantId, onSuccess }: AdminRestau
       setEntryMode("manual");
     }
   }, [existingRestaurant]);
+
+  // Check for duplicates when name or address changes
+  useEffect(() => {
+    const checkDuplicate = async () => {
+      if (!formData.name || !formData.address) {
+        setDuplicateWarning(null);
+        return;
+      }
+
+      let query = supabase
+        .from('restaurants')
+        .select('id')
+        .ilike('name', formData.name)
+        .ilike('address', formData.address);
+
+      if (editRestaurantId) {
+        query = query.neq('id', editRestaurantId);
+      }
+
+      const { data } = await query;
+      if (data && data.length > 0) {
+        setDuplicateWarning({
+          id: data[0].id,
+          message: "A restaurant with this name and address already exists."
+        });
+      } else {
+        setDuplicateWarning(null);
+      }
+    };
+
+    const timeoutId = setTimeout(checkDuplicate, 500);
+    return () => clearTimeout(timeoutId);
+  }, [formData.name, formData.address, editRestaurantId]);
 
   const handleMeatToggle = (meatId: string) => {
     setFormData(prev => ({
@@ -340,6 +375,12 @@ export const AdminRestaurantForm = ({ editRestaurantId, onSuccess }: AdminRestau
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (duplicateWarning) {
+      toast.error("Please resolve the duplicate restaurant issue before submitting.");
+      return;
+    }
+
     if (!formData.name || !formData.address || !formData.cuisine_type) {
       toast.error("Please fill in all required fields");
       return;
@@ -569,6 +610,24 @@ export const AdminRestaurantForm = ({ editRestaurantId, onSuccess }: AdminRestau
             </p>
           </TabsContent>
         </Tabs>
+      )}
+
+      {duplicateWarning && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Duplicate Detected</AlertTitle>
+          <AlertDescription className="flex flex-col gap-2">
+            <span>{duplicateWarning.message}</span>
+            <Button 
+              variant="link" 
+              className="p-0 h-auto font-semibold text-destructive underline w-fit" 
+              onClick={() => window.open(`/restaurant/${duplicateWarning.id}`, '_blank')} 
+              type="button"
+            >
+              View Existing Restaurant <ExternalLink className="h-3 w-3 ml-1" />
+            </Button>
+          </AlertDescription>
+        </Alert>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
