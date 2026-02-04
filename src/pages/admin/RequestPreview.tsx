@@ -246,12 +246,29 @@ const RequestPreview = () => {
     },
   });
 
-  const dayNames = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+  const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
   const today = dayNames[new Date().getDay()];
+
+  const formatTo12Hour = (time24: string): string => {
+    if (!time24 || typeof time24 !== 'string') return time24;
+    if (time24.toLowerCase().includes('am') || time24.toLowerCase().includes('pm')) {
+      return time24;
+    }
+    const [hoursStr, minutesStr] = time24.split(':');
+    if (!hoursStr || !minutesStr) return time24;
+    const hours = parseInt(hoursStr, 10);
+    const minutes = parseInt(minutesStr, 10);
+    if (isNaN(hours) || isNaN(minutes)) return time24;
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
 
   const formatHours = (hours: { isOpen: boolean; openTime?: string; closeTime?: string } | undefined): string => {
     if (!hours || !hours.isOpen) return "Closed";
-    if (hours.openTime && hours.closeTime) return `${hours.openTime} - ${hours.closeTime}`;
+    if (hours.openTime && hours.closeTime) {
+      return `${formatTo12Hour(hours.openTime)} - ${formatTo12Hour(hours.closeTime)}`;
+    }
     return "Open";
   };
 
