@@ -13,7 +13,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 // Lazy load the map
 const RestaurantMap = lazy(() => import("@/components/map/RestaurantMap").then(m => ({ default: m.RestaurantMap })));
 
-
 interface LocationMapLinkProps {
   lat: number;
   lng: number;
@@ -93,8 +92,8 @@ export const LocationMapLink = ({ lat, lng, address, name }: LocationMapLinkProp
               className="w-full justify-start gap-3 h-14"
               onClick={() => openMap("google")}
             >
-              <div className="w-8 h-8 rounded-full flex items-center justify-center">
-                 <img src="/google-maps-icon.svg" alt="Google Maps" className="w-6 h-6" />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center">
+                 <img src="/Maps/Google-Maps.svg" alt="Google Maps" className="w-8 h-8" />
               </div>
               <div className="text-left">
                 <div className="font-medium">Google Maps</div>
@@ -107,8 +106,8 @@ export const LocationMapLink = ({ lat, lng, address, name }: LocationMapLinkProp
               className="w-full justify-start gap-3 h-14"
               onClick={() => openMap("apple")}
             >
-               <div className="w-8 h-8 rounded-full flex items-center justify-center">
-                <img src="/apple-maps-icon.svg" alt="Apple Maps" className="w-6 h-6" />
+               <div className="w-10 h-10 rounded-full flex items-center justify-center">
+                <img src="/Maps/Apple-Maps.svg" alt="Apple Maps" className="w-8 h-8" />
               </div>
               <div className="text-left">
                 <div className="font-medium">Apple Maps</div>
@@ -121,8 +120,8 @@ export const LocationMapLink = ({ lat, lng, address, name }: LocationMapLinkProp
               className="w-full justify-start gap-3 h-14"
               onClick={() => openMap("waze")}
             >
-              <div className="w-8 h-8 rounded-full flex items-center justify-center">
-                <img src="/waze-icon.svg" alt="Waze" className="w-6 h-6" />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center">
+                <img src="/Maps/Waze-Maps.svg" alt="Waze" className="w-8 h-8" />
               </div>
               <div className="text-left">
                 <div className="font-medium">Waze</div>
