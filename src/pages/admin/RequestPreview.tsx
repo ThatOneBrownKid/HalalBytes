@@ -379,7 +379,7 @@ const RequestPreview = () => {
               whileHover={{ scale: 1.02 }}
               onClick={() => setSelectedImageIndex(0)}
             >
-              <img src={images[0]} alt={submissionData.name} className="w-full h-full object-cover" />
+              <img src={images[0]} alt={getString(submissionData.name)} className="w-full h-full object-cover" />
             </motion.div>
 
             {images.slice(1, 5).map((image, idx) => (
@@ -389,7 +389,7 @@ const RequestPreview = () => {
                 whileHover={{ scale: 1.05 }}
                 onClick={() => setSelectedImageIndex(idx + 1)}
               >
-                <img src={image} alt={`${submissionData.name} ${idx + 2}`} className="w-full h-full object-cover" />
+                <img src={image} alt={`${getString(submissionData.name)} ${idx + 2}`} className="w-full h-full object-cover" />
                 {idx === 3 && images.length > 5 && (
                   <div className="absolute inset-0 bg-foreground/60 flex items-center justify-center">
                     <span className="text-white font-medium">+{images.length - 5} more</span>
@@ -667,7 +667,7 @@ const RequestPreview = () => {
 
           <img
             src={images[selectedImageIndex]}
-            alt={submissionData.name}
+            alt={getString(submissionData.name)}
             className="max-w-full max-h-[90vh] object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}
           />
