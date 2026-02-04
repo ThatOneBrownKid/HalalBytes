@@ -192,7 +192,7 @@ const MobileAnnotation = ({
       initial={{ opacity: 0, y: 100 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 100 }}
-      className="absolute bottom-4 left-4 right-4 z-[1000] bg-card rounded-xl shadow-elevated border overflow-hidden"
+      className="absolute bottom-28 left-4 right-4 z-[1000] bg-card rounded-xl shadow-elevated border overflow-hidden"
     >
       {/* Close button */}
       <Button
