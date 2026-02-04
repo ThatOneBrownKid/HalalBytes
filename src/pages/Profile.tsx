@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Header } from "@/components/layout/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { User, Camera, Save, Loader2, Upload, AlertTriangle, Trash2 } from "lucide-react";
+import { Camera, Save, Loader2, AlertTriangle, Trash2 } from "lucide-react";
 
 // Helper to convert file to base64 data URI
 const fileToBase64 = (file: File): Promise<string> => {
@@ -26,8 +26,7 @@ const fileToBase64 = (file: File): Promise<string> => {
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, profile, loading } = useAuth();
-  const queryClient = useQueryClient();
+  const { user, profile, loading, updateProfile } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [username, setUsername] = useState(profile?.username || "");
@@ -36,13 +35,12 @@ const Profile = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [moderationError, setModerationError] = useState<string | null>(null);
 
-  // Sync state when profile loads
-  useState(() => {
+  useEffect(() => {
     if (profile) {
       setUsername(profile.username || "");
       setAvatarUrl(profile.avatar_url || "");
     }
-  });
+  }, [profile]);
 
   const deleteImageFromStorage = async (url: string) => {
     try {
@@ -64,17 +62,22 @@ const Profile = () => {
         await deleteImageFromStorage(profile.avatar_url);
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .update({ username, avatar_url: avatar_url || null })
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .select()
+        .single();
       
       if (error) throw error;
+      return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success("Profile updated successfully!");
       setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      if(data) {
+        updateProfile(data);
+      }
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -85,13 +88,11 @@ const Profile = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       toast.error("Please select an image file");
       return;
     }
 
-    // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       toast.error("Image must be less than 2MB");
       return;
@@ -101,27 +102,16 @@ const Profile = () => {
     setModerationError(null);
 
     try {
-      // First, moderate the image
       const imageBase64 = await fileToBase64(file);
-      console.log('Starting avatar moderation...');
       
       const response = await fetch('/moderate-avatar', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          imageBase64
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64 })
       });
 
-      if (!response.ok) {
-        console.error('Moderation function error:', response.statusText);
-        // Continue if moderation service fails
-      } else {
+      if (response.ok) {
         const result = await response.json();
-        console.log('Moderation result:', result);
-        
         if (result.success && result.data && !result.data.safe) {
           setModerationError(result.data.reason || 'This image violates our community guidelines.');
           setIsUploading(false);
@@ -129,45 +119,39 @@ const Profile = () => {
         }
       }
 
-      // Create unique file path
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
-      // Upload to Supabase storage
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('restaurant-images')
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: urlData } = supabase.storage
         .from('restaurant-images')
         .getPublicUrl(filePath);
 
       const newAvatarUrl = urlData.publicUrl;
       setAvatarUrl(newAvatarUrl);
+      updateProfile({ avatar_url: newAvatarUrl });
 
-      // If in edit mode, just update the state. Otherwise, save immediately
+      // If not in editing mode, save immediately.
       if (!isEditing) {
         if (profile?.avatar_url) {
           await deleteImageFromStorage(profile.avatar_url);
         }
-
         await supabase
           .from("profiles")
           .update({ avatar_url: newAvatarUrl })
           .eq("user_id", user.id);
-        
-        queryClient.invalidateQueries({ queryKey: ["profile"] });
         toast.success("Avatar updated!");
       } else {
-        // If we are replacing a temp image we just uploaded in this session
         if (avatarUrl && avatarUrl !== profile?.avatar_url) {
           await deleteImageFromStorage(avatarUrl);
         }
-        toast.success("Avatar uploaded! Click Save to keep it.");
+        toast.info("Avatar changed. Click 'Save Changes' to keep it.");
       }
     } catch (error: any) {
       console.error("Upload error:", error);
@@ -179,7 +163,11 @@ const Profile = () => {
 
   const handleDeleteAvatar = async () => {
     if (!user) return;
-    
+
+    const oldAvatarUrl = avatarUrl;
+    setAvatarUrl(""); 
+    updateProfile({ avatar_url: null });
+
     if (!isEditing) {
       if (!profile?.avatar_url) return;
       
@@ -193,18 +181,20 @@ const Profile = () => {
           
         if (error) {
           toast.error("Failed to remove avatar");
+          setAvatarUrl(oldAvatarUrl); // Revert UI on error
+          updateProfile({ avatar_url: oldAvatarUrl });
           return;
         }
         
-        setAvatarUrl("");
-        queryClient.invalidateQueries({ queryKey: ["profile"] });
         toast.success("Avatar removed");
+      } else {
+        setAvatarUrl(oldAvatarUrl); // Revert if user cancels
+        updateProfile({ avatar_url: oldAvatarUrl });
       }
     } else {
-      if (avatarUrl && avatarUrl !== profile?.avatar_url) {
-        await deleteImageFromStorage(avatarUrl);
+      if (oldAvatarUrl && oldAvatarUrl !== profile?.avatar_url) {
+        await deleteImageFromStorage(oldAvatarUrl);
       }
-      setAvatarUrl("");
     }
   };
 
@@ -247,7 +237,6 @@ const Profile = () => {
         </h1>
 
         <Card>
-          {/* Moderation Error Alert */}
           {moderationError && (
             <div className="p-4 pb-0">
               <Alert variant="destructive" className="flex items-start gap-2">
@@ -266,7 +255,6 @@ const Profile = () => {
                 </AvatarFallback>
               </Avatar>
               
-              {/* Upload overlay */}
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}

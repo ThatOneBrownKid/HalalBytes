@@ -16,6 +16,7 @@ import {
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -28,6 +29,96 @@ export const Header = () => {
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const renderUserActions = () => {
+    if (loading) {
+      return <Skeleton className="h-10 w-10 rounded-full" />;
+    }
+
+    if (user) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Avatar className="h-10 w-10 ring-2 ring-primary/10 transition-all hover:ring-primary/30">
+                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.username || ''} />
+                <AvatarFallback className="bg-primary text-primary-foreground font-medium">
+                  {profile?.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end" forceMount>
+            <div className="flex items-center gap-2 p-2">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.username || ''} />
+                <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                  {profile?.username?.charAt(0).toUpperCase() || 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col space-y-0.5">
+                <p className="text-sm font-medium">{profile?.username || user.email}</p>
+                <p className="text-xs text-muted-foreground capitalize">{role || 'user'}</p>
+              </div>
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => navigate('/profile')}>
+              <User className="mr-2 h-4 w-4" />
+              My Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/favorites')}>
+              <Heart className="mr-2 h-4 w-4" />
+              Favorites & Lists
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/my-requests')}>
+              <FileText className="mr-2 h-4 w-4" />
+              My Requests
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/submit-restaurant')}>
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Submit Restaurant
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/settings')}>
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
+            </DropdownMenuItem>
+            {role === 'admin' && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => navigate('/admin')}>
+                  <Shield className="mr-2 h-4 w-4" />
+                  Admin Dashboard
+                </DropdownMenuItem>
+              </>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+
+    return (
+      <div className="hidden sm:flex items-center gap-2">
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate('/auth/signin')}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          Sign In
+        </Button>
+        <Button 
+          onClick={() => navigate('/auth/signup')}
+          className="btn-glow"
+        >
+          Get Started
+        </Button>
+      </div>
+    );
   };
 
   return (
@@ -92,85 +183,7 @@ export const Header = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {!loading && user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                    <Avatar className="h-10 w-10 ring-2 ring-primary/10 transition-all hover:ring-primary/30">
-                      <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.username || ''} />
-                      <AvatarFallback className="bg-primary text-primary-foreground font-medium">
-                        {profile?.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <div className="flex items-center gap-2 p-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.username || ''} />
-                      <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                        {profile?.username?.charAt(0).toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col space-y-0.5">
-                      <p className="text-sm font-medium">{profile?.username || user.email}</p>
-                      <p className="text-xs text-muted-foreground capitalize">{role || 'user'}</p>
-                    </div>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/profile')}>
-                    <User className="mr-2 h-4 w-4" />
-                    My Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/favorites')}>
-                    <Heart className="mr-2 h-4 w-4" />
-                    Favorites & Lists
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/my-requests')}>
-                    <FileText className="mr-2 h-4 w-4" />
-                    My Requests
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/submit-restaurant')}>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Submit Restaurant
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/settings')}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
-                  {role === 'admin' && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => navigate('/admin')}>
-                        <Shield className="mr-2 h-4 w-4" />
-                        Admin Dashboard
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : !loading ? (
-              <div className="hidden sm:flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => navigate('/auth/signin')}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  Sign In
-                </Button>
-                <Button 
-                  onClick={() => navigate('/auth/signup')}
-                  className="btn-glow"
-                >
-                  Get Started
-                </Button>
-              </div>
-            ) : null}
+            {renderUserActions()}
 
             {/* Mobile Menu Button */}
             <Button
