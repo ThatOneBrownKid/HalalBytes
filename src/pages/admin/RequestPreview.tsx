@@ -164,6 +164,7 @@ const RequestPreview = () => {
                       const { data: publicUrlData } = supabase.storage
                         .from('restaurant-images')
                         .getPublicUrl(newPath);
+                    // Only update URL if copy succeeded
                       finalUrl = publicUrlData.publicUrl;
                       // Try to delete original
                       await supabase.storage.from('restaurant-images').remove([oldPath]);

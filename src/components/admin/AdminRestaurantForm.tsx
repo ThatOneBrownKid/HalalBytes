@@ -539,21 +539,33 @@ export const AdminRestaurantForm = ({ editRestaurantId, onSuccess }: AdminRestau
       const photosToProcess = place.photos.slice(0, 5);
       toast.info(`Processing ${photosToProcess.length} photos from Google...`);
       
-      const processedPhotos = await Promise.all(photosToProcess.map(async (url) => {
+      const processedPhotos: UploadedImage[] = [];
+      let failedCount = 0;
+
+      // Process sequentially to avoid rate limits
+      for (const url of photosToProcess) {
         const result = await uploadGooglePhoto(url);
         if (result) {
           googleImagePathsRef.current.push(result.path);
+          processedPhotos.push({
+            id: `google-${Date.now()}-${Math.random()}`,
+            url: result.url,
+            isUploading: false,
+          });
+        } else {
+          failedCount++;
         }
-        
-        return {
-          id: `google-${Date.now()}-${Math.random()}`,
-          url: result?.url || url, // Fallback to Google URL if upload fails
-          isUploading: false,
-        };
-      }));
+        // Small delay
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
       
       setImages(prev => [...prev, ...processedPhotos]);
-      toast.success(`Added ${photosToProcess.length} photos.`);
+      
+      if (failedCount > 0) {
+        toast.warning(`Added ${processedPhotos.length} photos. ${failedCount} failed to upload.`);
+      } else {
+        toast.success(`Added ${processedPhotos.length} photos.`);
+      }
     }
 
     toast.success("Restaurant details filled from search");

@@ -7,6 +7,31 @@ import { cuisineTypeMap } from "@/lib/cuisineTypeMap";
 const MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 const REFRESH_THRESHOLD_DAYS = 30;
 
+const uploadGooglePhoto = async (url: string) => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const ext = blob.type.split('/')[1] || 'jpg';
+    // Save to 'restaurants' folder with a specific prefix to identify refreshed images
+    const fileName = `restaurants/google-refresh-${Date.now()}-${Math.random()}.${ext}`;
+    
+    const { error } = await supabase.storage
+      .from('restaurant-images')
+      .upload(fileName, blob);
+      
+    if (error) throw error;
+    
+    const { data } = supabase.storage
+      .from('restaurant-images')
+      .getPublicUrl(fileName);
+      
+    return data.publicUrl;
+  } catch (error) {
+    console.error('Error uploading Google photo:', error);
+    return null;
+  }
+};
+
 interface RestaurantData {
   id: string;
   google_place_id: string | null;
@@ -142,6 +167,22 @@ export const useGoogleDataRefresh = (restaurant: RestaurantData | null) => {
         ) || [];
 
         if (googleImages.length > 0) {
+          // Delete files from storage bucket first
+          const pathsToDelete = googleImages
+            .map(img => {
+              const parts = img.url.split('/restaurant-images/');
+              return parts.length > 1 ? decodeURIComponent(parts[1].split('?')[0]) : null;
+            })
+            .filter((path): path is string => path !== null);
+
+          if (pathsToDelete.length > 0) {
+            const { error: removeError } = await supabase.storage
+              .from('restaurant-images')
+              .remove(pathsToDelete);
+              
+            if (removeError) console.error('Error removing old images from storage:', removeError);
+          }
+
           await supabase
             .from('restaurant_images')
             .delete()
@@ -149,12 +190,21 @@ export const useGoogleDataRefresh = (restaurant: RestaurantData | null) => {
         }
 
         // Insert new photos
-        for (const url of data.newPhotoUrls) {
-          await supabase.from('restaurant_images').insert({
-            restaurant_id: restaurant.id,
-            url,
-            is_primary: false,
-          });
+        const remainingCount = (existingImages?.length || 0) - googleImages.length;
+        
+        for (let i = 0; i < data.newPhotoUrls.length; i++) {
+          const googleUrl = data.newPhotoUrls[i];
+          const storageUrl = await uploadGooglePhoto(googleUrl);
+          
+          if (storageUrl) {
+            await supabase.from('restaurant_images').insert({
+              restaurant_id: restaurant.id,
+              url: storageUrl,
+              is_primary: remainingCount === 0 && i === 0,
+            });
+          }
+          // Small delay to be gentle on APIs and storage
+          await new Promise(resolve => setTimeout(resolve, 200));
         }
       }
 
@@ -188,5 +238,6 @@ export const useGoogleDataRefresh = (restaurant: RestaurantData | null) => {
   return {
     isRefreshing: refreshMutation.isPending,
     refreshError: refreshMutation.error,
+    refresh: refreshMutation.mutate,
   };
 };

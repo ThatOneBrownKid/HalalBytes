@@ -18,7 +18,8 @@ import {
   ChevronRight,
   Image as ImageIcon,
   Loader2,
-  Navigation
+  Navigation,
+  RefreshCw
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { ReviewForm } from "@/components/reviews/ReviewForm";
 import { ReviewCard } from "@/components/reviews/ReviewCard";
@@ -162,7 +164,7 @@ const RestaurantDetails = () => {
   });
 
   // Google data refresh hook
-  const { isRefreshing } = useGoogleDataRefresh(restaurant ? {
+  const { isRefreshing, refresh } = useGoogleDataRefresh(restaurant ? {
     id: restaurant.id,
     google_place_id: restaurant.google_place_id,
     google_data_fetched_at: restaurant.google_data_fetched_at,
@@ -322,6 +324,18 @@ const RestaurantDetails = () => {
     }
   };
 
+  const handleRefreshImages = () => {
+    if (restaurant?.google_place_id) {
+      toast.info("Refreshing images from Google...");
+      refresh(restaurant.google_place_id, {
+        onSuccess: () => toast.success("Images refreshed successfully!"),
+        onError: () => toast.error("Failed to refresh images"),
+      });
+    } else {
+      toast.error("No Google Place ID found for this restaurant");
+    }
+  };
+
   if (restaurantLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -380,14 +394,25 @@ const RestaurantDetails = () => {
         </Button>
         
         {isAdmin && (
-          <Button 
-            variant="outline"
-            onClick={() => navigate(`/admin?edit=${id}`)}
-            className="gap-2"
-          >
-            <Edit className="h-4 w-4" />
-            <span className="hidden sm:inline">Edit Restaurant</span>
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline"
+              onClick={handleRefreshImages}
+              disabled={isRefreshing}
+              className="gap-2"
+            >
+              <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+              <span className="hidden sm:inline">Refresh Images</span>
+            </Button>
+            <Button 
+              variant="outline"
+              onClick={() => navigate(`/admin?edit=${id}`)}
+              className="gap-2"
+            >
+              <Edit className="h-4 w-4" />
+              <span className="hidden sm:inline">Edit Restaurant</span>
+            </Button>
+          </div>
         )}
       </div>
 
