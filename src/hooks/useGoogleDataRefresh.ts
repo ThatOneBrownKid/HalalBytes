@@ -45,7 +45,8 @@ export const useGoogleDataRefresh = (restaurant: RestaurantData | null) => {
     mutationFn: async (placeId: string) => {
       if (!MAPS_API_KEY) throw new Error("Google API key not configured");
 
-      const fields = "regularOpeningHours,generativeSummary,editorialSummary,photos,primaryType,primaryTypeDisplayName,displayName,types";
+      // Only fetch photos to prevent overwriting other data
+      const fields = "photos";
       
       const response = await fetch(`https://places.googleapis.com/v1/places/${placeId}`, {
         method: 'GET',
@@ -63,90 +64,23 @@ export const useGoogleDataRefresh = (restaurant: RestaurantData | null) => {
 
       const data = await response.json();
       
-      // Parse opening hours
-      let openingHours = null;
-      if (data.regularOpeningHours?.weekdayDescriptions) {
-        const dayMap: Record<string, string> = {
-          'Monday': 'mon', 'Tuesday': 'tue', 'Wednesday': 'wed',
-          'Thursday': 'thu', 'Friday': 'fri', 'Saturday': 'sat', 'Sunday': 'sun'
-        };
-        
-        openingHours = {};
-        data.regularOpeningHours.weekdayDescriptions.forEach((desc: string) => {
-          const [day, ...hours] = desc.split(': ');
-          const dayKey = dayMap[day];
-          if (dayKey) {
-            const hoursStr = hours.join(': ');
-            if (hoursStr.toLowerCase() === 'closed') {
-              openingHours[dayKey] = { isOpen: false };
-            } else {
-              const times = hoursStr.split(' – ');
-              openingHours[dayKey] = {
-                isOpen: true,
-                openTime: times[0] || undefined,
-                closeTime: times[1] || undefined,
-              };
-            }
-          }
-        });
-      }
-
-      // Get description
-      let description = null;
-      if (data.generativeSummary?.overview?.text) {
-        description = data.generativeSummary.overview.text;
-      } else if (data.generativeSummary?.description?.text) {
-        description = data.generativeSummary.description.text;
-      } else if (data.editorialSummary?.text) {
-        description = data.editorialSummary.text;
-      }
-
-      // Get cuisine type using the custom tagger first
-      let cuisineType = getCustomCategory(data);
-
-      // Fallback to existing logic if no custom category is found
-      if (!cuisineType) {
-        if (data.primaryType && cuisineTypeMap[data.primaryType]) {
-          cuisineType = cuisineTypeMap[data.primaryType];
-        } else if (data.types) {
-          for (const type of data.types) {
-            if (cuisineTypeMap[type]) {
-              cuisineType = cuisineTypeMap[type];
-              break;
-            }
-          }
-        }
-      }
-      
-      // If still no type, default to 'Other'
-      if (!cuisineType) {
-        cuisineType = 'Other';
-      }
-
       // Get new photo URLs directly from Google Places API
       const newPhotoUrls = data.photos?.slice(0, 5).map((photo: any) =>
         `https://places.googleapis.com/v1/${photo.name}/media?maxHeightPx=800&maxWidthPx=1200&key=${MAPS_API_KEY}`
       ) || [];
 
-      return { openingHours, description, newPhotoUrls, cuisineType };
+      return { newPhotoUrls };
     },
     onSuccess: async (data, placeId) => {
       if (!restaurant) return;
 
-      // Update restaurant with refreshed data
+      // Update restaurant with refreshed data - only timestamp
       const updateData: any = {
         google_data_fetched_at: new Date().toISOString(),
       };
       
-      if (data.openingHours) {
-        updateData.opening_hours = data.openingHours;
-      }
-      if (data.description) {
-        updateData.description = data.description;
-      }
-      if (data.cuisineType) {
-        updateData.cuisine_type = data.cuisineType;
-      }
+      // Removed updates for opening_hours, description, and cuisine_type
+      // to preserve manual edits.
 
       await supabase
         .from('restaurants')
