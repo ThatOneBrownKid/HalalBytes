@@ -261,10 +261,6 @@ const Explore = () => {
     setTimeout(() => setHighlightedCardId(undefined), 3000);
   }, [sortedRestaurants]);
 
-  const handleCardSelect = useCallback((id: string) => {
-    navigate(`/restaurant/${id}`);
-  }, [navigate]);
-
   const handleBoundsChange = useCallback((bounds: { north: number; south: number; east: number; west: number }) => {
     setMapBounds(bounds);
   }, []);
@@ -395,7 +391,6 @@ const Explore = () => {
                     <RestaurantCard
                       restaurant={restaurant}
                       isHighlighted={highlightedCardId === restaurant.id || selectedRestaurantId === restaurant.id}
-                      onSelect={handleCardSelect}
                       onFavorite={toggleFavorite}
                       isFavorited={isInFavorites(restaurant.id)}
                     />
@@ -425,7 +420,6 @@ const Explore = () => {
                 onMarkerClick={handleMarkerClick}
                 onBoundsChange={handleBoundsChange}
                 center={mapCenter}
-                onNavigateToRestaurant={handleCardSelect}
                 isMobile={isMobile}
               />
             </Suspense>

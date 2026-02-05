@@ -333,7 +333,6 @@ const Favorites = () => {
                               review_count: reviews.length,
                             }}
                             isFavorited={true}
-                            onSelect={(id) => navigate(`/restaurant/${id}`)}
                             onFavorite={() => removeFavoriteMutation.mutate(fav.id)}
                           />
                         </div>

@@ -6,6 +6,7 @@ import { MapPin, Navigation, Loader2, Star, ExternalLink, X, ChevronLeft, Chevro
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useGeolocation } from "@/hooks/useGeolocation";
+import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 import "leaflet/dist/leaflet.css";
 
@@ -28,7 +29,6 @@ interface RestaurantMapProps {
   selectedId?: string;
   onMarkerClick?: (id: string) => void;
   onBoundsChange?: (bounds: { north: number; south: number; east: number; west: number }) => void;
-  onNavigateToRestaurant?: (id: string) => void;
   center?: { lat: number; lng: number };
   hoveredId?: string | null;
   zoom?: number;
@@ -160,11 +160,9 @@ const userLocationIcon = divIcon({
 const MobileAnnotation = ({
   restaurant,
   onClose,
-  onNavigate,
 }: {
   restaurant: Restaurant;
   onClose: () => void;
-  onNavigate?: (id: string) => void;
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = restaurant.images || [];
@@ -297,16 +295,15 @@ const MobileAnnotation = ({
             {restaurant.halal_status}
           </Badge>
           
-          {onNavigate && (
+          <NavLink to={`/restaurant/${restaurant.id}`} className="ml-auto">
             <Button
               size="sm"
-              className="ml-auto gap-1"
-              onClick={() => onNavigate(restaurant.id)}
+              className="gap-1"
             >
               View Details
               <ExternalLink className="h-3 w-3" />
             </Button>
-          )}
+          </NavLink>
         </div>
       </div>
     </motion.div>
@@ -318,7 +315,6 @@ export const RestaurantMap = ({
   selectedId,
   onMarkerClick,
   onBoundsChange,
-  onNavigateToRestaurant,
   center = { lat: 40.7128, lng: -74.0060 },
   hoveredId,
   zoom = 12,
@@ -393,7 +389,26 @@ export const RestaurantMap = ({
               click: () => handleMarkerClick(restaurant),
             }}
           >
-            {/* Popup removed for desktop as requested */}
+            {!isMobile && (
+              <Popup>
+                <div className="w-48">
+                  {restaurant.images && restaurant.images.length > 0 && (
+                    <img src={restaurant.images[0]} alt={restaurant.name} className="h-24 w-full object-cover rounded-md mb-2" />
+                  )}
+                  <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{restaurant.name}</h3>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+                    <Star className="h-3 w-3 fill-gold text-gold" />
+                    <span>{restaurant.rating?.toFixed(1)}</span>
+                    <span>({restaurant.review_count})</span>
+                  </div>
+                  <NavLink to={`/restaurant/${restaurant.id}`} className="block w-full">
+                    <Button size="sm" className="w-full">
+                      View Details
+                    </Button>
+                  </NavLink>
+                </div>
+              </Popup>
+            )}
           </Marker>
         ))}
       </MapContainer>
@@ -404,7 +419,6 @@ export const RestaurantMap = ({
           <MobileAnnotation
             restaurant={selectedRestaurant}
             onClose={closeAnnotation}
-            onNavigate={onNavigateToRestaurant}
           />
         )}
       </AnimatePresence>
