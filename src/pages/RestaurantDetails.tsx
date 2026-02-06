@@ -2,15 +2,15 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { 
-  ArrowLeft, 
-  Star, 
-  MapPin, 
-  Phone, 
-  Globe, 
-  Clock, 
-  Heart, 
-  Share2, 
+import {
+  ArrowLeft,
+  Star,
+  MapPin,
+  Phone,
+  Globe,
+  Clock,
+  Heart,
+  Share2,
   X,
   Check,
   Edit,
@@ -19,8 +19,27 @@ import {
   Image as ImageIcon,
   Loader2,
   Navigation,
-  RefreshCw
+  RefreshCw,
+  MoreVertical,
+  Trash2,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,17 +64,20 @@ import { LocationMapLink } from "@/components/restaurant/LocationMapLink";
 import { AddToListButton } from "@/components/favorites/AddToListButton";
 import { ImageGallery } from "@/components/restaurant/ImageGallery";
 
-
 const RestaurantDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isInFavorites, toggleFavorite } = useFavorites();
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
+    null
+  );
   const [isAdmin, setIsAdmin] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
-
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [isRefreshAlertOpen, setIsRefreshAlertOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Check if user is admin
   useEffect(() => {
@@ -65,10 +87,10 @@ const RestaurantDetails = () => {
         return;
       }
       const { data } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
         .maybeSingle();
       setIsAdmin(!!data);
     };
@@ -77,12 +99,12 @@ const RestaurantDetails = () => {
 
   // Fetch restaurant data
   const { data: restaurant, isLoading: restaurantLoading } = useQuery({
-    queryKey: ['restaurant', id],
+    queryKey: ["restaurant", id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('restaurants')
-        .select('*')
-        .eq('id', id)
+        .from("restaurants")
+        .select("*")
+        .eq("id", id)
         .maybeSingle();
 
       if (error) throw error;
@@ -93,39 +115,39 @@ const RestaurantDetails = () => {
 
   // Fetch restaurant images
   const { data: images = [] } = useQuery({
-    queryKey: ['restaurant-images', id],
+    queryKey: ["restaurant-images", id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('restaurant_images')
-        .select('*')
-        .eq('restaurant_id', id)
-        .order('is_primary', { ascending: false });
+        .from("restaurant_images")
+        .select("*")
+        .eq("restaurant_id", id)
+        .order("is_primary", { ascending: false });
 
       if (error) throw error;
-      return data?.map(img => img.url) || [];
+      return data?.map((img) => img.url) || [];
     },
     enabled: !!id,
   });
 
   // Fetch reviews with profile data and images
   const { data: reviews = [] } = useQuery({
-    queryKey: ['restaurant-reviews', id],
+    queryKey: ["restaurant-reviews", id],
     queryFn: async () => {
       const { data: reviewsData, error: reviewsError } = await supabase
-        .from('reviews')
-        .select('*')
-        .eq('restaurant_id', id)
-        .order('created_at', { ascending: false });
+        .from("reviews")
+        .select("*")
+        .eq("restaurant_id", id)
+        .order("created_at", { ascending: false });
 
       if (reviewsError) throw reviewsError;
       if (!reviewsData || reviewsData.length === 0) return [];
 
       // Fetch profiles for reviewers
-      const userIds = reviewsData.map(r => r.user_id);
+      const userIds = reviewsData.map((r) => r.user_id);
       const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('user_id, username, avatar_url')
-        .in('user_id', userIds);
+        .from("profiles")
+        .select("user_id, username, avatar_url")
+        .in("user_id", userIds);
 
       const profilesMap = (profilesData || []).reduce((acc, p) => {
         acc[p.user_id] = p;
@@ -133,11 +155,11 @@ const RestaurantDetails = () => {
       }, {} as Record<string, { username: string | null; avatar_url: string | null }>);
 
       // Fetch review images
-      const reviewIds = reviewsData.map(r => r.id);
+      const reviewIds = reviewsData.map((r) => r.id);
       const { data: reviewImagesData } = await supabase
-        .from('review_images')
-        .select('id, review_id, url')
-        .in('review_id', reviewIds);
+        .from("review_images")
+        .select("id, review_id, url")
+        .in("review_id", reviewIds);
 
       const imagesMap = (reviewImagesData || []).reduce((acc, img) => {
         if (!acc[img.review_id]) acc[img.review_id] = [];
@@ -145,7 +167,7 @@ const RestaurantDetails = () => {
         return acc;
       }, {} as Record<string, { id: string; url: string }[]>);
 
-      return reviewsData.map(review => ({
+      return reviewsData.map((review) => ({
         ...review,
         profile: profilesMap[review.user_id] || null,
         images: imagesMap[review.id] || [],
@@ -164,35 +186,48 @@ const RestaurantDetails = () => {
   });
 
   // Google data refresh hook
-  const { isRefreshing, refresh } = useGoogleDataRefresh(restaurant ? {
-    id: restaurant.id,
-    google_place_id: restaurant.google_place_id,
-    google_data_fetched_at: restaurant.google_data_fetched_at,
-  } : null);
+  const { isRefreshing, refresh } = useGoogleDataRefresh(
+    restaurant
+      ? {
+          id: restaurant.id,
+          google_place_id: restaurant.google_place_id,
+          google_data_fetched_at: restaurant.google_data_fetched_at,
+        }
+      : null
+  );
 
   // Calculate average rating
-  const avgRating = reviews.length > 0 
-    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length 
-    : 0;
+  const avgRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : 0;
 
   // Day name mappings - support both short (mon) and full (monday) names
-  const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  const dayNamesShort = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  const dayNames = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+  const dayNamesShort = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
   const dayNamesDisplay: Record<string, string> = {
-    sunday: 'Sunday',
-    monday: 'Monday', 
-    tuesday: 'Tuesday',
-    wednesday: 'Wednesday',
-    thursday: 'Thursday',
-    friday: 'Friday',
-    saturday: 'Saturday',
-    sun: 'Sunday',
-    mon: 'Monday', 
-    tue: 'Tuesday',
-    wed: 'Wednesday',
-    thu: 'Thursday',
-    fri: 'Friday',
-    sat: 'Saturday'
+    sunday: "Sunday",
+    monday: "Monday",
+    tuesday: "Tuesday",
+    wednesday: "Wednesday",
+    thursday: "Thursday",
+    friday: "Friday",
+    saturday: "Saturday",
+    sun: "Sunday",
+    mon: "Monday",
+    tue: "Tuesday",
+    wed: "Wednesday",
+    thu: "Thursday",
+    fri: "Friday",
+    sat: "Saturday",
   };
   const today = dayNames[new Date().getDay()];
 
@@ -200,7 +235,7 @@ const RestaurantDetails = () => {
 
   // Safely parse potentially stringified JSON data
   const safeParse = <T,>(data: unknown, fallback: T): T => {
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       try {
         const parsed = JSON.parse(data);
         return parsed;
@@ -211,85 +246,101 @@ const RestaurantDetails = () => {
     }
     return (data as T) ?? fallback;
   };
-  
+
   // Opening hours can be either:
   // 1. Simple string format: { mon: "10:00 AM - 11:00 PM", ... } or { monday: "10:00 AM - 11:00 PM", ... }
   // 2. Object format: { mon: { isOpen: true, openTime: "10:00", closeTime: "23:00" }, ... }
   // 3. Object format with full names: { monday: { isOpen: true, openTime: "10:00", closeTime: "23:00" }, ... }
-  
+
   // Helper to convert 24hr to 12hr format
   const formatTo12Hour = (time24: string): string => {
-    if (!time24 || typeof time24 !== 'string') return time24;
-    if (time24.toLowerCase().includes('am') || time24.toLowerCase().includes('pm')) {
+    if (!time24 || typeof time24 !== "string") return time24;
+    if (
+      time24.toLowerCase().includes("am") ||
+      time24.toLowerCase().includes("pm")
+    ) {
       return time24;
     }
-    const [hoursStr, minutesStr] = time24.split(':');
+    const [hoursStr, minutesStr] = time24.split(":");
     if (!hoursStr || !minutesStr) return time24;
     const hours = parseInt(hoursStr, 10);
     const minutes = parseInt(minutesStr, 10);
     if (isNaN(hours) || isNaN(minutes)) return time24;
-    const period = hours >= 12 ? 'PM' : 'AM';
+    const period = hours >= 12 ? "PM" : "AM";
     const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+    return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
   };
-  
+
   const formatHoursForDay = (hours: unknown, day: string): string => {
-    if (!hours || typeof hours !== 'object') return 'Closed';
-    
+    if (!hours || typeof hours !== "object") return "Closed";
+
     const hoursObj = hours as Record<string, unknown>;
-    
+
     // Try full day name first, then short name
     const fullDay = day.length === 3 ? dayNames[dayNamesShort.indexOf(day)] : day;
     const shortDay = day.length > 3 ? dayNamesShort[dayNames.indexOf(day)] : day;
-    
+
     let dayData = hoursObj[day] || hoursObj[fullDay] || hoursObj[shortDay];
-    
+
     // Handle simple string format
-    if (typeof dayData === 'string') {
-      if (!dayData || dayData.toLowerCase() === 'closed') return 'Closed';
+    if (typeof dayData === "string") {
+      if (!dayData || dayData.toLowerCase() === "closed") return "Closed";
       // Parse and reformat to 12hr
       const parts = dayData.split(/\s*[-–]\s*/);
       if (parts.length === 2) {
-        return `${formatTo12Hour(parts[0].trim())} - ${formatTo12Hour(parts[1].trim())}`;
+        return `${formatTo12Hour(parts[0].trim())} - ${formatTo12Hour(
+          parts[1].trim()
+        )}`;
       }
       return dayData;
     }
-    
-    // Handle object format
-    if (dayData && typeof dayData === 'object') {
-      const dayObj = dayData as { isOpen?: boolean; openTime?: string; closeTime?: string };
-      if (!dayObj.isOpen) return 'Closed';
-      if (dayObj.openTime && dayObj.closeTime) {
-        return `${formatTo12Hour(dayObj.openTime)} - ${formatTo12Hour(dayObj.closeTime)}`;
-      }
-      return 'Open';
-    }
-    
-    return 'Closed';
-  };
-  
-  const openingHours = safeParse<Record<string, unknown> | null>(restaurant?.opening_hours, null);
 
+    // Handle object format
+    if (dayData && typeof dayData === "object") {
+      const dayObj = dayData as {
+        isOpen?: boolean;
+        openTime?: string;
+        closeTime?: string;
+      };
+      if (!dayObj.isOpen) return "Closed";
+      if (dayObj.openTime && dayObj.closeTime) {
+        return `${formatTo12Hour(dayObj.openTime)} - ${formatTo12Hour(
+          dayObj.closeTime
+        )}`;
+      }
+      return "Open";
+    }
+
+    return "Closed";
+  };
+
+  const openingHours = safeParse<Record<string, unknown> | null>(
+    restaurant?.opening_hours,
+    null
+  );
 
   // Keyboard navigation for lightbox
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (selectedImageIndex === null) return;
-    if (e.key === 'ArrowLeft') {
-      setSelectedImageIndex(prev => 
-        prev !== null ? (prev === 0 ? images.length - 1 : prev - 1) : null
-      );
-    } else if (e.key === 'ArrowRight') {
-      setSelectedImageIndex(prev => 
-        prev !== null ? (prev === images.length - 1 ? 0 : prev + 1) : null
-      );
-    } else if (e.key === 'Escape') {
-      setSelectedImageIndex(null);
-    }
-  }, [selectedImageIndex, images.length]);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (selectedImageIndex === null) return;
+      if (e.key === "ArrowLeft") {
+        setSelectedImageIndex((prev) =>
+          prev !== null ? (prev === 0 ? images.length - 1 : prev - 1) : null
+        );
+      } else if (e.key === "ArrowRight") {
+        setSelectedImageIndex((prev) =>
+          prev !== null ? (prev === images.length - 1 ? 0 : prev + 1) : null
+        );
+      } else if (e.key === "Escape") {
+        setSelectedImageIndex(null);
+      }
+    },
+    [selectedImageIndex, images.length]
+  );
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
   // Touch swipe for mobile lightbox
@@ -311,31 +362,57 @@ const RestaurantDetails = () => {
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
-    
+
     if (isLeftSwipe && selectedImageIndex !== null) {
-      setSelectedImageIndex(prev => 
+      setSelectedImageIndex((prev) =>
         prev !== null ? (prev === images.length - 1 ? 0 : prev + 1) : null
       );
     }
     if (isRightSwipe && selectedImageIndex !== null) {
-      setSelectedImageIndex(prev => 
+      setSelectedImageIndex((prev) =>
         prev !== null ? (prev === 0 ? images.length - 1 : prev - 1) : null
       );
     }
   };
 
   const handleRefreshImages = () => {
+    setIsRefreshAlertOpen(false);
     if (restaurant?.google_place_id) {
-      toast.info("Refreshing images from Google...");
-      refresh(restaurant.google_place_id, {
-        onSuccess: () => toast.success("Images refreshed successfully!"),
-        onError: () => toast.error("Failed to refresh images"),
+      toast.promise(refresh(restaurant.google_place_id), {
+        loading: "Refreshing images from Google...",
+        success: "Images refreshed successfully!",
+        error: "Failed to refresh images.",
       });
     } else {
       toast.error("No Google Place ID found for this restaurant");
     }
   };
 
+  const handleDeleteRestaurant = async () => {
+      if (!restaurant) return;
+      setIsDeleting(true);
+      toast.loading("Deleting restaurant...");
+  
+      try {
+        const { error } = await supabase.functions.invoke("delete-restaurant", {
+          body: { restaurant_id: restaurant.id },
+        });
+  
+        if (error) {
+          throw new Error(error.message);
+        }
+  
+        toast.dismiss();
+        toast.success("Restaurant deleted successfully.");
+        navigate("/explore");
+      } catch (error: any) {
+        toast.dismiss();
+        toast.error(`Failed to delete restaurant: ${error.message}`);
+      } finally {
+        setIsDeleting(false);
+        setIsDeleteAlertOpen(false);
+      }
+    };
   if (restaurantLoading) {
     return (
       <div className="min-h-screen bg-background">
@@ -356,7 +433,7 @@ const RestaurantDetails = () => {
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold mb-4">Restaurant not found</h1>
-          <Button onClick={() => navigate('/explore')}>Back to Explore</Button>
+          <Button onClick={() => navigate("/explore")}>Back to Explore</Button>
         </div>
       </div>
     );
@@ -384,47 +461,48 @@ const RestaurantDetails = () => {
 
       {/* Back Button & Admin Edit */}
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate(-1)}
-          className="gap-2"
-        >
+        <Button variant="ghost" onClick={() => navigate(-1)} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           <span className="hidden sm:inline">Back</span>
         </Button>
-        
+
         {isAdmin && (
-          <div className="flex gap-2">
-            <Button 
-              variant="outline"
-              onClick={handleRefreshImages}
-              disabled={isRefreshing}
-              className="gap-2"
-            >
-              <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
-              <span className="hidden sm:inline">Refresh Images</span>
-            </Button>
-            <Button 
-              variant="outline"
-              onClick={() => navigate(`/admin?edit=${id}`)}
-              className="gap-2"
-            >
-              <Edit className="h-4 w-4" />
-              <span className="hidden sm:inline">Edit Restaurant</span>
-            </Button>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => navigate(`/admin?edit=${id}`)}>
+                <Edit className="mr-2 h-4 w-4" />
+                <span>Edit Restaurant</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsRefreshAlertOpen(true)}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                <span>Refresh Images</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => setIsDeleteAlertOpen(true)}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                <span>Delete Restaurant</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
 
       {/* Image Gallery - Primary + Thumbnails Layout */}
       <div className="container mx-auto px-4 mb-6 sm:mb-8">
-        <ImageGallery 
-          images={images} 
-          name={restaurant.name} 
-          onImageClick={(index) => setSelectedImageIndex(index)} 
+        <ImageGallery
+          images={images}
+          name={restaurant.name}
+          onImageClick={(index) => setSelectedImageIndex(index)}
         />
       </div>
-
 
       {/* Content */}
       <div className="container mx-auto px-4 pb-16">
@@ -442,9 +520,13 @@ const RestaurantDetails = () => {
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 sm:h-5 sm:w-5 fill-gold text-gold" />
                       <span className="font-semibold">{avgRating.toFixed(1)}</span>
-                      <span className="text-muted-foreground">({reviews.length} reviews)</span>
+                      <span className="text-muted-foreground">
+                        ({reviews.length} reviews)
+                      </span>
                     </div>
-                    <span className="text-muted-foreground hidden sm:inline">•</span>
+                    <span className="text-muted-foreground hidden sm:inline">
+                      •
+                    </span>
                     <span>{restaurant.cuisine_type}</span>
                     <span className="text-muted-foreground">•</span>
                     <span className="font-medium">{restaurant.price_range}</span>
@@ -455,16 +537,27 @@ const RestaurantDetails = () => {
                     variant="outline"
                     size="icon"
                     onClick={() => id && toggleFavorite(id)}
-                    className={cn("h-10 w-10 sm:h-9 sm:w-9", id && isInFavorites(id) && "text-destructive")}
+                    className={cn(
+                      "h-10 w-10 sm:h-9 sm:w-9",
+                      id && isInFavorites(id) && "text-destructive"
+                    )}
                   >
-                    <Heart className={cn("h-5 w-5 sm:h-4 sm:w-4", id && isInFavorites(id) && "fill-current")} />
+                    <Heart
+                      className={cn(
+                        "h-5 w-5 sm:h-4 sm:w-4",
+                        id && isInFavorites(id) && "fill-current"
+                      )}
+                    />
                   </Button>
                   {id && <AddToListButton restaurantId={id} variant="button" />}
-                  <Button variant="outline" size="icon" className="h-10 w-10 sm:h-9 sm:w-9">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10 sm:h-9 sm:w-9"
+                  >
                     <Share2 className="h-5 w-5 sm:h-4 sm:w-4" />
                   </Button>
                 </div>
-
               </div>
 
               {/* Halal Status */}
@@ -472,7 +565,7 @@ const RestaurantDetails = () => {
                 <Badge
                   className={cn(
                     "text-xs sm:text-sm px-2 sm:px-3 py-1",
-                    restaurant.halal_status === 'Full Halal'
+                    restaurant.halal_status === "Full Halal"
                       ? "bg-halal-full text-halal-full-foreground"
                       : "bg-halal-partial text-halal-partial-foreground"
                   )}
@@ -481,7 +574,9 @@ const RestaurantDetails = () => {
                 </Badge>
               </div>
 
-              <p className="text-muted-foreground text-sm sm:text-base">{restaurant.description}</p>
+              <p className="text-muted-foreground text-sm sm:text-base">
+                {restaurant.description}
+              </p>
             </div>
 
             <Separator className="hidden lg:block" />
@@ -489,10 +584,13 @@ const RestaurantDetails = () => {
             {/* Reviews Section */}
             <div className="order-3">
               {(() => {
-                const userHasReview = user && sortedReviews.some(r => r.user_id === user.id);
+                const userHasReview =
+                  user && sortedReviews.some((r) => r.user_id === user.id);
                 return (
                   <div className="flex items-center justify-between mb-6">
-                    <h2 className="font-display text-xl sm:text-2xl font-bold">Reviews</h2>
+                    <h2 className="font-display text-xl sm:text-2xl font-bold">
+                      Reviews
+                    </h2>
                     {user && !showReviewForm && !userHasReview && (
                       <Button size="sm" onClick={() => setShowReviewForm(true)}>
                         Write a Review
@@ -505,7 +603,7 @@ const RestaurantDetails = () => {
               {/* Review Form */}
               {showReviewForm && (
                 <div className="mb-6">
-                  <ReviewForm 
+                  <ReviewForm
                     restaurantId={id!}
                     onSuccess={() => setShowReviewForm(false)}
                     onCancel={() => setShowReviewForm(false)}
@@ -515,9 +613,14 @@ const RestaurantDetails = () => {
 
               {sortedReviews.length === 0 && !showReviewForm ? (
                 <div className="text-center py-8 sm:py-12 bg-muted/30 rounded-xl">
-                  <p className="text-muted-foreground mb-3">No reviews yet. Be the first to review!</p>
+                  <p className="text-muted-foreground mb-3">
+                    No reviews yet. Be the first to review!
+                  </p>
                   {user && (
-                    <Button variant="outline" onClick={() => setShowReviewForm(true)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowReviewForm(true)}
+                    >
                       Write a Review
                     </Button>
                   )}
@@ -547,8 +650,12 @@ const RestaurantDetails = () => {
                   <div className="flex items-start gap-3">
                     <MapPin className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                     <div className="min-w-0">
-                      <p className="font-medium text-sm sm:text-base">Address</p>
-                      <p className="text-muted-foreground text-xs sm:text-sm break-words">{restaurant.address}</p>
+                      <p className="font-medium text-sm sm:text-base">
+                        Address
+                      </p>
+                      <p className="text-muted-foreground text-xs sm:text-sm break-words">
+                        {restaurant.address}
+                      </p>
                     </div>
                   </div>
 
@@ -556,8 +663,10 @@ const RestaurantDetails = () => {
                     <div className="flex items-start gap-3">
                       <Phone className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-medium text-sm sm:text-base">Phone</p>
-                        <a 
+                        <p className="font-medium text-sm sm:text-base">
+                          Phone
+                        </p>
+                        <a
                           href={`tel:${restaurant.phone}`}
                           className="text-primary text-xs sm:text-sm hover:underline"
                         >
@@ -571,8 +680,10 @@ const RestaurantDetails = () => {
                     <div className="flex items-start gap-3">
                       <Globe className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                       <div className="min-w-0">
-                        <p className="font-medium text-sm sm:text-base">Website</p>
-                        <a 
+                        <p className="font-medium text-sm sm:text-base">
+                          Website
+                        </p>
+                        <a
                           href={restaurant.website_url}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -595,30 +706,32 @@ const RestaurantDetails = () => {
                         <div className="flex items-center gap-3">
                           <Clock className="h-5 w-5 text-muted-foreground" />
                           <div className="text-left">
-                            <p className="font-medium text-sm sm:text-base">Hours</p>
+                            <p className="font-medium text-sm sm:text-base">
+                              Hours
+                            </p>
                             <p className="text-xs sm:text-sm text-muted-foreground">
                               Today: {formatHoursForDay(openingHours, today)}
                             </p>
                           </div>
                         </div>
-
                       </AccordionTrigger>
                       <AccordionContent>
                         <div className="pt-4 space-y-2">
                           {dayNames.map((day) => (
-                            <div 
-                              key={day} 
+                            <div
+                              key={day}
                               className={cn(
                                 "flex justify-between text-xs sm:text-sm",
                                 day === today && "font-medium text-primary"
                               )}
                             >
                               <span>{dayNamesDisplay[day]}</span>
-                              <span>{formatHoursForDay(openingHours, day)}</span>
+                              <span>
+                                {formatHoursForDay(openingHours, day)}
+                              </span>
                             </div>
                           ))}
                         </div>
-
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
@@ -636,6 +749,62 @@ const RestaurantDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialogs */}
+      <AlertDialog
+        open={isRefreshAlertOpen}
+        onOpenChange={setIsRefreshAlertOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Refresh Google Images?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will replace existing Google-sourced images with the latest
+              ones from Google. Manual uploads will be kept. This action can be
+              costly. Are you sure?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleRefreshImages}
+              disabled={isRefreshing}
+            >
+              {isRefreshing && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Refresh
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={isDeleteAlertOpen}
+        onOpenChange={setIsDeleteAlertOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              restaurant and all of its associated data, including reviews and
+              images.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteRestaurant}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Image Lightbox with Navigation */}
       <AnimatePresence>
@@ -659,7 +828,7 @@ const RestaurantDetails = () => {
             >
               <X className="h-6 w-6" />
             </Button>
-            
+
             {/* Previous Button */}
             {images.length > 1 && (
               <Button
@@ -668,15 +837,19 @@ const RestaurantDetails = () => {
                 className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 text-background bg-foreground/80 hover:bg-foreground z-10 h-12 w-12 sm:h-14 sm:w-14"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedImageIndex(prev => 
-                    prev !== null ? (prev === 0 ? images.length - 1 : prev - 1) : null
+                  setSelectedImageIndex((prev) =>
+                    prev !== null
+                      ? prev === 0
+                        ? images.length - 1
+                        : prev - 1
+                      : null
                   );
                 }}
               >
                 <ChevronLeft className="h-8 w-8" />
               </Button>
             )}
-            
+
             {/* Next Button */}
             {images.length > 1 && (
               <Button
@@ -685,27 +858,31 @@ const RestaurantDetails = () => {
                 className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-background bg-foreground/80 hover:bg-foreground z-10 h-12 w-12 sm:h-14 sm:w-14"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setSelectedImageIndex(prev => 
-                    prev !== null ? (prev === images.length - 1 ? 0 : prev + 1) : null
+                  setSelectedImageIndex((prev) =>
+                    prev !== null
+                      ? prev === images.length - 1
+                        ? 0
+                        : prev + 1
+                      : null
                   );
                 }}
               >
                 <ChevronRight className="h-8 w-8" />
               </Button>
             )}
-            
+
             {/* Image Counter */}
             {images.length > 1 && (
               <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-4 py-2 rounded-full">
                 {selectedImageIndex + 1} / {images.length}
               </div>
             )}
-            
+
             {/* Swipe hint on mobile */}
             <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-white/60 text-xs sm:hidden">
               Swipe to navigate • Tap to close
             </div>
-            
+
             <motion.img
               key={selectedImageIndex}
               initial={{ scale: 0.9, opacity: 0 }}

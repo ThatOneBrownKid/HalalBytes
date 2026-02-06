@@ -68,36 +68,23 @@ export const AdminRestaurantList = () => {
 
   const deleteRestaurantMutation = useMutation({
     mutationFn: async (id: string) => {
-      // 1. Fetch images to delete from storage
-      const { data: images } = await supabase
-        .from("restaurant_images")
-        .select("url")
-        .eq("restaurant_id", id);
-
-      // 2. Delete images from storage
-      if (images && images.length > 0) {
-        const filesToRemove = images
-          .map((img) => {
-            const parts = img.url.split("/restaurant-images/");
-            return parts.length > 1 ? decodeURIComponent(parts[1]) : null;
-          })
-          .filter((path): path is string => path !== null);
-
-        if (filesToRemove.length > 0) {
-          await supabase.storage.from("restaurant-images").remove(filesToRemove);
-        }
-      }
-
-      const { error } = await supabase.from("restaurants").delete().eq("id", id);
+      const { error } = await supabase.functions.invoke("delete-restaurant", {
+        body: { restaurant_id: id },
+      });
       if (error) throw error;
     },
+    onMutate: () => {
+      toast.loading("Deleting restaurant...");
+    },
     onSuccess: () => {
-      toast.success("Restaurant deleted successfully");
+      toast.dismiss();
+      toast.success("Restaurant deleted successfully.");
       queryClient.invalidateQueries({ queryKey: ["admin-restaurants"] });
       queryClient.invalidateQueries({ queryKey: ["admin-stats"] });
     },
     onError: (error: Error) => {
-      toast.error(error.message);
+      toast.dismiss();
+      toast.error(`Failed to delete restaurant: ${error.message}`);
     },
   });
 
