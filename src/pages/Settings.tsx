@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Header } from "@/components/layout/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Sun, Moon, Monitor, Bell, Shield, Trash2, LogOut } from "lucide-react";
+import { Sun, Moon, Monitor, Bell, Shield, Trash2, LogOut, Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +27,7 @@ const Settings = () => {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   if (!user) {
     navigate("/auth/signin");
@@ -37,9 +40,30 @@ const Settings = () => {
     toast.success("Signed out successfully");
   };
 
-  const handleDeleteAccount = () => {
-    // This would need backend implementation
-    toast.error("Account deletion requires contacting support");
+  const handleDeleteAccount = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDeleting(true);
+
+    try {
+      // 1. Invoke the Edge Function to delete data on the server
+      const { error } = await supabase.functions.invoke("delete-user");
+      
+      if (error) throw error;
+
+      // 2. CRITICAL: Clear the session immediately so the app stops using the token
+      await signOut();
+
+      // 3. HARD RELOAD: Use window.location instead of navigate.
+      // This forces a browser refresh, clearing all React Query caches and in-memory state.
+      // This prevents "User not found" errors from background data refetches.
+      toast.success("Account deleted successfully");
+      window.location.href = "/";
+
+    } catch (error: any) {
+      console.error("Error deleting account:", error);
+      toast.error(error.message || "Failed to delete account");
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -208,7 +232,9 @@ const Settings = () => {
                     <AlertDialogAction
                       onClick={handleDeleteAccount}
                       className="bg-destructive hover:bg-destructive/90"
+                      disabled={isDeleting}
                     >
+                      {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       Delete Account
                     </AlertDialogAction>
                   </AlertDialogFooter>

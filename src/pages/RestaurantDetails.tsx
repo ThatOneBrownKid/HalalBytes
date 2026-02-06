@@ -170,6 +170,10 @@ const RestaurantDetails = () => {
       return reviewsData.map((review) => ({
         ...review,
         profile: profilesMap[review.user_id] || null,
+        profile: profilesMap[review.user_id] || {
+          username: "Deleted User",
+          avatar_url: "/default_avatar.svg",
+        },
         images: imagesMap[review.id] || [],
       }));
     },
