@@ -56,42 +56,23 @@ export const ReviewCard = ({ review, currentUserId, isAdmin, isOwnReview }: Revi
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      // Delete review images from storage and tables
-      if (review.images.length > 0) {
-        const imageFileNames = review.images.map(img => img.url.split('/').pop());
-        
-        // From storage
-        await supabase.storage
-          .from('restaurant-images')
-          .remove(imageFileNames as string[]);
+      const { error } = await supabase.functions.invoke("delete-review", {
+        body: { reviewId: review.id },
+      });
 
-        // From review_images table
-        await supabase
-          .from('review_images')
-          .delete()
-          .eq('review_id', review.id);
-
-        // From restaurant_images table
-        await supabase
-          .from('restaurant_images')
-          .delete()
-          .in('url', review.images.map(i => i.url));
-      }
-      
-      // Delete the review
-      const { error } = await supabase
-        .from('reviews')
-        .delete()
-        .eq('id', review.id);
-
-      if (error) throw error;
+      if (error) throw new Error(error.message);
     },
     onSuccess: () => {
       toast.success("Review deleted");
+      // Invalidate queries for the specific restaurant
       queryClient.invalidateQueries({ queryKey: ['restaurant-reviews', review.restaurant_id] });
+      queryClient.invalidateQueries({ queryKey: ['restaurant-details', review.restaurant_id] });
+      queryClient.invalidateQueries({ queryKey: ['restaurant-images', review.restaurant_id] });
+      // Invalidate the global query for all restaurants
+      queryClient.invalidateQueries({ queryKey: ['restaurants'] });
     },
     onError: (error: Error) => {
-      toast.error(error.message);
+      toast.error(`Failed to delete review: ${error.message}`);
     },
   });
 

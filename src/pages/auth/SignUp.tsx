@@ -1,24 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, ArrowLeft, Check } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, Check, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDebounce } from "use-debounce";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signUp } = useAuth();
+  const { signUp, checkUsernameUnique } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUsernameChecking, setIsUsernameChecking] = useState(false);
+  const [isUsernameValid, setIsUsernameValid] = useState(false);
+  const [usernameMessage, setUsernameMessage] = useState("");
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
+
+  const [debouncedUsername] = useDebounce(formData.username, 500);
+
+  useEffect(() => {
+    const checkUsername = async () => {
+      if (debouncedUsername.length > 3) {
+        setIsUsernameChecking(true);
+        const isUnique = await checkUsernameUnique(debouncedUsername);
+        setIsUsernameValid(isUnique);
+        setUsernameMessage(isUnique ? "Username is available!" : "Username is already taken.");
+        setIsUsernameChecking(false);
+      } else {
+        setIsUsernameValid(false);
+        setUsernameMessage("Username must be at least 4 characters long.");
+      }
+    };
+
+    if (debouncedUsername) {
+      checkUsername();
+    } else {
+      setIsUsernameValid(false);
+      setUsernameMessage("");
+    }
+  }, [debouncedUsername, checkUsernameUnique]);
 
   const passwordRequirements = [
     { text: "At least 8 characters", met: formData.password.length >= 8 },
@@ -31,7 +59,7 @@ const SignUp = () => {
     setIsLoading(true);
 
     const { error } = await signUp(formData.email, formData.password, formData.username);
-    
+
     if (error) {
       toast({
         title: "Sign up failed",
@@ -44,10 +72,10 @@ const SignUp = () => {
 
     toast({
       title: "Account created!",
-      description: "Welcome to HalalBytes. Start exploring halal food near you.",
+      description: "Please check your email to confirm your account.",
     });
     setIsLoading(false);
-    navigate('/explore');
+    navigate(`/auth/confirm-email?email=${formData.email}`);
   };
 
   return (
@@ -105,15 +133,38 @@ const SignUp = () => {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="johndoe"
-                  value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  required
-                  className="h-12"
-                />
+                <div className="relative">
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="johndoe"
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    required
+                    className="h-12 pr-12"
+                  />
+                  {isUsernameChecking ? (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <svg className="animate-spin h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </div>
+                  ) : formData.username.length > 0 && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {isUsernameValid ? (
+                        <Check className="h-5 w-5 text-halal-full" />
+                      ) : (
+                        <AlertCircle className="h-5 w-5 text-destructive" />
+                      )}
+                    </div>
+                  )}
+                </div>
+                {usernameMessage && (
+                  <p className={`text-sm ${isUsernameValid ? "text-halal-full" : "text-destructive"}`}>
+                    {usernameMessage}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -158,7 +209,7 @@ const SignUp = () => {
                 {/* Password Requirements */}
                 <div className="pt-2 space-y-1">
                   {passwordRequirements.map((req, idx) => (
-                    <div 
+                    <div
                       key={idx}
                       className={`flex items-center gap-2 text-sm ${req.met ? 'text-halal-full' : 'text-muted-foreground'}`}
                     >
@@ -169,10 +220,10 @@ const SignUp = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full h-12 btn-glow"
-                disabled={isLoading || !passwordRequirements.every(r => r.met)}
+                disabled={isLoading || !isUsernameValid || !passwordRequirements.every(r => r.met)}
               >
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>

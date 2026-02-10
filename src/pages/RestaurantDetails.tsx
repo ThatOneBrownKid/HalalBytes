@@ -143,11 +143,11 @@ const RestaurantDetails = () => {
       if (!reviewsData || reviewsData.length === 0) return [];
 
       // Fetch profiles for reviewers
-      const userIds = reviewsData.map((r) => r.user_id);
+      const userIds = reviewsData.map((r) => r.user_id).filter(Boolean);
       const { data: profilesData } = await supabase
         .from("profiles")
         .select("user_id, username, avatar_url")
-        .in("user_id", userIds);
+        .in("user_id", userIds as string[]);
 
       const profilesMap = (profilesData || []).reduce((acc, p) => {
         acc[p.user_id] = p;
@@ -169,7 +169,6 @@ const RestaurantDetails = () => {
 
       return reviewsData.map((review) => ({
         ...review,
-        profile: profilesMap[review.user_id] || null,
         profile: profilesMap[review.user_id] || {
           username: "Deleted User",
           avatar_url: "/default_avatar.svg",

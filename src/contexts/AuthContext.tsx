@@ -19,10 +19,12 @@ interface AuthContextType {
   profile: Profile | null;
   role: 'admin' | 'moderator' | 'user' | null;
   loading: boolean;
+  checkUsernameUnique: (username: string) => Promise<boolean>;
   signUp: (email: string, password: string, username?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   updateProfile: (newProfile: Partial<Profile>) => void;
+  resendConfirmationEmail: (email: string) => Promise<{ error: Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -118,6 +120,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  const checkUsernameUnique = async (username: string) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("username", username);
+
+    if (error) {
+      console.error("Error checking username:", error);
+      return false;
+    }
+
+    return data.length === 0;
+  };
+
   const signUp = async (email: string, password: string, username?: string) => {
     const { error } = await supabase.auth.signUp({
       email,
@@ -128,6 +144,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           username: username || email.split("@")[0],
         },
       },
+    });
+    return { error };
+  };
+
+  const resendConfirmationEmail = async (email: string) => {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
     });
     return { error };
   };
@@ -157,10 +181,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         profile,
         role,
         loading,
+        checkUsernameUnique,
         signUp,
         signIn,
         signOut,
         updateProfile,
+        resendConfirmationEmail,
       }}
     >
       {children}

@@ -4,7 +4,7 @@ import { corsHeaders } from "../_shared/cors.ts";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_ANON_KEY")!
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")! // Use service role key for elevated privileges
 );
 
 serve(async (req) => {
@@ -13,10 +13,12 @@ serve(async (req) => {
   }
 
   try {
-    const { record } = await req.json();
-    const reviewId = record.id;
+    const { reviewId } = await req.json();
+    if (!reviewId) {
+      throw new Error("reviewId is required");
+    }
 
-    // First, find all image URLs associated with the review
+    // 1. Find all image URLs associated with the review from review_images table
     const { data: reviewImages, error: selectError } = await supabase
       .from("review_images")
       .select("url")
@@ -27,31 +29,41 @@ serve(async (req) => {
       throw selectError;
     }
 
+    // 2. If there are images, delete them from storage
     if (reviewImages && reviewImages.length > 0) {
       const imageUrls = reviewImages.map((img) => img.url);
-      const imageFileNames = imageUrls.map(url => url.split('/').pop());
+      const imageFileNames = imageUrls.map(url => url.substring(url.lastIndexOf('/') + 1));
 
-
-      // Delete images from storage
       const { error: storageError } = await supabase.storage
         .from("restaurant-images")
         .remove(imageFileNames);
 
       if (storageError) {
         console.error("Error deleting images from storage:", storageError);
-        // Dont throw error, we can still delete the image from the table
+        // Do not throw an error, as we want to proceed with deleting DB records
       }
+    }
 
-      // Delete from restaurant_images table
-      const { error: deleteRestError } = await supabase
-        .from("restaurant_images")
-        .delete()
-        .in("url", imageUrls);
+    // 3. Delete entries from the review_images table
+    const { error: deleteReviewImagesError } = await supabase
+      .from("review_images")
+      .delete()
+      .eq("review_id", reviewId);
 
-      if (deleteRestError) {
-        console.error("Error deleting from restaurant_images:", deleteRestError);
-        // Dont throw error, we can still delete the image from the table
-      }
+    if (deleteReviewImagesError) {
+      console.error("Error deleting from review_images:", deleteReviewImagesError);
+      throw deleteReviewImagesError;
+    }
+
+    // 4. Delete the review from the reviews table
+    const { error: deleteReviewError } = await supabase
+      .from("reviews")
+      .delete()
+      .eq("id", reviewId);
+
+    if (deleteReviewError) {
+      console.error("Error deleting review:", deleteReviewError);
+      throw deleteReviewError;
     }
 
     return new Response(JSON.stringify({ success: true }), {

@@ -13,6 +13,7 @@ import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
+import ConfirmEmail from "./pages/auth/ConfirmEmail";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import RequestPreview from "./pages/admin/RequestPreview";
 import Profile from "./pages/Profile";
@@ -48,6 +49,7 @@ const App = () => (
               />
               <Route path="/auth/signin" element={<SignIn />} />
               <Route path="/auth/signup" element={<SignUp />} />
+              <Route path="/auth/confirm-email" element={<ConfirmEmail />} />
               <Route path="/auth/forgot-password" element={<ForgotPassword />} />
               <Route path="/auth/reset-password" element={<ResetPassword />} />
               {/* User Routes */}
