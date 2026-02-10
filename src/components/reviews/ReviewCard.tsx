@@ -56,29 +56,53 @@ export const ReviewCard = ({ review, currentUserId, isAdmin, isOwnReview }: Revi
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.functions.invoke("delete-review", {
+      const { data, error } = await supabase.functions.invoke("delete-review", {
         body: { reviewId: review.id },
       });
-
       if (error) throw new Error(error.message);
+      return { ...data, deletedReviewId: review.id, deletedImageUrls: review.images.map(img => img.url) };
     },
-    onSuccess: () => {
-      toast.success("Review deleted");
-      // Invalidate queries for the specific restaurant
+    onMutate: async ({ deletedReviewId, deletedImageUrls }) => {
+      await queryClient.cancelQueries({ queryKey: ['restaurant-reviews', review.restaurant_id] });
+      await queryClient.cancelQueries({ queryKey: ['restaurant-images', review.restaurant_id] });
+      await queryClient.cancelQueries({ queryKey: ['restaurants'] });
+
+      const previousReviews = queryClient.getQueryData(['restaurant-reviews', review.restaurant_id]);
+      const previousImages = queryClient.getQueryData(['restaurant-images', review.restaurant_id]);
+
+      queryClient.setQueryData(['restaurant-reviews', review.restaurant_id], (old: any) => 
+        old ? old.filter((r: any) => r.id !== deletedReviewId) : []
+      );
+      
+      queryClient.setQueryData(['restaurant-images', review.restaurant_id], (old: any) =>
+        old ? old.filter((url: string) => !deletedImageUrls.includes(url)) : []
+      );
+
+      return { previousReviews, previousImages };
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || "Review deleted successfully");
+    },
+    onError: (err, variables, context) => {
+      toast.error(`Failed to delete review: ${err.message}`);
+      if (context?.previousReviews) {
+        queryClient.setQueryData(['restaurant-reviews', review.restaurant_id], context.previousReviews);
+      }
+      if (context?.previousImages) {
+        queryClient.setQueryData(['restaurant-images', review.restaurant_id], context.previousImages);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['restaurant-reviews', review.restaurant_id] });
-      queryClient.invalidateQueries({ queryKey: ['restaurant-details', review.restaurant_id] });
       queryClient.invalidateQueries({ queryKey: ['restaurant-images', review.restaurant_id] });
-      // Invalidate the global query for all restaurants
       queryClient.invalidateQueries({ queryKey: ['restaurants'] });
-    },
-    onError: (error: Error) => {
-      toast.error(`Failed to delete review: ${error.message}`);
+      queryClient.invalidateQueries({ queryKey: ['restaurant-details', review.restaurant_id] });
     },
   });
 
   const handleDelete = () => {
     setShowDeleteDialog(false);
-    deleteMutation.mutate();
+    deleteMutation.mutate({ deletedReviewId: review.id, deletedImageUrls: review.images.map(img => img.url) });
   };
 
   if (isEditing) {

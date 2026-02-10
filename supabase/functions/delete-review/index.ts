@@ -29,11 +29,26 @@ serve(async (req) => {
       throw selectError;
     }
 
-    // 2. If there are images, delete them from storage
+    // 2. If there are images, delete them from tables and storage
     if (reviewImages && reviewImages.length > 0) {
       const imageUrls = reviewImages.map((img) => img.url);
-      const imageFileNames = imageUrls.map(url => url.substring(url.lastIndexOf('/') + 1));
 
+      // Delete from restaurant_images table
+      const { error: deleteRestImagesError } = await supabase
+        .from("restaurant_images")
+        .delete()
+        .in("url", imageUrls);
+
+      if (deleteRestImagesError) {
+        console.error(
+          "Error deleting from restaurant_images table:",
+          deleteRestImagesError
+        );
+        // We might not want to throw, to allow deletion to continue
+      }
+
+      // Delete from storage
+      const imageFileNames = imageUrls.map(url => url.substring(url.lastIndexOf('/') + 1));
       const { error: storageError } = await supabase.storage
         .from("restaurant-images")
         .remove(imageFileNames);
@@ -66,7 +81,7 @@ serve(async (req) => {
       throw deleteReviewError;
     }
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ message: "Review deleted successfully" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
