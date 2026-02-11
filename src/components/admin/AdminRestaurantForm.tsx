@@ -169,6 +169,9 @@ export const AdminRestaurantForm = ({ editRestaurantId, onSuccess }: AdminRestau
   // Populate form when editing
   useEffect(() => {
     if (existingRestaurant) {
+      const existingHours = existingRestaurant.opening_hours as unknown as OpeningHoursData | null;
+      const hasHours = existingHours && Object.keys(existingHours).length > 0;
+
       setFormData({
         name: existingRestaurant.name,
         address: existingRestaurant.address,
@@ -181,7 +184,7 @@ export const AdminRestaurantForm = ({ editRestaurantId, onSuccess }: AdminRestau
         website_url: existingRestaurant.website_url || "",
         lat: existingRestaurant.lat,
         lng: existingRestaurant.lng,
-        opening_hours: (existingRestaurant.opening_hours as unknown as OpeningHoursData) || getDefaultOpeningHours(),
+        opening_hours: hasHours ? existingHours : getDefaultOpeningHours(),
         google_place_id: existingRestaurant.google_place_id || "",
       });
 

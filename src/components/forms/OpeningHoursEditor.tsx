@@ -45,14 +45,32 @@ interface OpeningHoursEditorProps {
 
 export const OpeningHoursEditor = ({ value, onChange }: OpeningHoursEditorProps) => {
   const updateDay = (day: keyof OpeningHoursData, updates: Partial<DayHours>) => {
+    const previousDayState = value[day] || { isOpen: false, openTime: "09:00", closeTime: "21:00" };
+
+    const newDayState = { ...previousDayState, ...updates };
+
+    // If isOpen is true, ensure both openTime and closeTime have values.
+    if (newDayState.isOpen) {
+      newDayState.openTime = newDayState.openTime || "09:00";
+      newDayState.closeTime = newDayState.closeTime || "21:00";
+    }
+
+    // If closing, clear the times to be consistent with Google's format.
+    if (updates.isOpen === false) {
+      newDayState.openTime = "";
+      newDayState.closeTime = "";
+    }
+    
     onChange({
       ...value,
-      [day]: { ...value[day], ...updates },
+      [day]: newDayState
     });
   };
 
   const applyToAll = (sourceDay: keyof OpeningHoursData) => {
     const sourceHours = value[sourceDay];
+    if (!sourceHours) return; // Don't apply if source is empty
+    
     const newHours = { ...value };
     DAYS.forEach(({ key }) => {
       newHours[key] = { ...sourceHours };
@@ -81,7 +99,7 @@ export const OpeningHoursEditor = ({ value, onChange }: OpeningHoursEditorProps)
             <span className="text-sm font-medium">{label}</span>
             
             <Switch
-              checked={value[key]?.isOpen ?? true}
+              checked={value[key]?.isOpen ?? false}
               onCheckedChange={(checked) => updateDay(key, { isOpen: checked })}
             />
             
@@ -99,20 +117,22 @@ export const OpeningHoursEditor = ({ value, onChange }: OpeningHoursEditorProps)
                   onChange={(e) => updateDay(key, { closeTime: e.target.value })}
                   className="h-8 text-sm"
                 />
-                {key === "monday" && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => applyToAll("monday")}
-                    className="text-xs whitespace-nowrap"
-                  >
-                    Apply to all
-                  </Button>
-                )}
+                <div className="w-[90px]">
+                  {key === "monday" && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => applyToAll("monday")}
+                      className="text-xs whitespace-nowrap"
+                    >
+                      Apply to all
+                    </Button>
+                  )}
+                </div>
               </>
             ) : (
-              <span className="col-span-2 text-sm text-muted-foreground">Closed</span>
+              <span className="col-span-3 text-sm text-muted-foreground">Closed</span>
             )}
           </div>
         ))}
