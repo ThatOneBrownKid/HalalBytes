@@ -120,8 +120,8 @@ const RequestPreview = () => {
           website_url: submissionData.website_url || null,
           lat,
           lng,
-          opening_hours: submissionData.opening_hours || null,
-          
+          opening_hours: submissionData.opening_hours,
+
           created_by: request?.user_id,
         })
         .select()
@@ -131,51 +131,44 @@ const RequestPreview = () => {
 
       // Add images
       if (images.length > 0) {
-        const processedImages = await Promise.all(images.map(async (url) => {
+        const uniqueImageUrls = [...new Set(images)];
+
+        const processedImages = await Promise.all(uniqueImageUrls.map(async (url: string) => {
           let finalUrl = url;
-          
-          // Check if image is in submissions folder and move it to restaurants
-          if (url.includes('/submissions/')) {
-            try {
-              const pathParts = url.split('/restaurant-images/');
-              if (pathParts.length > 1) {
-                let oldPath = decodeURIComponent(pathParts[1]);
-                // Strip query parameters if present
-                oldPath = oldPath.split('?')[0];
-                oldPath = oldPath.replace(/^\/+/, '');
-                if (oldPath.startsWith('submissions/')) {
-                  const newPath = oldPath.replace('submissions/', 'restaurants/');
-                  
-                  const { error: moveError } = await supabase.storage
-                    .from('restaurant-images')
-                    .move(oldPath, newPath);
-                    
-                  if (!moveError) {
-                    const { data: publicUrlData } = supabase.storage
-                      .from('restaurant-images')
-                      .getPublicUrl(newPath);
-                    finalUrl = publicUrlData.publicUrl;
-                  } else {
-                    // Fallback to copy if move fails (e.g. permissions)
-                    const { error: copyError } = await supabase.storage
-                      .from('restaurant-images')
-                      .copy(oldPath, newPath);
-                    if (!copyError) {
-                      const { data: publicUrlData } = supabase.storage
-                        .from('restaurant-images')
-                        .getPublicUrl(newPath);
-                    // Only update URL if copy succeeded
-                      finalUrl = publicUrlData.publicUrl;
-                      // Try to delete original
-                      await supabase.storage.from('restaurant-images').remove([oldPath]);
-                    }
-                  }
-                }
-              }
-            } catch (e) {
-              console.error("Error moving image:", e);
-            }
+          if (!url.includes('/submissions/')) {
+            return url; // Not a submission image, return original URL
           }
+
+          try {
+            const pathParts = url.split('/restaurant-images/');
+            if (pathParts.length <= 1) {
+              return url; // Return original URL if path can't be parsed
+            }
+
+            let oldPath = decodeURIComponent(pathParts[1]);
+            oldPath = oldPath.split('?')[0]; // Strip query parameters
+
+            const newPath = oldPath.replace('submissions/', 'restaurants/');
+            
+            const { error: copyError } = await supabase.storage
+              .from('restaurant-images')
+              .copy(oldPath, newPath);
+
+            if (copyError) {
+              return url; // Return original URL if all operations fail
+            }
+
+            // If copy succeeded, get new public URL and remove old file
+            const { data: publicUrlData } = supabase.storage
+              .from('restaurant-images')
+              .getPublicUrl(newPath);
+            finalUrl = publicUrlData.publicUrl;
+            
+            await supabase.storage.from('restaurant-images').remove([oldPath]);
+          } catch (e: any) {
+            // Silently fail on unexpected errors to not break the UI
+          }
+          
           return finalUrl;
         }));
 

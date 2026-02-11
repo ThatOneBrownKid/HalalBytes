@@ -179,7 +179,7 @@ export const GooglePlacesAutocomplete = ({
           throw new Error(data.error?.message || "Failed to fetch place details.");
         }
         
-        console.log("Places API (New) Details Response:", data);
+        // console.log("Places API (New) Details Response:", data);
   
         // Parse price level from string like "PRICE_LEVEL_MODERATE" to number
         const priceLevelMap: Record<string, number> = {

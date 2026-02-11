@@ -79,6 +79,7 @@ const AdminDashboard = () => {
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<string>("pending");
+  const [processingRequestId, setProcessingRequestId] = useState<string | null>(null);
   
   // Check if we should open edit mode for a specific restaurant
   const editRestaurantId = searchParams.get('edit');
@@ -156,6 +157,7 @@ const AdminDashboard = () => {
         website_url: submissionData.website_url || null,
         lat: lat || 40.7128,
         lng: lng || -74.0060,
+        opening_hours: submissionData.opening_hours || null,
         created_by: request.user_id,
       })
       .select()
@@ -165,47 +167,44 @@ const AdminDashboard = () => {
 
       // Handle images if present
       if (submissionData.image_urls && Array.isArray(submissionData.image_urls) && submissionData.image_urls.length > 0) {
-        const processedImages = await Promise.all(submissionData.image_urls.map(async (url: string) => {
+        const uniqueImageUrls = [...new Set(submissionData.image_urls)];
+
+        const processedImages = await Promise.all(uniqueImageUrls.map(async (url: string) => {
           let finalUrl = url;
-          if (url.includes('/submissions/')) {
-            try {
-              const pathParts = url.split('/restaurant-images/');
-              if (pathParts.length > 1) {
-                let oldPath = decodeURIComponent(pathParts[1]);
-                // Strip query parameters if present
-                oldPath = oldPath.split('?')[0];
-                oldPath = oldPath.replace(/^\/+/, '');
-                if (oldPath.startsWith('submissions/')) {
-                  const newPath = oldPath.replace('submissions/', 'restaurants/');
-                  const { error: moveError } = await supabase.storage
-                    .from('restaurant-images')
-                    .move(oldPath, newPath);
-                  if (!moveError) {
-                    const { data: publicUrlData } = supabase.storage
-                      .from('restaurant-images')
-                      .getPublicUrl(newPath);
-                    finalUrl = publicUrlData.publicUrl;
-                  } else {
-                    // Fallback to copy if move fails (e.g. permissions)
-                    const { error: copyError } = await supabase.storage
-                      .from('restaurant-images')
-                      .copy(oldPath, newPath);
-                    if (!copyError) {
-                      const { data: publicUrlData } = supabase.storage
-                        .from('restaurant-images')
-                        .getPublicUrl(newPath);
-                      // Only update URL if copy succeeded
-                      finalUrl = publicUrlData.publicUrl;
-                      // Try to delete original
-                      await supabase.storage.from('restaurant-images').remove([oldPath]);
-                    }
-                  }
-                }
-              }
-            } catch (e) {
-              console.error("Error moving image:", e);
-            }
+          if (!url.includes('/submissions/')) {
+            return url; // Not a submission image, return original URL
           }
+
+          try {
+            const pathParts = url.split('/restaurant-images/');
+            if (pathParts.length <= 1) {
+              return url; // Return original URL if path can't be parsed
+            }
+
+            let oldPath = decodeURIComponent(pathParts[1]);
+            oldPath = oldPath.split('?')[0]; // Strip query parameters
+
+            const newPath = oldPath.replace('submissions/', 'restaurants/');
+            
+            const { error: copyError } = await supabase.storage
+              .from('restaurant-images')
+              .copy(oldPath, newPath);
+
+            if (copyError) {
+              return url; // Return original URL if all operations fail
+            }
+
+            // If copy succeeded, get new public URL and remove old file
+            const { data: publicUrlData } = supabase.storage
+              .from('restaurant-images')
+              .getPublicUrl(newPath);
+            finalUrl = publicUrlData.publicUrl;
+            
+            await supabase.storage.from('restaurant-images').remove([oldPath]);
+          } catch (e: any) {
+            // Silently fail on unexpected errors to not break the UI
+          }
+          
           return finalUrl;
         }));
 
@@ -236,6 +235,9 @@ const AdminDashboard = () => {
     },
     onError: (error: Error) => {
       toast.error(error.message);
+    },
+    onSettled: () => {
+      setProcessingRequestId(null);
     },
   });
 
@@ -450,10 +452,13 @@ const AdminDashboard = () => {
                                   size="sm"
                                   variant="outline"
                                   className="h-8 text-green-600 hover:text-green-700 hover:bg-green-50"
-                                  onClick={() => approveRequestMutation.mutate({ requestId: request.id })}
-                                  disabled={approveRequestMutation.isPending}
+                                  onClick={() => {
+                                    setProcessingRequestId(request.id);
+                                    approveRequestMutation.mutate({ requestId: request.id });
+                                  }}
+                                  disabled={approveRequestMutation.isPending && processingRequestId === request.id}
                                 >
-                                  {approveRequestMutation.isPending ? (
+                                  {approveRequestMutation.isPending && processingRequestId === request.id ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
                                   ) : (
                                     <Check className="h-4 w-4" />
@@ -558,10 +563,13 @@ const AdminDashboard = () => {
                                         size="sm"
                                         variant="outline"
                                         className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                                        onClick={() => approveRequestMutation.mutate({ requestId: request.id })}
-                                        disabled={approveRequestMutation.isPending}
+                                        onClick={() => {
+                                          setProcessingRequestId(request.id);
+                                          approveRequestMutation.mutate({ requestId: request.id });
+                                        }}
+                                        disabled={approveRequestMutation.isPending && processingRequestId === request.id}
                                       >
-                                        {approveRequestMutation.isPending ? (
+                                        {approveRequestMutation.isPending && processingRequestId === request.id ? (
                                           <Loader2 className="h-4 w-4 animate-spin" />
                                         ) : (
                                           <Check className="h-4 w-4" />
