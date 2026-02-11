@@ -74,9 +74,10 @@ export const useGoogleDataRefresh = (restaurant: RestaurantData | null) => {
     onSuccess: async (data, placeId) => {
       if (!restaurant) return;
 
-      // Update restaurant with refreshed data - only timestamp
+      // Update restaurant with refreshed data - timestamp and place ID
       const updateData: any = {
         google_data_fetched_at: new Date().toISOString(),
+        google_place_id: placeId,
       };
       
       // Removed updates for opening_hours, description, and cuisine_type
