@@ -60,7 +60,7 @@ const Favorites = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const queryClient = useQueryClient();
-  const { deleteList, moveToList } = useFavorites();
+  const { listNames: existingListNames, deleteList, moveToList } = useFavorites();
   
   const [newListName, setNewListName] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -164,11 +164,28 @@ const Favorites = () => {
   });
 
   const handleCreateList = () => {
-    if (!newListName.trim()) return;
-    // Just close dialog - list will be created when user adds first item
-    toast.success(`List "${newListName}" ready. Add restaurants to populate it.`);
+    const trimmedName = newListName.trim();
+    if (!trimmedName) return;
+
+    const allLists = existingListNames;
+    if (allLists.includes(trimmedName)) {
+      toast.error(`List "${trimmedName}" already exists.`);
+      return;
+    }
+
+    if (allLists.filter(l => l !== 'Favorites').length >= 5) {
+      toast.error("You can only have a maximum of 5 custom lists.");
+      return;
+    }
+    
+    const tempLists = JSON.parse(localStorage.getItem("tempFavoriteLists") || "[]");
+    localStorage.setItem("tempFavoriteLists", JSON.stringify([...tempLists, trimmedName]));
+
+    queryClient.invalidateQueries({ queryKey: ["favorites"] });
+    setActiveTab(trimmedName);
     setNewListName("");
     setIsCreateDialogOpen(false);
+    toast.success(`List "${trimmedName}" created. Add restaurants to populate it.`);
   };
 
   const handleRenameList = () => {
@@ -209,8 +226,7 @@ const Favorites = () => {
     return null;
   }
 
-  // Group favorites by list name
-  const listNames = [...new Set(favorites?.map((f) => f.list_name) || [])];
+  const listNames = existingListNames;
   // Ensure Favorites is always first
   const orderedListNames = ["Favorites", ...listNames.filter(n => n !== "Favorites")];
   const uniqueListNames = [...new Set(orderedListNames)];

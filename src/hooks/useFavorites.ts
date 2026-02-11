@@ -5,10 +5,20 @@ import { toast } from "sonner";
 
 export interface Favorite {
   id: string;
-  user_id: string;
-  restaurant_id: string;
   list_name: string;
-  created_at: string;
+  restaurant_id: string;
+  restaurant: {
+    id: string;
+    name: string;
+    description: string | null;
+    address: string;
+    price_range: "$" | "$$" | "$$$" | "$$$$";
+    cuisine_type: string;
+    halal_status: "Full Halal" | "Partial Halal";
+    is_sponsored: boolean;
+    opening_hours: unknown;
+    reviews: { rating: number }[];
+  };
 }
 
 export const useFavorites = () => {
@@ -23,7 +33,23 @@ export const useFavorites = () => {
 
       const { data, error } = await supabase
         .from("favorites")
-        .select("*")
+        .select(`
+          id,
+          list_name,
+          restaurant_id,
+          restaurant:restaurants (
+            id,
+            name,
+            description,
+            address,
+            price_range,
+            cuisine_type,
+            halal_status,
+            is_sponsored,
+            opening_hours,
+            reviews (rating)
+          )
+        `)
         .eq("user_id", user.id);
 
       if (error) throw error;
@@ -32,8 +58,19 @@ export const useFavorites = () => {
     enabled: !!user,
   });
 
-  // Get unique list names
-  const listNames = [...new Set(favorites.map((f) => f.list_name))];
+  // Get unique list names from DB
+  const dbListNames = [...new Set(favorites.map((f) => f.list_name))];
+
+  // Get temporary lists from localStorage
+  const getTempLists = () => {
+    const stored = localStorage.getItem("tempFavoriteLists");
+    return stored ? JSON.parse(stored) : [];
+  };
+
+  const tempLists = getTempLists();
+  
+  const listNames = [...new Set([...dbListNames, ...tempLists])];
+
 
   // Check if a restaurant is favorited
   const isFavorited = (restaurantId: string) => {
@@ -50,6 +87,21 @@ export const useFavorites = () => {
     mutationFn: async ({ restaurantId, listName = "Favorites" }: { restaurantId: string; listName?: string }) => {
       if (!user) throw new Error("Must be logged in");
 
+      // Check for list limit
+      if (listName !== "Favorites") {
+        const { data: existingListsData, error: existingListsError } = await supabase
+          .from("favorites")
+          .select("list_name")
+          .eq("user_id", user.id);
+
+        if (existingListsError) throw existingListsError;
+        
+        const uniqueLists = [...new Set(existingListsData.map(item => item.list_name))];
+        if (!uniqueLists.includes(listName) && uniqueLists.filter(l => l !== 'Favorites').length >= 5) {
+          throw new Error("You can only have a maximum of 5 custom lists.");
+        }
+      }
+
       const { data, error } = await supabase
         .from("favorites")
         .insert({
@@ -63,9 +115,16 @@ export const useFavorites = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["favorites"] });
       toast.success("Added to favorites");
+
+      // Remove from temp lists if it exists
+      const tempLists = JSON.parse(localStorage.getItem("tempFavoriteLists") || "[]");
+      if (tempLists.includes(data.list_name)) {
+        const newTempLists = tempLists.filter((l: string) => l !== data.list_name);
+        localStorage.setItem("tempFavoriteLists", JSON.stringify(newTempLists));
+      }
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -126,6 +185,25 @@ export const useFavorites = () => {
       return;
     }
 
+    // Check for list limit
+    if (newListName !== "Favorites") {
+      const { data: existingListsData, error: existingListsError } = await supabase
+        .from("favorites")
+        .select("list_name")
+        .eq("user_id", user.id);
+
+      if (existingListsError) {
+        toast.error(existingListsError.message);
+        return;
+      }
+      
+      const uniqueLists = [...new Set(existingListsData.map(item => item.list_name))];
+      if (!uniqueLists.includes(newListName) && uniqueLists.filter(l => l !== 'Favorites').length >= 5) {
+        toast.error("You can only have a maximum of 5 custom lists.");
+        return;
+      }
+    }
+
     const existing = getFavorite(restaurantId);
     if (existing) {
       // Update the list name
@@ -139,6 +217,13 @@ export const useFavorites = () => {
       } else {
         queryClient.invalidateQueries({ queryKey: ["favorites"] });
         toast.success(`Moved to ${newListName}`);
+
+        // Remove from temp lists if it exists
+        const tempLists = JSON.parse(localStorage.getItem("tempFavoriteLists") || "[]");
+        if (tempLists.includes(newListName)) {
+          const newTempLists = tempLists.filter((l: string) => l !== newListName);
+          localStorage.setItem("tempFavoriteLists", JSON.stringify(newTempLists));
+        }
       }
     } else {
       // Add to the new list
@@ -152,6 +237,13 @@ export const useFavorites = () => {
     if (listName === "Favorites") {
       toast.error("Cannot delete the default Favorites list");
       return;
+    }
+
+    // Always try to remove from localStorage first
+    const tempLists = JSON.parse(localStorage.getItem("tempFavoriteLists") || "[]");
+    if (tempLists.includes(listName)) {
+      const newTempLists = tempLists.filter((l: string) => l !== listName);
+      localStorage.setItem("tempFavoriteLists", JSON.stringify(newTempLists));
     }
 
     const { error } = await supabase
