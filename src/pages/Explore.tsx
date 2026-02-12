@@ -42,16 +42,37 @@ interface Restaurant {
 // Fetch user's approximate location from IP
 const fetchIPLocation = async (): Promise<{ lat: number; lng: number; city: string } | null> => {
   try {
-    const response = await fetch('https://ipapi.co/json/');
-    if (!response.ok) return null;
-    const data = await response.json();
-    return {
-      lat: data.latitude,
-      lng: data.longitude,
-      city: `${data.city}, ${data.region_code || data.region}`
-    };
+    // Try geojs.io first - very CORS friendly
+    const response = await fetch('https://get.geojs.io/v1/ip/geo.json');
+    if (response.ok) {
+      const data = await response.json();
+      if (data.latitude && data.longitude) {
+        return {
+          lat: parseFloat(data.latitude),
+          lng: parseFloat(data.longitude),
+          city: `${data.city}, ${data.region || data.country_code}`
+        };
+      }
+    }
+    throw new Error('geojs.io returned invalid data');
   } catch (error) {
-    console.error('Failed to fetch IP location:', error);
+    console.warn('Primary IP location fetch failed, trying backup:', error);
+    try {
+      // Backup: ipapi.co
+      const response = await fetch('https://ipapi.co/json/');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.latitude && data.longitude) {
+          return {
+            lat: data.latitude,
+            lng: data.longitude,
+            city: `${data.city}, ${data.region_code || data.region}`
+          };
+        }
+      }
+    } catch (backupError) {
+      console.error('All IP location fetches failed:', backupError);
+    }
     return null;
   }
 };

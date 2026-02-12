@@ -9,8 +9,8 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 import "leaflet/dist/leaflet.css";
-import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
-import "react-leaflet-cluster/dist/assets/MarkerCluster.Default.css";
+import "react-leaflet-cluster/lib/assets/MarkerCluster.css";
+import "react-leaflet-cluster/lib/assets/MarkerCluster.Default.css";
 import MarkerClusterGroup from "react-leaflet-cluster";
 
 interface Restaurant {
