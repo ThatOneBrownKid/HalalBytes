@@ -1,3 +1,6 @@
 name = "halal-bytes"
 compatibility_date = "2024-04-01"
 pages_build_output_dir = "dist"
+
+[vars]
+NPM_CONFIG_LEGACY_PEER_DEPS = "true"
