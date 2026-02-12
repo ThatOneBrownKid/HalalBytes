@@ -27,6 +27,18 @@ export function Footer() {
               About
             </Link>
             <Link
+              to="/privacy"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Privacy
+            </Link>
+            <Link
+              to="/terms"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Terms
+            </Link>
+            <Link
               to="/submit-restaurant"
               className="text-sm text-muted-foreground hover:text-foreground"
             >

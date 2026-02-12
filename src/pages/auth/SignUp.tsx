@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDebounce } from "use-debounce";
+import TermsAgreement from "@/components/auth/TermsAgreement";
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ const SignUp = () => {
   const [isUsernameChecking, setIsUsernameChecking] = useState(false);
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [usernameMessage, setUsernameMessage] = useState("");
+  const [hasAgreedToTerms, setHasAgreedToTerms] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -57,6 +59,16 @@ const SignUp = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    if (!hasAgreedToTerms) {
+      toast({
+        title: "Terms Agreement Required",
+        description: "Please agree to the Terms of Service and Privacy Policy to continue.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     const { error } = await signUp(formData.email, formData.password, formData.username);
 
@@ -220,10 +232,19 @@ const SignUp = () => {
                 </div>
               </div>
 
+              {/* Terms Agreement */}
+              <div className="space-y-2">
+                <Label>Terms of Service & Privacy Policy</Label>
+                <TermsAgreement 
+                  onAgreementChange={setHasAgreedToTerms}
+                  isAgreed={hasAgreedToTerms}
+                />
+              </div>
+
               <Button
                 type="submit"
                 className="w-full h-12 btn-glow"
-                disabled={isLoading || !isUsernameValid || !passwordRequirements.every(r => r.met)}
+                disabled={isLoading || !isUsernameValid || !passwordRequirements.every(r => r.met) || !hasAgreedToTerms}
               >
                 {isLoading ? "Creating account..." : "Create Account"}
               </Button>
