@@ -9,6 +9,9 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 import "leaflet/dist/leaflet.css";
+import "react-leaflet-cluster/dist/assets/MarkerCluster.css";
+import "react-leaflet-cluster/dist/assets/MarkerCluster.Default.css";
+import MarkerClusterGroup from "react-leaflet-cluster";
 
 interface Restaurant {
   id: string;
@@ -377,41 +380,42 @@ export const RestaurantMap = ({
         )}
 
         {/* Restaurant markers */}
-        {restaurants.map((restaurant) => (
-          <Marker
-            key={restaurant.id}
-            position={[restaurant.lat, restaurant.lng]}
-            icon={createMarkerIcon(
-              getMarkerColor(restaurant),
-              selectedId === restaurant.id || selectedRestaurant?.id === restaurant.id || hoveredId === restaurant.id
-            )}
-            eventHandlers={{
-              click: () => handleMarkerClick(restaurant),
-            }}
-          >
-            {!isMobile && (
-              <Popup>
-                <div className="w-48">
-                  {restaurant.images && restaurant.images.length > 0 && (
-                    <img src={restaurant.images[0]} alt={restaurant.name} className="h-24 w-full object-cover rounded-md mb-2" />
-                  )}
-                  <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{restaurant.name}</h3>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
-                    <Star className="h-3 w-3 fill-gold text-gold" />
-                    <span>{restaurant.rating?.toFixed(1)}</span>
-                    <span>({restaurant.review_count})</span>
-                  </div>
-                  <NavLink to={`/restaurant/${restaurant.id}`} className="block w-full">
-                    <Button size="sm" className="w-full">
-                      View Details
-                    </Button>
-                  </NavLink>
-                </div>
-              </Popup>
-            )}
-          </Marker>
-        ))}
-      </MapContainer>
+                                <MarkerClusterGroup disableClusteringAtZoom={10} maxClusterRadius={40}>
+                                  {restaurants.map((restaurant) => (
+                                    <Marker
+                                      key={restaurant.id}
+                                      position={[restaurant.lat, restaurant.lng]}
+                                      icon={createMarkerIcon(
+                                        getMarkerColor(restaurant),
+                                        selectedId === restaurant.id || selectedRestaurant?.id === restaurant.id || hoveredId === restaurant.id
+                                      )}
+                                      eventHandlers={{
+                                        click: () => handleMarkerClick(restaurant),
+                                      }}
+                                    >
+                                      {!isMobile && (
+                                        <Popup>
+                                          <div className="w-48">
+                                            {restaurant.images && restaurant.images.length > 0 && (
+                                              <img src={restaurant.images[0]} alt={restaurant.name} className="h-24 w-full object-cover rounded-md mb-2" />
+                                            )}
+                                            <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{restaurant.name}</h3>
+                                            <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+                                              <Star className="h-3 w-3 fill-gold text-gold" />
+                                              <span>{restaurant.rating?.toFixed(1)}</span>
+                                              <span>({restaurant.review_count})</span>
+                                            </div>
+                                            <NavLink to={`/restaurant/${restaurant.id}`} className="block w-full">
+                                              <Button size="sm" className="w-full">
+                                                View Details
+                                              </Button>
+                                            </NavLink>
+                                          </div>
+                                        </Popup>
+                                      )}
+                                    </Marker>
+                                  ))}
+                                </MarkerClusterGroup>      </MapContainer>
 
       {/* Mobile annotation overlay */}
       <AnimatePresence>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlidersHorizontal, X, Clock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,11 +48,15 @@ const cuisineOptions = [
   'Latin American'
 ];
 const halalOptions = ['Full Halal', 'Partial Halal'];
-const distanceMarks = [5, 10, 25, 50, 100];
+const distanceMarks = [5, 10, 25, 50];
 
 export const FilterBar = ({ filters, onFiltersChange }: FilterBarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [tempFilters, setTempFilters] = useState(filters);
+
+  useEffect(() => {
+    setTempFilters(filters);
+  }, [filters]);
 
   const activeFiltersCount = 
     filters.priceRange.length + 
@@ -144,7 +148,7 @@ export const FilterBar = ({ filters, onFiltersChange }: FilterBarProps) => {
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-medium">Distance</h3>
                   <span className="text-sm text-muted-foreground">
-                    {tempFilters.distance === 100 ? "100+ km" : `${tempFilters.distance} km`}
+                    {tempFilters.distance === 50 ? "50+ mi" : `${tempFilters.distance} mi`}
                   </span>
                 </div>
                 <div className="px-2">
@@ -152,15 +156,14 @@ export const FilterBar = ({ filters, onFiltersChange }: FilterBarProps) => {
                     value={[tempFilters.distance]}
                     onValueChange={(value) => setTempFilters(prev => ({ ...prev, distance: value[0] }))}
                     min={5}
-                    max={100}
+                    max={50}
                     step={5}
                     className="w-full"
                   />
                   <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                    <span>5 km</span>
-                    <span>25 km</span>
-                    <span>50 km</span>
-                    <span>100+ km</span>
+                    <span>5 mi</span>
+                    <span>25 mi</span>
+                    <span>50+ mi</span>
                   </div>
                 </div>
               </div>
@@ -261,7 +264,7 @@ export const FilterBar = ({ filters, onFiltersChange }: FilterBarProps) => {
                 }}
               >
                 <MapPin className="h-3 w-3" />
-                {filters.distance} km
+                {filters.distance} mi
                 <X className="h-3 w-3" />
               </Badge>
             </motion.div>

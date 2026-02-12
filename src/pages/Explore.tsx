@@ -20,7 +20,7 @@ import { checkIfOpen } from "@/utils/timeFormat";
 // Lazy load the map to avoid context issues
 const RestaurantMap = lazy(() => import("@/components/map/RestaurantMap").then(m => ({ default: m.RestaurantMap })));
 
-const distanceOptions = [5, 10, 25, 50, 100];
+
 
 interface Restaurant {
   id: string;
@@ -56,9 +56,9 @@ const fetchIPLocation = async (): Promise<{ lat: number; lng: number; city: stri
   }
 };
 
-// Calculate distance in km between two coordinates
+// Calculate distance in miles between two coordinates
 const calculateDistance = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
-  const R = 6371; // Earth's radius in km
+  const R = 3959; // Earth's radius in miles
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLng = (lng2 - lng1) * Math.PI / 180;
   const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -126,6 +126,23 @@ const Explore = () => {
       });
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (mapBounds) {
+      const distanceToCorner = calculateDistance(
+        mapCenter.lat,
+        mapCenter.lng,
+        mapBounds.north,
+        mapBounds.east
+      );
+      // Round to nearest 5 and cap at 50
+      const newDistance = Math.min(Math.round(distanceToCorner / 5) * 5, 50);
+      setFilters(prev => ({
+        ...prev,
+        distance: newDistance
+      }));
+    }
+  }, [mapBounds, mapCenter.lat, mapCenter.lng]);
 
   // Fetch restaurants from database
   const { data: restaurants = [], isLoading } = useQuery({
@@ -196,10 +213,23 @@ const Explore = () => {
   // Filter restaurants based on active filters and distance
   const filteredRestaurants = useMemo(() => {
     return restaurants.filter((restaurant) => {
-      // Filter by distance from current map center
-      const distance = calculateDistance(mapCenter.lat, mapCenter.lng, restaurant.lat, restaurant.lng);
-      if (distance > filters.distance) {
-        return false;
+      // Filter by map bounds if they exist
+      if (mapBounds) {
+        const { north, south, east, west } = mapBounds;
+        if (
+          restaurant.lat > north ||
+          restaurant.lat < south ||
+          restaurant.lng > east ||
+          restaurant.lng < west
+        ) {
+          return false;
+        }
+      } else {
+        // Fallback to distance filter if no bounds
+        const distance = calculateDistance(mapCenter.lat, mapCenter.lng, restaurant.lat, restaurant.lng);
+        if (distance > filters.distance) {
+          return false;
+        }
       }
 
       // Filter by Open Now
@@ -227,7 +257,7 @@ const Explore = () => {
       }
       return true;
     });
-  }, [restaurants, filters, searchQuery, mapCenter]);
+  }, [restaurants, filters, searchQuery, mapCenter, mapBounds]);
 
   // Sort with sponsored first
   const sortedRestaurants = useMemo(() => {
