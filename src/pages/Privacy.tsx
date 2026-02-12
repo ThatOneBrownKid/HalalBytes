@@ -89,7 +89,7 @@ const Privacy = () => {
         </motion.div>
 
         {/* Main Content */}
-        <div className="max-w-4xl mx-auto space-y-12">
+        <div className="max-w-4xl mx-auto space-y-12 px-4">
           {sections.map((section, index) => (
             <motion.div
               key={section.title}
