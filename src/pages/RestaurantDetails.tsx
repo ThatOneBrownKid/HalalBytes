@@ -577,6 +577,29 @@ const RestaurantDetails = () => {
                 </Badge>
               </div>
 
+              {restaurant.halal_status === "Partial Halal" &&
+                restaurant.partial_halal_meats &&
+                (restaurant.partial_halal_meats as string[]).length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="font-semibold text-sm sm:text-base mb-2">
+                      Halal Meats Offered
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {(restaurant.partial_halal_meats as string[]).map(
+                        (meat) => (
+                          <Badge
+                            key={meat}
+                            variant="outline"
+                            className="text-sm"
+                          >
+                            {meat.charAt(0).toUpperCase() + meat.slice(1)}
+                          </Badge>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
               <p className="text-muted-foreground text-sm sm:text-base">
                 {restaurant.description}
               </p>
