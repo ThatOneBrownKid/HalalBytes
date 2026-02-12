@@ -1,5 +1,5 @@
 import { useRef, useCallback, useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import { Icon, divIcon, LatLngBounds } from "leaflet";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Navigation, Loader2, Star, ExternalLink, X, ChevronLeft, ChevronRight } from "lucide-react";
@@ -90,16 +90,6 @@ const MapEventHandler = ({
       }
     },
   });
-
-  // Fly to selected restaurant
-  useEffect(() => {
-    if (selectedId) {
-      const restaurant = restaurants.find(r => r.id === selectedId);
-      if (restaurant) {
-        map.flyTo([restaurant.lat, restaurant.lng], 15, { duration: 1 });
-      }
-    }
-  }, [selectedId, restaurants, map]);
 
   return null;
 };
@@ -394,24 +384,9 @@ export const RestaurantMap = ({
                                       }}
                                     >
                                       {!isMobile && (
-                                        <Popup>
-                                          <div className="w-48">
-                                            {restaurant.images && restaurant.images.length > 0 && (
-                                              <img src={restaurant.images[0]} alt={restaurant.name} className="h-24 w-full object-cover rounded-md mb-2" />
-                                            )}
-                                            <h3 className="font-semibold text-foreground mb-1 line-clamp-1">{restaurant.name}</h3>
-                                            <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
-                                              <Star className="h-3 w-3 fill-gold text-gold" />
-                                              <span>{restaurant.rating?.toFixed(1)}</span>
-                                              <span>({restaurant.review_count})</span>
-                                            </div>
-                                            <NavLink to={`/restaurant/${restaurant.id}`} className="block w-full">
-                                              <Button size="sm" className="w-full">
-                                                View Details
-                                              </Button>
-                                            </NavLink>
-                                          </div>
-                                        </Popup>
+                                        <Tooltip>
+                                          <span className="font-semibold">{restaurant.name}</span>
+                                        </Tooltip>
                                       )}
                                     </Marker>
                                   ))}

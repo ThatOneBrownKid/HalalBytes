@@ -44,7 +44,6 @@ export const RestaurantCard = ({
         animate={{
           opacity: 1,
           y: 0,
-          scale: isHighlighted ? 1.02 : 1,
         }}
         exit={{ opacity: 0, y: -20 }}
         whileHover={{ y: -4 }}

@@ -80,6 +80,7 @@ const Explore = () => {
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | undefined>();
   const [hoveredRestaurantId, setHoveredRestaurantId] = useState<string | null>(null);
   const [highlightedCardId, setHighlightedCardId] = useState<string | undefined>();
+  const [scrollToId, setScrollToId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentLocation, setCurrentLocation] = useState("Loading...");
   const [mapCenter, setMapCenter] = useState({ lat: 40.7128, lng: -74.0060 });
@@ -269,18 +270,8 @@ const Explore = () => {
   }, [filteredRestaurants]);
 
   const handleMarkerClick = useCallback((id: string) => {
-    setSelectedRestaurantId(id);
     setHighlightedCardId(id);
-    
-    // Find the index of the restaurant in the sorted list
-    const index = sortedRestaurants.findIndex(r => r.id === id);
-    if (index !== -1 && virtuosoRef.current) {
-      virtuosoRef.current.scrollToIndex({
-        index,
-        align: 'center',
-        behavior: 'smooth'
-      });
-    }
+    setScrollToId(id);
     
     // On mobile, switch to list view when marker is clicked
     if (window.innerWidth < 1024) {
@@ -289,7 +280,24 @@ const Explore = () => {
     
     // Clear highlight after a delay
     setTimeout(() => setHighlightedCardId(undefined), 3000);
-  }, [sortedRestaurants]);
+  }, []);
+
+  // Effect to scroll to the selected restaurant
+  useEffect(() => {
+    if (scrollToId) {
+      const index = sortedRestaurants.findIndex(r => r.id === scrollToId);
+      if (index !== -1 && virtuosoRef.current) {
+        setTimeout(() => {
+          virtuosoRef.current?.scrollToIndex({
+            index,
+            align: 'center',
+            behavior: 'smooth'
+          });
+        }, 50);
+      }
+      setScrollToId(null); // Reset after scrolling attempt
+    }
+  }, [scrollToId, sortedRestaurants]);
 
   const handleBoundsChange = useCallback((bounds: { north: number; south: number; east: number; west: number }) => {
     setMapBounds(bounds);
@@ -420,7 +428,7 @@ const Explore = () => {
                   >
                     <RestaurantCard
                       restaurant={restaurant}
-                      isHighlighted={highlightedCardId === restaurant.id || selectedRestaurantId === restaurant.id}
+                      isHighlighted={highlightedCardId === restaurant.id}
                       onFavorite={toggleFavorite}
                       isFavorited={isInFavorites(restaurant.id)}
                     />
@@ -445,7 +453,7 @@ const Explore = () => {
             <Suspense fallback={<div className="flex items-center justify-center h-full bg-muted"><Skeleton className="w-full h-full" /></div>}>
               <RestaurantMap
                 restaurants={mapRestaurants}
-                selectedId={selectedRestaurantId}
+                selectedId={highlightedCardId}
                 hoveredId={hoveredRestaurantId}
                 onMarkerClick={handleMarkerClick}
                 onBoundsChange={handleBoundsChange}
