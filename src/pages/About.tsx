@@ -34,12 +34,12 @@ const values = [
   },
 ];
 
-const stats = [
-  { number: "1000+", label: "Restaurants Listed" },
-  { number: "50+", label: "Cities Covered" },
-  { number: "10K+", label: "Community Members" },
-  { number: "5K+", label: "Reviews Written" },
-];
+// const stats = [
+//   { number: "1000+", label: "Restaurants Listed" },
+//   { number: "50+", label: "Cities Covered" },
+//   { number: "10K+", label: "Community Members" },
+//   { number: "5K+", label: "Reviews Written" },
+// ];
 
 const features = [
   "Verified halal certification details",
@@ -99,7 +99,7 @@ const About = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="border-y bg-card/50">
+      {/* <section className="border-y bg-card/50">
         <div className="container mx-auto px-4 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, idx) => (
@@ -119,7 +119,7 @@ const About = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Story Section */}
       <section className="py-20 md:py-32">
